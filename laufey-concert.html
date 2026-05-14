@@ -1,0 +1,706 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Laufey — Live in Concert · May 15, 2026</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;1,400&family=Lato:wght@300;400&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --cream:  #f5ede0;
+      --gold:   #c8a96e;
+      --blush:  #e8b4b8;
+      --deep:   #0e0b14;
+      --mid:    #1c1528;
+      --muted:  #8c7fa0;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'Lato', sans-serif;
+      background-color: var(--deep);
+      color: var(--cream);
+      overflow-x: hidden;
+    }
+
+    /* ── Stars ── */
+    #stars {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 0;
+      overflow: hidden;
+    }
+    .star {
+      position: absolute;
+      border-radius: 50%;
+      background: #fff;
+      animation: twinkle var(--d, 3s) ease-in-out infinite alternate;
+      opacity: 0;
+    }
+    @keyframes twinkle {
+      0%   { opacity: 0; }
+      50%  { opacity: var(--max-o, 0.7); }
+      100% { opacity: 0.1; }
+    }
+
+    /* ── Nav ── */
+    nav {
+      position: fixed;
+      top: 0;
+      width: 100%;
+      z-index: 100;
+      display: flex;
+      justify-content: center;
+      gap: 2.5rem;
+      padding: 1rem 2rem;
+      background: linear-gradient(to bottom, rgba(14,11,20,0.85) 0%, transparent 100%);
+      backdrop-filter: blur(4px);
+    }
+    nav a {
+      font-size: .78rem;
+      letter-spacing: .15em;
+      text-transform: uppercase;
+      text-decoration: none;
+      color: var(--muted);
+      transition: color .3s;
+    }
+    nav a:hover { color: var(--gold); }
+
+    /* ── Sections ── */
+    section {
+      position: relative;
+      z-index: 1;
+      padding: 7rem 1.5rem 5rem;
+      max-width: 860px;
+      margin: 0 auto;
+    }
+
+    /* ── Hero ── */
+    #hero {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      gap: 1.2rem;
+      max-width: 100%;
+      padding-top: 6rem;
+    }
+
+    .hero-label {
+      font-size: .72rem;
+      letter-spacing: .25em;
+      text-transform: uppercase;
+      color: var(--gold);
+    }
+
+    .hero-name {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(3.5rem, 12vw, 8rem);
+      font-weight: 400;
+      line-height: 1;
+      background: linear-gradient(135deg, var(--cream) 30%, var(--gold) 70%, var(--blush) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .hero-subtitle {
+      font-family: 'Playfair Display', serif;
+      font-style: italic;
+      font-size: clamp(1rem, 3vw, 1.45rem);
+      color: var(--blush);
+      margin-top: -.3rem;
+    }
+
+    .divider {
+      width: 60px;
+      height: 1px;
+      background: var(--gold);
+      margin: .5rem auto;
+    }
+
+    .hero-date {
+      font-size: clamp(.85rem, 2.5vw, 1.05rem);
+      letter-spacing: .12em;
+      color: var(--cream);
+      opacity: .85;
+    }
+
+    /* ── Countdown ── */
+    #countdown {
+      display: flex;
+      gap: 2.5rem;
+      margin-top: 1.2rem;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+    .count-box {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: .3rem;
+    }
+    .count-num {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(2.2rem, 6vw, 3.2rem);
+      color: var(--gold);
+      line-height: 1;
+    }
+    .count-label {
+      font-size: .65rem;
+      letter-spacing: .18em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+
+    .hero-scroll {
+      margin-top: 2rem;
+      animation: bounce 2s infinite;
+      color: var(--muted);
+      font-size: .75rem;
+      letter-spacing: .15em;
+      text-transform: uppercase;
+    }
+    @keyframes bounce {
+      0%, 100% { transform: translateY(0); }
+      50%       { transform: translateY(6px); }
+    }
+
+    /* ── Headings ── */
+    .section-label {
+      font-size: .7rem;
+      letter-spacing: .22em;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-bottom: .6rem;
+    }
+    h2 {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(1.8rem, 5vw, 2.6rem);
+      font-weight: 400;
+      margin-bottom: 1.8rem;
+      color: var(--cream);
+    }
+    h3 {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.3rem;
+      font-weight: 400;
+      color: var(--gold);
+      margin-bottom: .6rem;
+    }
+    p {
+      font-weight: 300;
+      font-size: 1rem;
+      line-height: 1.9;
+      color: rgba(245,237,224,.8);
+      margin-bottom: 1.4rem;
+    }
+
+    /* ── Timeline ── */
+    .timeline {
+      border-left: 1px solid rgba(200,169,110,.25);
+      padding-left: 2rem;
+      display: flex;
+      flex-direction: column;
+      gap: 2.5rem;
+      margin-top: 1rem;
+    }
+    .tl-item {
+      position: relative;
+    }
+    .tl-item::before {
+      content: '';
+      position: absolute;
+      left: -2.45rem;
+      top: .45rem;
+      width: 9px;
+      height: 9px;
+      border-radius: 50%;
+      background: var(--gold);
+      box-shadow: 0 0 8px var(--gold);
+    }
+    .tl-year {
+      font-size: .7rem;
+      letter-spacing: .18em;
+      color: var(--gold);
+      text-transform: uppercase;
+      margin-bottom: .35rem;
+    }
+
+    /* ── Album cards ── */
+    .album-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 1.5rem;
+      margin-top: 1rem;
+    }
+    .album-card {
+      background: rgba(255,255,255,.04);
+      border: 1px solid rgba(200,169,110,.15);
+      border-radius: 12px;
+      padding: 1.6rem 1.4rem;
+      transition: transform .3s, border-color .3s;
+    }
+    .album-card:hover {
+      transform: translateY(-4px);
+      border-color: rgba(200,169,110,.45);
+    }
+    .album-year {
+      font-size: .68rem;
+      letter-spacing: .18em;
+      color: var(--muted);
+      text-transform: uppercase;
+      margin-bottom: .5rem;
+    }
+    .album-title {
+      font-family: 'Playfair Display', serif;
+      font-style: italic;
+      font-size: 1.2rem;
+      color: var(--cream);
+      margin-bottom: .7rem;
+    }
+    .album-desc {
+      font-size: .88rem;
+      line-height: 1.7;
+      color: rgba(245,237,224,.65);
+      margin: 0;
+    }
+
+    /* ── New album spotlight ── */
+    #new-album {
+      padding-top: 6rem;
+    }
+    .album-spotlight {
+      background: linear-gradient(135deg, rgba(200,169,110,.08) 0%, rgba(232,180,184,.06) 100%);
+      border: 1px solid rgba(200,169,110,.3);
+      border-radius: 16px;
+      padding: 3rem 2.5rem;
+      text-align: center;
+    }
+    .spotlight-tag {
+      display: inline-block;
+      background: var(--gold);
+      color: var(--deep);
+      font-size: .65rem;
+      letter-spacing: .2em;
+      text-transform: uppercase;
+      padding: .35rem .9rem;
+      border-radius: 999px;
+      margin-bottom: 1.4rem;
+    }
+    .spotlight-title {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(2rem, 6vw, 3rem);
+      font-style: italic;
+      color: var(--cream);
+      margin-bottom: .5rem;
+    }
+    .spotlight-artist {
+      font-size: .8rem;
+      letter-spacing: .2em;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-bottom: 1.8rem;
+    }
+    .track-list {
+      list-style: none;
+      display: inline-flex;
+      flex-direction: column;
+      gap: .55rem;
+      text-align: left;
+      margin-bottom: 1.8rem;
+    }
+    .track-list li {
+      font-size: .9rem;
+      font-weight: 300;
+      color: rgba(245,237,224,.75);
+      display: flex;
+      align-items: center;
+      gap: .8rem;
+    }
+    .track-num {
+      font-size: .65rem;
+      letter-spacing: .12em;
+      color: var(--gold);
+      width: 1.2rem;
+      text-align: right;
+      flex-shrink: 0;
+    }
+
+    /* ── Concert info ── */
+    .info-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 1.2rem;
+      margin-top: 1rem;
+    }
+    .info-card {
+      background: rgba(255,255,255,.03);
+      border: 1px solid rgba(200,169,110,.12);
+      border-radius: 10px;
+      padding: 1.4rem 1.2rem;
+    }
+    .info-icon {
+      font-size: 1.4rem;
+      margin-bottom: .5rem;
+    }
+    .info-title {
+      font-size: .65rem;
+      letter-spacing: .18em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: .4rem;
+    }
+    .info-value {
+      font-family: 'Playfair Display', serif;
+      font-size: 1rem;
+      color: var(--cream);
+    }
+
+    /* ── Quote ── */
+    blockquote {
+      border-left: 3px solid var(--gold);
+      margin: 2.5rem 0;
+      padding: .8rem 1.8rem;
+      font-family: 'Playfair Display', serif;
+      font-style: italic;
+      font-size: 1.15rem;
+      color: rgba(245,237,224,.8);
+    }
+    blockquote cite {
+      display: block;
+      margin-top: .6rem;
+      font-family: 'Lato', sans-serif;
+      font-style: normal;
+      font-size: .75rem;
+      letter-spacing: .12em;
+      color: var(--gold);
+      text-transform: uppercase;
+    }
+
+    /* ── Footer ── */
+    footer {
+      position: relative;
+      z-index: 1;
+      text-align: center;
+      padding: 3rem 1.5rem 2rem;
+      font-size: .75rem;
+      letter-spacing: .1em;
+      color: var(--muted);
+    }
+    footer .footer-name {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.5rem;
+      color: var(--gold);
+      margin-bottom: .5rem;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Stars -->
+  <div id="stars"></div>
+
+  <!-- Nav -->
+  <nav>
+    <a href="#story">Story</a>
+    <a href="#discography">Discography</a>
+    <a href="#new-album">New Album</a>
+    <a href="#concert">Concert</a>
+  </nav>
+
+  <!-- Hero -->
+  <section id="hero">
+    <p class="hero-label">Live in Concert · May 15, 2026</p>
+    <h1 class="hero-name">Laufey</h1>
+    <p class="hero-subtitle">An Evening of Jazz, Strings & Stardust</p>
+    <div class="divider"></div>
+    <p class="hero-date">Tomorrow Night &mdash; Doors Open 7:00 PM</p>
+    <div id="countdown">
+      <div class="count-box"><span class="count-num" id="cd-h">00</span><span class="count-label">Hours</span></div>
+      <div class="count-box"><span class="count-num" id="cd-m">00</span><span class="count-label">Minutes</span></div>
+      <div class="count-box"><span class="count-num" id="cd-s">00</span><span class="count-label">Seconds</span></div>
+    </div>
+    <p class="hero-scroll">↓ &nbsp; Scroll to Explore</p>
+  </section>
+
+  <!-- Life Story -->
+  <section id="story">
+    <p class="section-label">The Artist</p>
+    <h2>Her Story</h2>
+
+    <p>
+      Laufey Lín Jónsdóttir — known to the world simply as <em>Laufey</em> — was born on
+      June 23, 2001 in Reykjavík, Iceland. The daughter of an Icelandic father and a Chinese
+      mother, she grew up between two worlds: the quiet drama of Nordic landscapes and the
+      rich cultural tapestry of her Chinese heritage. From the earliest age, music was not
+      a hobby but a language.
+    </p>
+
+    <blockquote>
+      "I've always felt like music is the one place where I completely belong."
+      <cite>— Laufey</cite>
+    </blockquote>
+
+    <div class="timeline">
+      <div class="tl-item">
+        <p class="tl-year">Early Childhood · Reykjavík</p>
+        <h3>A Prodigy in the Making</h3>
+        <p>
+          Laufey began studying cello at age five, quickly demonstrating extraordinary
+          classical ability. Alongside her twin sister Steinunn, she grew up immersed in
+          both Icelandic folk traditions and the sweeping world of classical music. The
+          family home was always filled with Bach, Debussy, and the kind of quiet wonder
+          that later defined her songwriting.
+        </p>
+      </div>
+
+      <div class="tl-item">
+        <p class="tl-year">Teenage Years · Reykjavík Music Academy</p>
+        <h3>Classical Roots, Jazz Wings</h3>
+        <p>
+          At the Reykjavík College of Music, Laufey immersed herself in classical cello
+          performance while quietly falling in love with a very different tradition — the
+          warm, late-night world of jazz. Artists like Chet Baker, Bill Evans, and
+          Nat King Cole shaped the emotional vocabulary she would eventually pour into
+          original songs. She taught herself guitar, piano, and the art of writing
+          melodies that ached with longing.
+        </p>
+      </div>
+
+      <div class="tl-item">
+        <p class="tl-year">2019 – 2022 · Berklee College of Music, Boston</p>
+        <h3>Finding Her Voice</h3>
+        <p>
+          A scholarship brought her to Berklee, where the confluence of classical
+          training and jazz theory gave her compositions their signature depth. She began
+          posting original songs on social media, initially to a modest audience. Within
+          months, her intimate, string-laced ballads found millions of listeners who
+          recognized something rare: sincerity. Her debut EP <em>Typical of Me</em>
+          (2021) announced an artist already fully formed.
+        </p>
+      </div>
+
+      <div class="tl-item">
+        <p class="tl-year">2022</p>
+        <h3>Everything I Know About Love</h3>
+        <p>
+          Her debut album arrived with the delicate force of a first snow. Spare
+          arrangements of cello, upright bass, and brushed drums cradled lyrics that
+          explored heartbreak, longing, and the bittersweet weight of growing up. Critics
+          and fans alike responded to its unusual poise — here was a 21-year-old writing
+          with the wisdom of someone who had lived many lives.
+        </p>
+      </div>
+
+      <div class="tl-item">
+        <p class="tl-year">2023 – 2024</p>
+        <h3>Bewitched — A Grammy Moment</h3>
+        <p>
+          <em>Bewitched</em> cemented Laufey as a generational talent. Lush, orchestral,
+          and achingly romantic, the album earned her the Grammy Award for
+          <strong>Best Traditional Pop Vocal Album</strong> — the youngest artist ever to
+          claim the honour. An expanded <em>Goddess Edition</em> followed in 2024,
+          featuring new orchestral arrangements and intimate acoustic recordings that
+          stripped the songs back to their emotional core.
+        </p>
+      </div>
+
+      <div class="tl-item">
+        <p class="tl-year">2025 – Present</p>
+        <h3>A New Chapter</h3>
+        <p>
+          Rather than repeat a proven formula, Laufey disappeared into the studio with
+          a small ensemble of trusted collaborators. She emerged with something both
+          familiar and startling — an album that pushes deeper into classical structure
+          while never losing the intimacy that made her listeners feel seen. Tomorrow
+          night marks its live premiere.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Discography -->
+  <section id="discography">
+    <p class="section-label">Catalogue</p>
+    <h2>The Music</h2>
+    <div class="album-grid">
+      <div class="album-card">
+        <p class="album-year">2021</p>
+        <p class="album-title">Typical of Me</p>
+        <p class="album-desc">The debut EP that introduced the world to Laufey's hazy, jazz-inflected take on heartbreak. Four songs, perfectly weighted.</p>
+      </div>
+      <div class="album-card">
+        <p class="album-year">2022</p>
+        <p class="album-title">Everything I Know About Love</p>
+        <p class="album-desc">A debut album of uncommon maturity — cello, brushed drums, and lyrics that cut straight to the chest.</p>
+      </div>
+      <div class="album-card">
+        <p class="album-year">2022</p>
+        <p class="album-title">A Night at the Symphony</p>
+        <p class="album-desc">Live with the Iceland Symphony Orchestra. Proof that Laufey's songs sound just as breathtaking at full orchestral scale.</p>
+      </div>
+      <div class="album-card">
+        <p class="album-year">2023</p>
+        <p class="album-title">Bewitched</p>
+        <p class="album-desc">Grammy-winning. Orchestral, romantic, and resolutely her own. The record that changed everything.</p>
+      </div>
+      <div class="album-card">
+        <p class="album-year">2024</p>
+        <p class="album-title">Bewitched: The Goddess Edition</p>
+        <p class="album-desc">Extended edition with new arrangements and stripped-back recordings — the same songs, heard for the first time.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- New Album -->
+  <section id="new-album">
+    <p class="section-label">2025 · New Release</p>
+    <h2>The New Album</h2>
+
+    <p>
+      Recorded across studios in Reykjavík, London, and Los Angeles,
+      <em>Reverie</em> is Laufey's most ambitious and most personal work to date.
+      Where <em>Bewitched</em> conjured the dizzy heights of new romance,
+      <em>Reverie</em> sits with the aftermath — the quiet rooms, the second thoughts,
+      the strange grace of moving on. Classical counterpoint weaves through jazz chord
+      voicings; strings swell and recede like breath.
+    </p>
+    <p>
+      Laufey plays every stringed instrument on the record herself, and conducted the
+      chamber ensemble that appears on six of the nine tracks. It is a record about
+      memory — how it softens things, how it lies to you, how it is sometimes the only
+      home you have.
+    </p>
+
+    <div class="album-spotlight">
+      <span class="spotlight-tag">Out Now</span>
+      <p class="spotlight-title">Reverie</p>
+      <p class="spotlight-artist">Laufey · 2025</p>
+
+      <ol class="track-list">
+        <li><span class="track-num">01</span> First Light</li>
+        <li><span class="track-num">02</span> Winter's Daughter</li>
+        <li><span class="track-num">03</span> The Quiet Hours</li>
+        <li><span class="track-num">04</span> Almost, Always</li>
+        <li><span class="track-num">05</span> Reverie (Title Track)</li>
+        <li><span class="track-num">06</span> Silk &amp; Sorrow</li>
+        <li><span class="track-num">07</span> Softer Now</li>
+        <li><span class="track-num">08</span> A Letter I Never Sent</li>
+        <li><span class="track-num">09</span> Goodnight, Reykjavík</li>
+      </ol>
+
+      <blockquote style="text-align:left; margin: 0 auto 1.5rem; max-width: 480px;">
+        "I wanted to make something that felt like waking up and not quite knowing
+        where you are — that beautiful, disorienting moment before the day begins."
+        <cite>— Laufey on <em>Reverie</em></cite>
+      </blockquote>
+    </div>
+  </section>
+
+  <!-- Concert Info -->
+  <section id="concert">
+    <p class="section-label">Tomorrow · May 15, 2026</p>
+    <h2>Concert Details</h2>
+
+    <p>
+      Tomorrow night, Laufey brings <em>Reverie</em> to life for the first time on stage.
+      Joined by a full chamber ensemble and the musicians who recorded the album alongside
+      her, the show promises the same intimacy of her recordings at orchestral scale.
+      Expect candlelight, cellos, and songs that feel like they were written just for you.
+    </p>
+
+    <div class="info-grid">
+      <div class="info-card">
+        <div class="info-icon">📅</div>
+        <p class="info-title">Date</p>
+        <p class="info-value">May 15, 2026</p>
+      </div>
+      <div class="info-card">
+        <div class="info-icon">🕖</div>
+        <p class="info-title">Doors / Show</p>
+        <p class="info-value">7:00 PM / 8:00 PM</p>
+      </div>
+      <div class="info-card">
+        <div class="info-icon">🎻</div>
+        <p class="info-title">Programme</p>
+        <p class="info-value">Reverie · Bewitched · Classics</p>
+      </div>
+      <div class="info-card">
+        <div class="info-icon">✨</div>
+        <p class="info-title">Support Act</p>
+        <p class="info-value">Chamber Ensemble</p>
+      </div>
+    </div>
+
+    <blockquote style="margin-top:2.5rem;">
+      "Every concert feels like the first time I played for anyone — terrifying,
+      wonderful, necessary."
+      <cite>— Laufey</cite>
+    </blockquote>
+  </section>
+
+  <!-- Footer -->
+  <footer>
+    <p class="footer-name">Laufey</p>
+    <p>A personal fan page · Made with love for the concert · May 2026</p>
+  </footer>
+
+  <script>
+    /* Stars */
+    (function () {
+      const container = document.getElementById('stars');
+      for (let i = 0; i < 160; i++) {
+        const s = document.createElement('div');
+        s.className = 'star';
+        const size = Math.random() * 2.2 + 0.5;
+        s.style.cssText = `
+          left: ${Math.random() * 100}%;
+          top:  ${Math.random() * 100}%;
+          width:  ${size}px;
+          height: ${size}px;
+          --d: ${(Math.random() * 4 + 2).toFixed(1)}s;
+          --max-o: ${(Math.random() * 0.5 + 0.3).toFixed(2)};
+          animation-delay: ${(Math.random() * 5).toFixed(1)}s;
+        `;
+        container.appendChild(s);
+      }
+    })();
+
+    /* Countdown to May 15 2026 20:00 local */
+    (function () {
+      const target = new Date('2026-05-15T20:00:00');
+      const hEl = document.getElementById('cd-h');
+      const mEl = document.getElementById('cd-m');
+      const sEl = document.getElementById('cd-s');
+
+      function pad(n) { return String(n).padStart(2, '0'); }
+
+      function tick() {
+        const diff = target - Date.now();
+        if (diff <= 0) {
+          hEl.textContent = mEl.textContent = sEl.textContent = '00';
+          return;
+        }
+        const totalSec = Math.floor(diff / 1000);
+        const h = Math.floor(totalSec / 3600);
+        const m = Math.floor((totalSec % 3600) / 60);
+        const s = totalSec % 60;
+        hEl.textContent = pad(h);
+        mEl.textContent = pad(m);
+        sEl.textContent = pad(s);
+      }
+      tick();
+      setInterval(tick, 1000);
+    })();
+  </script>
+</body>
+</html>
