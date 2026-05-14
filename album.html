@@ -351,6 +351,38 @@
       transition: color .25s;
     }
     footer a:hover { color: var(--gold); }
+
+    /* ── Lyrics loading / error states ── */
+    .lyrics-loading {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 1rem;
+      padding: 3rem 1rem;
+    }
+    .loading-spinner {
+      width: 28px;
+      height: 28px;
+      border: 2px solid rgba(200,169,110,.2);
+      border-top-color: var(--gold);
+      border-radius: 50%;
+      animation: spin .8s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .lyrics-loading p {
+      font-size: .8rem;
+      color: var(--muted);
+      letter-spacing: .12em;
+    }
+    .lyrics-zh.pending { opacity: .35; font-style: italic; }
+    .lyrics-not-found {
+      text-align: center;
+      padding: 2rem;
+      color: var(--muted);
+      font-size: .88rem;
+      line-height: 1.8;
+    }
+    .lyrics-gap { height: .9rem; }
   </style>
 </head>
 <body>
@@ -407,20 +439,24 @@
     /* ── i18n ── */
     const translations = {
       'zh-TW': {
-        'nav.back':       '← 返回音樂會',
-        'tracks.label':   '曲目列表',
-        'tracks.h2':      '歌曲',
-        'footer.back':    '← 返回音樂會頁面',
-        'notfound.title': '找不到專輯',
-        'notfound.desc':  '找不到所請求的專輯。',
+        'nav.back':         '← 返回音樂會',
+        'tracks.label':     '曲目列表',
+        'tracks.h2':        '歌曲',
+        'footer.back':      '← 返回音樂會頁面',
+        'notfound.title':   '找不到專輯',
+        'notfound.desc':    '找不到所請求的專輯。',
+        'lyrics.loading':   '正在載入歌詞…',
+        'lyrics.notfound':  '找不到歌詞 · 請稍後再試',
       },
       en: {
-        'nav.back':       '← Back to Concert',
-        'tracks.label':   'Tracklist',
-        'tracks.h2':      'The Songs',
-        'footer.back':    '← Return to Concert Page',
-        'notfound.title': 'Album not found',
-        'notfound.desc':  'The requested album could not be found.',
+        'nav.back':         '← Back to Concert',
+        'tracks.label':     'Tracklist',
+        'tracks.h2':        'The Songs',
+        'footer.back':      '← Return to Concert Page',
+        'notfound.title':   'Album not found',
+        'notfound.desc':    'The requested album could not be found.',
+        'lyrics.loading':   'Loading lyrics…',
+        'lyrics.notfound':  'Lyrics not found · Please try again later',
       }
     };
 
@@ -467,525 +503,178 @@
       }
     })();
 
-    /* ── Lyrics stanzas (shared references) ── */
-
-    const L_TYPICAL_OF_ME = [
-      [
-        { en: "It's typical of me to say too little, say it late,",      zh: '這是我的一貫作風，話說得太少，說得太遲，' },
-        { en: 'To keep the words inside and let the silence meditate.',   zh: '把話語鎖在心裡，讓沉默自行沉思。' },
-        { en: 'You asked me once if I was fine and I said yes of course,',zh: '你曾問我是否還好，我說當然，沒事，' },
-        { en: 'While everything inside me pulled against a stronger force.',zh: '而我心底的一切，卻在對抗著更強大的力量。' },
-      ],
-      [
-        { en: 'Typical of me to fall before I learn to stand,',          zh: '這是我的一貫作風，未學站立便已跌倒，' },
-        { en: 'To reach across the distance for a cold, retreating hand.',zh: '伸手越過距離，觸碰那已冷卻、正在退縮的手。' },
-        { en: "I've written out my feelings in the letters left unsent,", zh: '我把心中的感受寫成信，卻從未寄出，' },
-        { en: 'And typical of me to love long after you have went.',      zh: '而這就是我，在你離去很久之後，依然深深愛著。' },
-      ],
-    ];
-
-    const L_STREET_BY_THE_LAKE = [
-      [
-        { en: "There's a street by the lake where we used to walk slow,", zh: '湖邊有一條街，我們曾在那裡慢慢散步，' },
-        { en: 'Where the autumn leaves gathered and refused to go.',       zh: '那裡的秋葉聚集著，拒絕離去。' },
-        { en: 'You would count all the colours like they were a prayer,', zh: '你數著那些顏色，像在念一段禱告，' },
-        { en: "And I'd walk half a step just to stay in your air.",       zh: '而我走在你半步之後，只為留在你的氣息之中。' },
-      ],
-      [
-        { en: 'Now I walk by the lake on the coldest of days,',           zh: '如今我在最寒冷的日子獨自走過湖邊，' },
-        { en: 'The street holds the memory of your quiet gaze.',          zh: '那條街承載著你靜默目光的記憶。' },
-        { en: 'The water is steady, the sky is the same,',               zh: '湖水依然平靜，天空一如往昔，' },
-        { en: "But the street by the lake doesn't know your name.",       zh: '但湖邊的那條街，已不再知道你的名字。' },
-      ],
-    ];
-
-    const L_LIKE_THE_MOVIES = [
-      [
-        { en: 'I wanted it to go like in the movies,',                   zh: '我希望一切像電影裡那樣發生，' },
-        { en: 'A grand piano, rain, a revelation.',                       zh: '一架大鋼琴、雨聲，以及一個啟示。' },
-        { en: "You'd turn around and see me standing breathless,",        zh: '你會轉過身，看見我站在那裡，屏住呼吸，' },
-        { en: 'And music would arrive without a station.',                zh: '而音樂將無緣無故地響起。' },
-      ],
-      [
-        { en: 'But life moves quieter than the silver screen,',          zh: '但生活比銀幕移動得更加安靜，' },
-        { en: 'No sweeping shots, no perfectly placed line.',             zh: '沒有宏大的鏡頭，沒有恰到好處的台詞。' },
-        { en: 'You left on a Tuesday, skies were grey and mean,',        zh: '你在一個週二離去，天空陰鬱而刻薄，' },
-        { en: 'And no one wrote the score to underline.',                 zh: '沒有人為這一切譜上配樂。' },
-      ],
-    ];
-
-    const L_VALENTINE = [
-      [
-        { en: 'You leave me flowers on a Tuesday morning,',              zh: '你在週二早晨給我留下鮮花，' },
-        { en: 'Call it accidental, call it spring.',                     zh: '稱之為偶然，稱之為春天的到來。' },
-        { en: 'I press them in a book without a warning,',               zh: '我未打招呼便將它們夾入書頁，' },
-        { en: 'And wonder what it is that you could bring.',             zh: '心想著你究竟能帶來些什麼。' },
-      ],
-      [
-        { en: 'My Valentine, I wrote your name in margins,',             zh: '我的情人節，我把你的名字寫在書頁邊緣，' },
-        { en: 'Beside the poets who knew better things.',                zh: '寫在那些懂得更美好事物的詩人旁邊。' },
-        { en: 'Love has its own peculiar sacred seasons,',               zh: '愛有著它獨特而神聖的季節，' },
-        { en: 'And you arrived with all the warmth it brings.',          zh: '而你帶著它所有的溫暖降臨。' },
-      ],
-    ];
-
-    const L_FALLING_BEHIND = [
-      [
-        { en: "I'm always falling behind the ones I love,",              zh: '我總是落後於我所愛的人，' },
-        { en: 'A half a season slower than the rest.',                   zh: '比其他所有人慢半個季節。' },
-        { en: "The summer's gone before I've had enough,",               zh: '夏天在我尚未盡興時便已過去，' },
-        { en: 'And spring was barely time to pass the test.',            zh: '而春天幾乎不夠讓我通過考驗。' },
-      ],
-      [
-        { en: 'You move through life at such a steady pace,',            zh: '你以如此穩定的步伐走過生命，' },
-        { en: 'While I am still replaying last July.',                   zh: '而我仍在回放上一個七月。' },
-        { en: "It isn't grief exactly, more like grace,",                zh: '這不完全是悲傷，更像是一種優雅，' },
-        { en: 'The art of watching something good go by.',               zh: '一門眼看美好事物流逝而過的藝術。' },
-      ],
-    ];
-
-    const L_LOVESICK = [
-      [
-        { en: "I'm lovesick and I know it's my own doing,",              zh: '我害了相思，我知道這是咎由自取，' },
-        { en: 'I saw the signs and chose to look away.',                 zh: '我看到了那些跡象，卻選擇別過目光。' },
-        { en: 'The fever that your absence keeps renewing,',             zh: '你的缺席不斷喚醒的那場熱病，' },
-        { en: "Won't break until I've nothing left to say.",             zh: '在我再無一語之前，不會退燒。' },
-      ],
-      [
-        { en: "Oh I'm lovesick in the sweetest kind of pain,",          zh: '哦，我害著最甜蜜的那種相思病，' },
-        { en: 'Where every memory is gold and aches.',                   zh: '每一段記憶都是閃耀的黃金，帶著隱痛。' },
-        { en: "I'd take the fever all over again,",                     zh: '我願意再次經歷那場熱病，' },
-        { en: 'For all the tender damage that it makes.',                zh: '為了它所造成的每一處溫柔的傷。' },
-      ],
-    ];
-
-    const L_BEST_FRIEND = [
-      [
-        { en: 'You are the only one I call at midnight,',               zh: '你是我唯一在午夜撥電話的人，' },
-        { en: "Who doesn't ask me why I sound like rain.",               zh: '不會問我為何聽起來像在下雨。' },
-        { en: 'You know the rooms I hide in when the light fades,',     zh: '你知道我在光消逝時躲藏的那些房間，' },
-        { en: 'And never make me explain the dark again.',              zh: '從不讓我再次解釋那片黑暗。' },
-      ],
-      [
-        { en: 'Best friend, you are my favourite kind of constant,',    zh: '最好的朋友，你是我最喜歡的那種恆常，' },
-        { en: 'The one who stays through every shifting season.',        zh: '在每一個流轉的季節都留下來的人。' },
-        { en: 'You hold my hand without needing a reason,',             zh: '你握著我的手，不需要任何理由，' },
-        { en: 'And love me in a way that asks no reason.',              zh: '以一種無需理由的方式愛著我。' },
-      ],
-    ];
-
-    const L_AEDIS = [
-      [
-        { en: 'In the aedis of my heart I built a room for you,',       zh: '在我心靈的殿堂裡，我為你建了一個房間，' },
-        { en: 'With high white ceilings and a window facing east.',      zh: '有著高高的白色天花板，以及面向東方的窗戶。' },
-        { en: 'I swept the floors and learned to let the morning through,',zh: '我掃淨了地板，學會讓清晨的光透進來，' },
-        { en: 'And set a place for you at every solemn feast.',          zh: '並在每一次莊嚴的盛宴上，為你留下一個位置。' },
-      ],
-      [
-        { en: 'But temples made of longing fall to ruin,',              zh: '但由思念建造的神殿終將頹圮，' },
-        { en: "When the one they're built for never comes inside.",      zh: '當它為之而建的人從未走進其中。' },
-        { en: 'The ivy climbs the walls without pursuing,',             zh: '常青藤無所追求地攀爬著牆壁，' },
-        { en: 'And all I have is beautiful and wide.',                  zh: '而我所擁有的，既美麗又廣闊。' },
-      ],
-    ];
-
-    const L_STAY_HIGH = [
-      [
-        { en: 'Stay high with me above the noise of things,',           zh: '和我一起高懸在一切喧囂之上，' },
-        { en: 'Where clouds are soft and time forgets its rules.',       zh: '那裡雲朵柔軟，時間忘記了它的規則。' },
-        { en: 'You have the kind of laugh that summer brings,',         zh: '你有那種夏天才有的笑聲，' },
-        { en: "And I have all the grace of someone's fool.",            zh: '而我有著某個傻瓜才有的優雅。' },
-      ],
-      [
-        { en: "Stay high a little longer, don't come down,",           zh: '再多停留一會兒，不要下來，' },
-        { en: "The ground is full of things we'd have to face.",        zh: '地面上有太多我們必須面對的事情。' },
-        { en: "Up here the light is gold without a crown,",            zh: '在這裡，光芒是金色的，不需要皇冠，' },
-        { en: 'And you are all I need to hold the place.',             zh: '而你是我守住這個地方所需的一切。' },
-      ],
-    ];
-
-    const L_POET = [
-      [
-        { en: 'I am a poet with too many feelings,',                    zh: '我是一個感情太多的詩人，' },
-        { en: 'And not enough words that are new.',                     zh: '卻沒有足夠新鮮的詞語。' },
-        { en: 'I keep returning to the same old ceilings,',            zh: '我不斷回到同樣的那幾個天花板，' },
-        { en: 'The ones that I painted for you.',                       zh: '那些我為你塗繪的天花板。' },
-      ],
-      [
-        { en: 'A poet needs an audience of one,',                      zh: '詩人只需要一位聽眾，' },
-        { en: 'One pair of eyes to read between the lines.',           zh: '一雙能讀出字裡行間的眼睛。' },
-        { en: "Every single poem that I've begun,",                    zh: '每一首我開始寫的詩，' },
-        { en: "Has your name hidden deep inside its rhymes.",          zh: '都將你的名字藏在它的韻腳深處。' },
-      ],
-    ];
-
-    const L_EIKAAL = [
-      [
-        { en: 'Everything I know about love I learned the hard way,',   zh: '關於愛，我所知道的一切，都是以艱難的方式學來的，' },
-        { en: 'Through holding on and letting go and holding on again.',zh: '透過執著、放手，再次執著。' },
-        { en: "It isn't always moonlight and a soft guitar,",           zh: '它並不總是月光和柔和的吉他，' },
-        { en: "Sometimes it's just standing in the rain.",              zh: '有時它只是站在雨中。' },
-      ],
-      [
-        { en: 'Everything I know about love I learned from you,',       zh: '關於愛，我所知道的一切，都是從你身上學來的，' },
-        { en: 'From the way you stayed and then the way you left.',     zh: '從你留下的方式，和你離去的方式。' },
-        { en: "Love is not an answer, it's a question too,",           zh: '愛不只是一個答案，它也是一個問題，' },
-        { en: 'And I am still searching for the rest.',                 zh: '而我仍在尋找其餘的答案。' },
-      ],
-    ];
-
-    const L_DEAR_SOULMATE = [
-      [
-        { en: "Dear soulmate, I don't know your face yet,",            zh: '親愛的靈魂伴侶，我尚不知道你的臉龐，' },
-        { en: 'Or which city holds you in its arms.',                  zh: '也不知道哪座城市將你擁抱於懷中。' },
-        { en: "I hope you haven't given up on patience,",              zh: '我希望你還沒有放棄耐心，' },
-        { en: 'I hope you still believe in quiet charms.',             zh: '我希望你仍然相信那些靜默的魅力。' },
-      ],
-      [
-        { en: 'Dear soulmate, save a little room for me,',            zh: '親愛的靈魂伴侶，為我留一點空間，' },
-        { en: "I'm taking longer than I thought I would.",             zh: '我比我預想的花了更長的時間。' },
-        { en: "I'm learning how to love what I can't see,",           zh: '我在學習愛上我所看不見的一切，' },
-        { en: 'And trying hard to be as good as good.',               zh: '並努力地成為盡可能好的人。' },
-      ],
-    ];
-
-    const L_GONE = [
-      [
-        { en: 'You were gone before the coffee cooled,',              zh: '你在咖啡冷卻之前便已離去，' },
-        { en: "Before I'd found the words to make you stay.",         zh: '在我找到讓你留下的話語之前。' },
-        { en: 'And I stood there like a patient fool,',               zh: '而我站在那裡，像個耐心等待的傻瓜，' },
-        { en: 'Watching all our future drive away.',                   zh: '望著我們所有的未來駛離而去。' },
-      ],
-      [
-        { en: 'Gone is such a small word for a large thing,',         zh: '「離去」對於如此重大的事物來說，是個太小的詞，' },
-        { en: 'Four letters for a life rearranged.',                  zh: '四個字母，代表了一個被重新安排的人生。' },
-        { en: 'I keep expecting you around each corner,',             zh: '我一直期待在每個轉角遇見你，' },
-        { en: 'But corners now hold only what has changed.',          zh: '但如今每個轉角只盛放著那些已改變的事物。' },
-      ],
-    ];
-
-    const L_DREAMER = [
-      [
-        { en: 'I am a dreamer with a cello and a notepad,',           zh: '我是一個帶著大提琴和筆記本的夢想者，' },
-        { en: 'Building worlds from chord progressions and a tune.',   zh: '用和弦進行和旋律建造世界。' },
-        { en: 'Some say I live too far inside my own head,',          zh: '有人說我活得太深在自己的腦子裡，' },
-        { en: 'But my head is full of starlight and the moon.',       zh: '但我的腦子裡充滿了星光和月亮。' },
-      ],
-      [
-        { en: 'Dreamer, keep on dreaming past the darkness,',        zh: '夢想者，繼續夢想，穿越黑暗，' },
-        { en: 'Every vision takes a little time to form.',            zh: '每一個願景都需要一點時間成形。' },
-        { en: 'The night is always longest just before the dawn is,', zh: '黎明之前的黑夜總是最漫長的，' },
-        { en: 'And dreamers are the ones who weather every storm.',   zh: '而夢想者是那些能夠撐過每一場風暴的人。' },
-      ],
-    ];
-
-    const L_BEWITCHED = [
-      [
-        { en: 'I am bewitched by the way you hold your teacup,',     zh: '我被你握茶杯的方式所迷惑，' },
-        { en: 'By every small and ordinary thing.',                   zh: '被每一件平凡而普通的事物所迷惑。' },
-        { en: 'The way you look when you believe no one is watching,',zh: '你在不以為有人注視時的模樣，' },
-        { en: 'Is enough to make my whole body sing.',                zh: '足以讓我整個身體歌唱。' },
-      ],
-      [
-        { en: "Bewitched, bewitched, I've lost my careful footing,", zh: '著迷、著迷，我失去了我謹慎的立足點，' },
-        { en: 'The ground beneath me shifts like April rain.',        zh: '我腳下的地面如四月的雨般搖晃。' },
-        { en: 'How can one person carry so much magic,',             zh: '一個人怎能承載如此多的魔力，' },
-        { en: "And never even know they've caused this pain?",       zh: '卻甚至不知道自己造成了這種痛苦？' },
-      ],
-    ];
-
-    const L_FROM_THE_START = [
-      [
-        { en: 'From the start I knew that you were different,',       zh: '從一開始我就知道你與眾不同，' },
-        { en: 'The way you said my name without a sound.',            zh: '你無聲地說出我名字的方式。' },
-        { en: 'I tried to keep my feelings at a distance,',          zh: '我試著讓我的感情保持距離，' },
-        { en: 'But you were everywhere that I was found.',            zh: '但無論我在哪裡，你都在那裡。' },
-      ],
-      [
-        { en: 'From the start I should have said I loved you,',      zh: '從一開始我就應該說我愛你，' },
-        { en: 'Before the words grew heavy in my chest.',            zh: '在那些話語在我胸口變得沉重之前。' },
-        { en: 'From the start I let the moment carry,',              zh: '從一開始我就讓那個時刻自行流逝，' },
-        { en: 'And now I\'m left to love you at a distance best.',   zh: '如今我只能以最遠的距離愛你。' },
-      ],
-    ];
-
-    const L_VALENTINE_REPRISE = [
-      [
-        { en: 'My Valentine, you left without a reason,',            zh: '我的情人節，你無緣無故地離去，' },
-        { en: 'Or maybe there were reasons I refused.',              zh: '或許有理由，只是我拒絕承認。' },
-        { en: 'I built a life for every changing season,',           zh: '我為每一個流轉的季節建造了一個生活，' },
-        { en: 'And somehow lost the one I should have used.',        zh: '卻不知怎的失去了那個我本該用的。' },
-      ],
-      [
-        { en: 'My Valentine, the flowers I still keep,',            zh: '我的情人節，我仍然保存的那些花，' },
-        { en: 'Are pressed inside the book beside my bed.',          zh: '夾在我床邊的書裡。' },
-        { en: 'They hold the shape of every vow made in sleep,',    zh: '它們保持著每一個在夢中許下誓言的形狀，' },
-        { en: "And every word I've left forever unsaid.",           zh: '以及每一句我永遠未曾說出口的話。' },
-      ],
-    ];
-
-    const L_CALIFORNIA = [
-      [
-        { en: 'California never asked my name,',                     zh: '加州從未問過我的名字，' },
-        { en: 'But held me in its golden afternoon.',                zh: '卻將我擁入它金色的下午。' },
-        { en: "It wasn't mine to keep and not to claim,",           zh: '它不是我的，不能留存，不能認領，' },
-        { en: 'A borrowed city under a borrowed moon.',             zh: '一座借來的城市，在一輪借來的月亮之下。' },
-      ],
-      [
-        { en: 'California, I was just a visitor,',                  zh: '加州，我只是一個過客，' },
-        { en: 'Pretending that the palm trees were my own.',        zh: '假裝那些棕櫚樹屬於我。' },
-        { en: 'But every borrowed place makes you remember,',       zh: '但每一個借來的地方都讓你記起，' },
-        { en: "There's somewhere you will always be alone.",        zh: '有一個地方，你將永遠獨自一人。' },
-      ],
-    ];
-
-    const L_SERENDIPITY = [
-      [
-        { en: 'Serendipity, you arrived unannounced,',              zh: '緣分，你在不打招呼的情況下降臨，' },
-        { en: 'On an ordinary Tuesday, wearing spring.',            zh: '在一個普通的週二，穿著春天。' },
-        { en: "Every joy I've known has been pronounced,",         zh: '我所知道的每一種喜悅，都是被宣告的，' },
-        { en: "By quiet things that didn't mean a thing.",          zh: '被那些本不意味著什麼的寂靜之物。' },
-      ],
-      [
-        { en: "Serendipity, you can't be manufactured,",           zh: '緣分，你無法被製造，' },
-        { en: 'Or planned for in an organised life.',              zh: '也無法在一個有條理的生活中計劃而來。' },
-        { en: 'You come when every careful plan is fractured,',    zh: '你在每一個周全計劃都破裂時現身，' },
-        { en: 'And someone hands you flowers, not a knife.',       zh: '當某個人遞給你鮮花，而非一把刀。' },
-      ],
-    ];
-
-    const L_GODDESS = [
-      [
-        { en: 'You said I moved like something from the old gods,', zh: '你說我的舉止像古老神祇中的某個人物，' },
-        { en: 'Like marble cut from some forgotten hill.',          zh: '像從某座被遺忘的山丘上切割下來的大理石。' },
-        { en: 'I took it as a compliment despite the odds,',       zh: '儘管如此，我還是將它當作讚美，' },
-        { en: 'And tried to hold my ordinary still.',              zh: '並試著讓我平凡的一面保持靜止。' },
-      ],
-      [
-        { en: 'But I am not a goddess, I am human,',              zh: '但我不是女神，我是人，' },
-        { en: 'I bruise like peaches in the summer heat.',         zh: '我像夏日炎熱中的桃子一樣容易淤青。' },
-        { en: 'The myth you built around me needs some pruning,',  zh: '你圍繞著我建造的神話需要修剪，' },
-        { en: "I'm ordinary, whole, and incomplete.",             zh: '我是普通的、完整的，也是不完整的。' },
-      ],
-    ];
-
-    const L_WHILE_YOU_WERE_SLEEPING = [
-      [
-        { en: 'While you were sleeping I wrote you a letter,',     zh: '在你熟睡時，我給你寫了一封信，' },
-        { en: 'I folded it and slid it under time.',               zh: '我將它折疊，塞入時間的縫隙之中。' },
-        { en: 'I said the things that daylight never let her,',    zh: '我說出了那些白晝從不讓她說出口的話，' },
-        { en: 'Speak aloud within the waking paradigm.',           zh: '在清醒的範式中大聲說出。' },
-      ],
-      [
-        { en: 'While you were sleeping, I sat by the window,',    zh: '在你熟睡時，我坐在窗邊，' },
-        { en: 'And watched the sky go through its nightly change.',zh: '看著天空經歷它夜晚的變化。' },
-        { en: 'Love is easiest to say to someone dreaming,',      zh: '對一個在夢中的人說愛，是最容易的，' },
-        { en: 'The words come out less frightened, less estranged.',zh: '那些話說出來時，少了一分恐懼，少了一分疏離。' },
-      ],
-    ];
-
-    const L_LETTER_13 = [
-      [
-        { en: 'Dear thirteen, the cello is your compass,',         zh: '親愛的十三歲，大提琴是你的指南針，' },
-        { en: "Keep it close when nothing else feels sure.",       zh: '當一切都感到不確定時，讓它貼近你。' },
-        { en: "The years ahead are harder than you'd fathom,",    zh: '未來的歲月比你所能想象的更為艱難，' },
-        { en: 'But they will shape a you worth living for.',       zh: '但它們將塑造一個值得為之而活的你。' },
-      ],
-      [
-        { en: "Dear thirteen, don't apologise for feelings,",     zh: '親愛的十三歲，不要為感情而道歉，' },
-        { en: 'For being soft inside a world of stone.',          zh: '不要為在一個石頭世界裡保持柔軟而道歉。' },
-        { en: 'The sensitivity you think is weakness,',           zh: '你認為是弱點的那份敏感，' },
-        { en: 'Is the very thing that makes your music known.',   zh: '正是讓你的音樂被世人所知的那個東西。' },
-      ],
-    ];
-
-    const L_SECOND_BEST = [
-      [
-        { en: "I've spent a lifetime being second best,",         zh: '我花了一輩子做第二名，' },
-        { en: 'The runner-up, the almost, the maybe.',            zh: '那個亞軍、那個差一點、那個也許。' },
-        { en: "I've worn the silver medal on my chest,",          zh: '我把銀牌戴在胸前，' },
-        { en: "And smiled and thanked the one who didn't need me.",zh: '微笑著感謝那個不需要我的人。' },
-      ],
-      [
-        { en: 'But second best is still a kind of love,',        zh: '但第二名仍然是一種愛，' },
-        { en: 'A quieter, more persistent kind of care.',         zh: '一種更安靜、更持久的關懷。' },
-        { en: "It may not fit the stories up above,",            zh: '它或許不符合那些高高在上的故事，' },
-        { en: 'But it is mine and it is always there.',           zh: '但它是我的，它永遠都在那裡。' },
-      ],
-    ];
-
-    const L_PROMISE = [
-      [
-        { en: 'I made a promise to the younger version,',         zh: '我對那個更年輕的我許下了承諾，' },
-        { en: 'Of me who cried in bathrooms after shows.',        zh: '那個在演出後在浴室裡哭泣的我。' },
-        { en: 'I said that I would find a way to surface,',      zh: '我說我會找到浮出水面的方法，' },
-        { en: 'And learn to love wherever the music goes.',       zh: '學會愛上音樂前往的每一個地方。' },
-      ],
-      [
-        { en: 'A promise is the smallest kind of monument,',     zh: '承諾是最小的那種紀念碑，' },
-        { en: 'A flag you plant in the softest ground.',          zh: '一面你插在最柔軟土地上的旗幟。' },
-        { en: 'I plant mine in the music, in the moment,',       zh: '我把我的承諾插在音樂裡，插在此刻，' },
-        { en: 'In every room where I have made a sound.',         zh: '插在每一個我曾發出聲音的房間裡。' },
-      ],
-    ];
-
-    const L_HAUNTED = [
-      [
-        { en: "I'm haunted by a Tuesday in November,",           zh: '我被十一月的一個週二所縈繞，' },
-        { en: 'By the coffee cup you left beside the sink.',     zh: '被你留在水槽旁的那個咖啡杯所縈繞。' },
-        { en: "I've tried to lose it but I still remember,",    zh: '我試著忘卻，但我仍然記得，' },
-        { en: 'The colour of the cup, the way you\'d drink.',   zh: '那個杯子的顏色，以及你喝咖啡的方式。' },
-      ],
-      [
-        { en: 'Haunted is a gentle word for this,',             zh: '「縈繞」對於這一切來說是個溫和的詞，' },
-        { en: 'A ghost who knows exactly how to stay.',          zh: '一個幽靈，確切知道如何留下。' },
-        { en: 'It lives inside the ordinary list,',             zh: '它住在那些平凡的清單裡，' },
-        { en: 'The groceries, the routes, the time of day.',    zh: '住在購物清單、行走路線和一天中的時刻裡。' },
-      ],
-    ];
-
-    const L_GODDESS_REPRISE = [
-      [
-        { en: "They still call me a goddess but I'm learning,", zh: '他們仍稱我為女神，但我正在學習，' },
-        { en: 'To be the thing I am and nothing more.',         zh: '做我所是的那個東西，不多也不少。' },
-        { en: "The marble's cracked, the pedestal is turning,", zh: '大理石裂了，底座正在變成，' },
-        { en: 'To dust upon a quiet studio floor.',             zh: '一間安靜錄音室地板上的塵埃。' },
-      ],
-      [
-        { en: "A goddess doesn't need a golden crown,",        zh: '女神不需要金冠，' },
-        { en: 'She needs a cello and an honest song.',          zh: '她需要一把大提琴和一首誠實的歌。' },
-        { en: 'She puts the myth of herself gently down,',     zh: '她輕柔地放下關於自己的神話，' },
-        { en: 'And finds that simply being was enough all along.',zh: '發現僅僅是自己本身，一直都已足夠。' },
-      ],
-    ];
-
-    /* ── Album data ── */
+    /* ── Album data (no stanzas — lyrics fetched at runtime) ── */
     const ALBUMS = {
       'typical-of-me': {
-        title: 'Typical of Me',
-        year: '2021',
-        typeEn: 'Debut EP',
-        typeZh: '首張 EP',
+        title: 'Typical of Me', year: '2021',
+        typeEn: 'Debut EP', typeZh: '首張 EP',
         descEn: "Four songs that introduced the world to Laufey's hazy, jazz-inflected sound. Delicate arrangements of cello, guitar, and brushed percussion frame lyrics about love, longing, and the specific ache of saying too little, too late.",
-        descZh: '四首歌曲，將 Laufey 充滿爵士氣息的迷朦音樂帶給了世界。大提琴、吉他與刷擊打擊樂的細膩編排，框住了關於愛、思念，以及說得太少、太遲的那種特殊痛苦的歌詞。',
+        descZh: '四首歌曲，將 Laufey 充滿爵士氣息的迷朦音樂帶給世界。大提琴、吉他與刷擊打擊樂的細膩編排，框住了關於愛、思念，以及說得太少、太遲的特殊痛苦的歌詞。',
         tracks: [
-          { num: '01', title: 'Typical of Me',       stanzas: L_TYPICAL_OF_ME },
-          { num: '02', title: 'Street by the Lake',  stanzas: L_STREET_BY_THE_LAKE },
-          { num: '03', title: 'Like the Movies',     stanzas: L_LIKE_THE_MOVIES },
-          { num: '04', title: 'Valentine',           stanzas: L_VALENTINE },
+          { num: '01', title: 'Typical of Me' },
+          { num: '02', title: 'Street by the Lake' },
+          { num: '03', title: 'Like the Movies' },
+          { num: '04', title: 'Valentine' },
         ],
       },
-
       'everything-i-know-about-love': {
-        title: 'Everything I Know About Love',
-        year: '2022',
-        typeEn: 'Debut Album',
-        typeZh: '首張專輯',
-        descEn: "Laufey's debut full-length arrived like a first snow — quiet, inevitable, impossible to ignore. Ten songs about heartbreak, friendship, longing, and the slow education of the heart. Cello, upright bass, and brushed drums frame lyrics of uncommon wisdom from a 21-year-old who sounds like she has lived many lives.",
-        descZh: 'Laufey 的首張全長專輯如初雪般降臨——安靜、無可避免、令人無法忽視。十首關於心碎、友誼、思念，以及心靈緩慢教育的歌曲。大提琴、直立低音提琴和刷鼓，框住了一個聽起來像歷盡滄桑之人的二十一歲女孩的歌詞。',
+        title: 'Everything I Know About Love', year: '2022',
+        typeEn: 'Debut Album', typeZh: '首張專輯',
+        descEn: "Laufey's debut full-length arrived like a first snow — quiet, inevitable, impossible to ignore. Ten songs about heartbreak, friendship, longing, and the slow education of the heart. Cello, upright bass, and brushed drums frame lyrics of uncommon wisdom.",
+        descZh: 'Laufey 的首張全長專輯如初雪般降臨——安靜、無可避免、令人無法忽視。十首關於心碎、友誼、思念，以及心靈緩慢教育的歌曲。大提琴、直立低音提琴和刷鼓，框住了充滿非凡智慧的歌詞。',
         tracks: [
-          { num: '01', title: 'Valentine',                        stanzas: L_VALENTINE },
-          { num: '02', title: 'Falling Behind',                   stanzas: L_FALLING_BEHIND },
-          { num: '03', title: 'Lovesick',                         stanzas: L_LOVESICK },
-          { num: '04', title: 'Best Friend',                      stanzas: L_BEST_FRIEND },
-          { num: '05', title: 'Aedis',                            stanzas: L_AEDIS },
-          { num: '06', title: 'Stay High',                        stanzas: L_STAY_HIGH },
-          { num: '07', title: 'Poet',                             stanzas: L_POET },
-          { num: '08', title: 'Everything I Know About Love',     stanzas: L_EIKAAL },
-          { num: '09', title: 'Dear Soulmate',                    stanzas: L_DEAR_SOULMATE },
-          { num: '10', title: 'Gone',                             stanzas: L_GONE },
+          { num: '01', title: 'Valentine' },
+          { num: '02', title: 'Falling Behind' },
+          { num: '03', title: 'Lovesick' },
+          { num: '04', title: 'Best Friend' },
+          { num: '05', title: 'Aedis' },
+          { num: '06', title: 'Stay High' },
+          { num: '07', title: 'Poet' },
+          { num: '08', title: 'Everything I Know About Love' },
+          { num: '09', title: 'Dear Soulmate' },
+          { num: '10', title: 'Gone' },
         ],
       },
-
       'a-night-at-the-symphony': {
-        title: 'A Night at the Symphony',
-        year: '2022',
-        typeEn: 'Live EP',
-        typeZh: '現場 EP',
+        title: 'A Night at the Symphony', year: '2022',
+        typeEn: 'Live EP', typeZh: '現場 EP',
         descEn: "Recorded live with the Iceland Symphony Orchestra, this EP captures Laufey's songs at their most majestic. The orchestral arrangements deepen the emotional weight of already beloved tracks, and Laufey's voice — steady above the strings — feels more intimate than ever.",
         descZh: '與冰島交響樂團現場錄製，這張 EP 以最宏大的規模呈現了 Laufey 的歌曲。管弦樂編曲加深了這些已深受喜愛曲目的情感重量，而 Laufey 在弦樂之上穩定的嗓音，感覺比以往任何時候都更加親密。',
         tracks: [
-          { num: '01', title: 'Lovesick (Symphony Version)',                    stanzas: L_LOVESICK },
-          { num: '02', title: 'Valentine (Symphony Version)',                   stanzas: L_VALENTINE },
-          { num: '03', title: 'Everything I Know About Love (Symphony Version)',stanzas: L_EIKAAL },
-          { num: '04', title: 'Stay High (Symphony Version)',                   stanzas: L_STAY_HIGH },
-          { num: '05', title: 'Poet (Symphony Version)',                        stanzas: L_POET },
-          { num: '06', title: 'Falling Behind (Symphony Version)',              stanzas: L_FALLING_BEHIND },
+          { num: '01', title: 'Lovesick' },
+          { num: '02', title: 'Valentine' },
+          { num: '03', title: 'Everything I Know About Love' },
+          { num: '04', title: 'Stay High' },
+          { num: '05', title: 'Poet' },
+          { num: '06', title: 'Falling Behind' },
         ],
       },
-
       'bewitched': {
-        title: 'Bewitched',
-        year: '2023',
-        typeEn: 'Grammy-Winning Album',
-        typeZh: '葛萊美獲獎專輯',
+        title: 'Bewitched', year: '2023',
+        typeEn: 'Grammy-Winning Album', typeZh: '葛萊美獲獎專輯',
         descEn: 'The record that changed everything. Twelve songs of orchestral, achingly romantic pop earned Laufey the Grammy for Best Traditional Pop Vocal Album — making her the youngest ever recipient. Lush, intimate, and entirely her own.',
         descZh: '改變了一切的那張唱片。十二首管弦樂化、令人心碎地浪漫的流行歌曲，為 Laufey 贏得了葛萊美最佳傳統流行演唱專輯獎，使她成為有史以來最年輕的得獎者。豐盛、親密，徹頭徹尾屬於她自己。',
         tracks: [
-          { num: '01', title: 'Dreamer',                        stanzas: L_DREAMER },
-          { num: '02', title: 'Bewitched',                      stanzas: L_BEWITCHED },
-          { num: '03', title: 'From the Start',                 stanzas: L_FROM_THE_START },
-          { num: '04', title: 'Valentine (Reprise)',            stanzas: L_VALENTINE_REPRISE },
-          { num: '05', title: 'California and Me',              stanzas: L_CALIFORNIA },
-          { num: '06', title: 'Serendipity',                    stanzas: L_SERENDIPITY },
-          { num: '07', title: 'Goddess',                        stanzas: L_GODDESS },
-          { num: '08', title: 'While You Were Sleeping',        stanzas: L_WHILE_YOU_WERE_SLEEPING },
-          { num: '09', title: 'Lovesick',                       stanzas: L_LOVESICK },
-          { num: '10', title: 'Letter to My 13 Year Old Self',  stanzas: L_LETTER_13 },
-          { num: '11', title: 'Second Best',                    stanzas: L_SECOND_BEST },
-          { num: '12', title: 'Promise',                        stanzas: L_PROMISE },
+          { num: '01', title: 'Dreamer' },
+          { num: '02', title: 'Bewitched' },
+          { num: '03', title: 'From the Start' },
+          { num: '04', title: 'Valentine' },
+          { num: '05', title: 'California and Me' },
+          { num: '06', title: 'Serendipity' },
+          { num: '07', title: 'Goddess' },
+          { num: '08', title: 'While You Were Sleeping' },
+          { num: '09', title: 'Lovesick' },
+          { num: '10', title: 'Letter to My 13 Year Old Self' },
+          { num: '11', title: 'Second Best' },
+          { num: '12', title: 'Promise' },
         ],
       },
-
       'bewitched-goddess': {
-        title: 'Bewitched: The Goddess Edition',
-        year: '2024',
-        typeEn: 'Extended Edition',
-        typeZh: '擴充版',
+        title: 'Bewitched: The Goddess Edition', year: '2024',
+        typeEn: 'Extended Edition', typeZh: '擴充版',
         descEn: 'An expanded Bewitched featuring four additional tracks — a haunting new original, an acoustic take, an orchestral arrangement, and a stripped-back reprise. The fullest expression of the Bewitched universe.',
         descZh: '《Bewitched》的擴充版，收錄四首額外曲目——一首縈繞人心的全新原創、一個原聲版本、一個管弦樂編曲，以及一個剝去一切的尾聲版本。《Bewitched》世界最完整的呈現。',
         tracks: [
-          { num: '01', title: 'Dreamer',                        stanzas: L_DREAMER },
-          { num: '02', title: 'Bewitched',                      stanzas: L_BEWITCHED },
-          { num: '03', title: 'From the Start',                 stanzas: L_FROM_THE_START },
-          { num: '04', title: 'Valentine (Reprise)',            stanzas: L_VALENTINE_REPRISE },
-          { num: '05', title: 'California and Me',              stanzas: L_CALIFORNIA },
-          { num: '06', title: 'Serendipity',                    stanzas: L_SERENDIPITY },
-          { num: '07', title: 'Goddess',                        stanzas: L_GODDESS },
-          { num: '08', title: 'While You Were Sleeping',        stanzas: L_WHILE_YOU_WERE_SLEEPING },
-          { num: '09', title: 'Lovesick',                       stanzas: L_LOVESICK },
-          { num: '10', title: 'Letter to My 13 Year Old Self',  stanzas: L_LETTER_13 },
-          { num: '11', title: 'Second Best',                    stanzas: L_SECOND_BEST },
-          { num: '12', title: 'Promise',                        stanzas: L_PROMISE },
-          { num: '13', title: 'Haunted',                        stanzas: L_HAUNTED },
-          { num: '14', title: 'Dreamer (Acoustic)',             stanzas: L_DREAMER },
-          { num: '15', title: 'From the Start (Orchestral)',    stanzas: L_FROM_THE_START },
-          { num: '16', title: 'Goddess (Reprise)',              stanzas: L_GODDESS_REPRISE },
+          { num: '01', title: 'Dreamer' },
+          { num: '02', title: 'Bewitched' },
+          { num: '03', title: 'From the Start' },
+          { num: '04', title: 'Valentine' },
+          { num: '05', title: 'California and Me' },
+          { num: '06', title: 'Serendipity' },
+          { num: '07', title: 'Goddess' },
+          { num: '08', title: 'While You Were Sleeping' },
+          { num: '09', title: 'Lovesick' },
+          { num: '10', title: 'Letter to My 13 Year Old Self' },
+          { num: '11', title: 'Second Best' },
+          { num: '12', title: 'Promise' },
+          { num: '13', title: 'Haunted' },
+          { num: '14', title: 'Dreamer (Acoustic)' },
+          { num: '15', title: 'From the Start (Orchestral)' },
+          { num: '16', title: 'Goddess (Reprise)' },
         ],
       },
     };
 
-    /* ── Modal logic ── */
+    /* ── Modal elements ── */
     const modal         = document.getElementById('lyrics-modal');
     const lyricsContent = document.getElementById('lyrics-content');
     const lyricsNumEl   = document.getElementById('lyrics-num');
     const lyricsTitleEl = document.getElementById('lyrics-modal-title');
 
-    function openLyrics(track) {
+    /* ── Lyrics API helpers ── */
+    function escHtml(str) {
+      return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+    }
+
+    async function translateLine(text) {
+      const res = await fetch(
+        'https://api.mymemory.translated.net/get?q=' +
+        encodeURIComponent(text) + '&langpair=en|zh-TW'
+      );
+      if (!res.ok) throw new Error('translate error');
+      const data = await res.json();
+      if (data.responseStatus === 200) return data.responseData.translatedText;
+      throw new Error('translate failed');
+    }
+
+    function renderEnLines(rawLines) {
+      lyricsContent.innerHTML = rawLines.map((line, i) => {
+        if (!line.trim()) return '<div class="lyrics-gap"></div>';
+        return '<div class="lyrics-pair" data-line="' + i + '">' +
+          '<p class="lyrics-en">' + escHtml(line) + '</p>' +
+          '<p class="lyrics-zh pending">…</p>' +
+          '</div>';
+      }).join('');
+    }
+
+    async function translateAllLines(rawLines) {
+      const nonEmpty = rawLines
+        .map((line, i) => ({ text: line.trim(), idx: i }))
+        .filter(({ text }) => text.length > 0);
+
+      const results = await Promise.allSettled(
+        nonEmpty.map(({ text }) => translateLine(text))
+      );
+
+      nonEmpty.forEach(({ idx }, i) => {
+        const el = lyricsContent.querySelector('[data-line="' + idx + '"] .lyrics-zh');
+        if (!el) return;
+        const r = results[i];
+        el.textContent = r.status === 'fulfilled' ? r.value : '';
+        el.classList.remove('pending');
+      });
+    }
+
+    async function openLyrics(track) {
       lyricsNumEl.textContent   = track.num;
       lyricsTitleEl.textContent = track.title;
-      lyricsContent.innerHTML = track.stanzas.map(stanza =>
-        `<div class="lyrics-stanza">${
-          stanza.map(pair =>
-            `<div class="lyrics-pair">
-              <p class="lyrics-en">${pair.en}</p>
-              <p class="lyrics-zh">${pair.zh}</p>
-            </div>`
-          ).join('')
-        }</div>`
-      ).join('');
+      lyricsContent.innerHTML =
+        '<div class="lyrics-loading">' +
+        '<div class="loading-spinner"></div>' +
+        '<p data-i18n="lyrics.loading"></p></div>';
+      applyLang(currentLang);
       modal.classList.add('open');
       document.body.style.overflow = 'hidden';
+
+      // Strip version suffixes for the API query: "(Symphony Version)", "(Acoustic)", etc.
+      const cleanTitle = track.title.replace(/\s*\([^)]*\)\s*/g, '').trim();
+
+      try {
+        const res = await fetch(
+          'https://api.lyrics.ovh/v1/Laufey/' + encodeURIComponent(cleanTitle)
+        );
+        if (!res.ok) throw new Error('not found');
+        const data = await res.json();
+        if (!data.lyrics) throw new Error('empty');
+
+        const rawLines = data.lyrics.replace(/\r\n/g, '\n').split('\n');
+        renderEnLines(rawLines);
+        await translateAllLines(rawLines);
+      } catch (_) {
+        lyricsContent.innerHTML =
+          '<p class="lyrics-not-found" data-i18n="lyrics.notfound"></p>';
+        applyLang(currentLang);
+      }
     }
 
     function closeLyrics() {
@@ -1014,27 +703,22 @@
         return;
       }
 
-      /* Populate hero */
       document.getElementById('album-title-el').textContent = album.title;
       document.getElementById('album-year-el').textContent  = album.year;
       document.title = 'Laufey — ' + album.title;
 
-      /* Render tracks */
       const list = document.getElementById('track-list-el');
-      album.tracks.forEach((track, idx) => {
+      album.tracks.forEach((track) => {
         const li = document.createElement('li');
         li.className = 'full-track-item';
-        li.dataset.track = idx;
-        li.innerHTML = `
-          <span class="full-track-num">${track.num}</span>
-          <span class="full-track-name">${track.title}</span>
-          <span class="track-hint">歌詞 ↗</span>
-        `;
+        li.innerHTML =
+          '<span class="full-track-num">' + track.num + '</span>' +
+          '<span class="full-track-name">' + escHtml(track.title) + '</span>' +
+          '<span class="track-hint">歌詞 ↗</span>';
         li.addEventListener('click', () => openLyrics(track));
         list.appendChild(li);
       });
 
-      /* Apply default language (sets badge + desc) */
       applyLang('zh-TW');
     })();
   </script>
