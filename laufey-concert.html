@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="zh-TW">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Laufey — Live in Concert · May 15, 2026</title>
+  <title>Laufey — 現場音樂會 · 2026年5月15日</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;1,400&family=Lato:wght@300;400&display=swap" rel="stylesheet" />
@@ -56,6 +56,7 @@
       width: 100%;
       z-index: 100;
       display: flex;
+      align-items: center;
       justify-content: center;
       gap: 2.5rem;
       padding: 1rem 2rem;
@@ -71,6 +72,29 @@
       transition: color .3s;
     }
     nav a:hover { color: var(--gold); }
+
+    .lang-switch {
+      position: absolute;
+      right: 2rem;
+      display: flex;
+      align-items: center;
+      gap: .35rem;
+    }
+    .lang-btn {
+      background: none;
+      border: none;
+      cursor: pointer;
+      font-family: 'Lato', sans-serif;
+      font-size: .72rem;
+      letter-spacing: .1em;
+      color: var(--muted);
+      padding: .2rem .4rem;
+      transition: color .3s;
+      line-height: 1;
+    }
+    .lang-btn:hover { color: var(--gold); }
+    .lang-btn.active { color: var(--gold); font-weight: 400; }
+    .lang-sep { color: rgba(140,127,160,.4); font-size: .7rem; }
 
     /* ── Sections ── */
     section {
@@ -93,14 +117,12 @@
       max-width: 100%;
       padding-top: 6rem;
     }
-
     .hero-label {
       font-size: .72rem;
       letter-spacing: .25em;
       text-transform: uppercase;
       color: var(--gold);
     }
-
     .hero-name {
       font-family: 'Playfair Display', serif;
       font-size: clamp(3.5rem, 12vw, 8rem);
@@ -111,7 +133,6 @@
       -webkit-text-fill-color: transparent;
       background-clip: text;
     }
-
     .hero-subtitle {
       font-family: 'Playfair Display', serif;
       font-style: italic;
@@ -119,14 +140,12 @@
       color: var(--blush);
       margin-top: -.3rem;
     }
-
     .divider {
       width: 60px;
       height: 1px;
       background: var(--gold);
       margin: .5rem auto;
     }
-
     .hero-date {
       font-size: clamp(.85rem, 2.5vw, 1.05rem);
       letter-spacing: .12em;
@@ -142,12 +161,7 @@
       justify-content: center;
       flex-wrap: wrap;
     }
-    .count-box {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: .3rem;
-    }
+    .count-box { display: flex; flex-direction: column; align-items: center; gap: .3rem; }
     .count-num {
       font-family: 'Playfair Display', serif;
       font-size: clamp(2.2rem, 6vw, 3.2rem);
@@ -160,7 +174,6 @@
       text-transform: uppercase;
       color: var(--muted);
     }
-
     .hero-scroll {
       margin-top: 2rem;
       animation: bounce 2s infinite;
@@ -213,9 +226,7 @@
       gap: 2.5rem;
       margin-top: 1rem;
     }
-    .tl-item {
-      position: relative;
-    }
+    .tl-item { position: relative; }
     .tl-item::before {
       content: '';
       position: absolute;
@@ -249,10 +260,7 @@
       padding: 1.6rem 1.4rem;
       transition: transform .3s, border-color .3s;
     }
-    .album-card:hover {
-      transform: translateY(-4px);
-      border-color: rgba(200,169,110,.45);
-    }
+    .album-card:hover { transform: translateY(-4px); border-color: rgba(200,169,110,.45); }
     .album-year {
       font-size: .68rem;
       letter-spacing: .18em;
@@ -275,9 +283,7 @@
     }
 
     /* ── New album spotlight ── */
-    #new-album {
-      padding-top: 6rem;
-    }
+    #new-album { padding-top: 6rem; }
     .album-spotlight {
       background: linear-gradient(135deg, rgba(200,169,110,.08) 0%, rgba(232,180,184,.06) 100%);
       border: 1px solid rgba(200,169,110,.3);
@@ -348,10 +354,7 @@
       border-radius: 10px;
       padding: 1.4rem 1.2rem;
     }
-    .info-icon {
-      font-size: 1.4rem;
-      margin-bottom: .5rem;
-    }
+    .info-icon { font-size: 1.4rem; margin-bottom: .5rem; }
     .info-title {
       font-size: .65rem;
       letter-spacing: .18em;
@@ -386,6 +389,97 @@
       text-transform: uppercase;
     }
 
+    /* ── Track click ── */
+    .track-item {
+      cursor: pointer;
+      transition: color .2s;
+      border-radius: 4px;
+    }
+    .track-item:hover { color: var(--gold); }
+    .track-item .track-hint {
+      font-size: .6rem;
+      letter-spacing: .1em;
+      color: var(--muted);
+      opacity: 0;
+      transition: opacity .2s;
+      margin-left: .4rem;
+    }
+    .track-item:hover .track-hint { opacity: 1; }
+
+    /* ── Lyrics Modal ── */
+    #lyrics-modal {
+      position: fixed;
+      inset: 0;
+      z-index: 200;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: rgba(14,11,20,.88);
+      backdrop-filter: blur(8px);
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity .3s;
+    }
+    #lyrics-modal.open { opacity: 1; pointer-events: all; }
+    .lyrics-box {
+      background: var(--mid);
+      border: 1px solid rgba(200,169,110,.35);
+      border-radius: 16px;
+      padding: 2.5rem 2rem 2rem;
+      max-width: 560px;
+      width: 92%;
+      max-height: 82vh;
+      overflow-y: auto;
+      position: relative;
+      scrollbar-width: thin;
+      scrollbar-color: rgba(200,169,110,.3) transparent;
+    }
+    .lyrics-close {
+      position: absolute;
+      top: 1rem;
+      right: 1.2rem;
+      background: none;
+      border: none;
+      color: var(--muted);
+      font-size: 1.5rem;
+      cursor: pointer;
+      transition: color .2s;
+      line-height: 1;
+      font-family: serif;
+    }
+    .lyrics-close:hover { color: var(--gold); }
+    .lyrics-num {
+      font-size: .65rem;
+      letter-spacing: .18em;
+      color: var(--gold);
+      margin-bottom: .4rem;
+    }
+    .lyrics-title {
+      font-family: 'Playfair Display', serif;
+      font-style: italic;
+      font-size: 1.35rem;
+      color: var(--cream);
+      margin-bottom: 1.8rem;
+      padding-right: 2rem;
+    }
+    .lyrics-stanza { margin-bottom: 1.6rem; }
+    .lyrics-pair { margin-bottom: .55rem; }
+    .lyrics-en {
+      font-size: .93rem;
+      font-weight: 300;
+      color: rgba(245,237,224,.92);
+      line-height: 1.5;
+      margin: 0;
+    }
+    .lyrics-zh {
+      font-size: .78rem;
+      font-weight: 300;
+      color: var(--gold);
+      opacity: .75;
+      line-height: 1.5;
+      margin: 0;
+    }
+
     /* ── Footer ── */
     footer {
       position: relative;
@@ -406,257 +500,377 @@
 </head>
 <body>
 
-  <!-- Stars -->
   <div id="stars"></div>
 
-  <!-- Nav -->
+  <!-- Lyrics Modal -->
+  <div id="lyrics-modal" role="dialog" aria-modal="true">
+    <div class="lyrics-box" id="lyrics-box">
+      <button class="lyrics-close" id="lyrics-close" aria-label="Close">&#x2715;</button>
+      <p class="lyrics-num" id="lyrics-num"></p>
+      <p class="lyrics-title" id="lyrics-modal-title"></p>
+      <div id="lyrics-content"></div>
+    </div>
+  </div>
+
   <nav>
-    <a href="#story">Story</a>
-    <a href="#discography">Discography</a>
-    <a href="#new-album">New Album</a>
-    <a href="#concert">Concert</a>
+    <a href="#story"       data-i18n="nav.story"></a>
+    <a href="#discography" data-i18n="nav.disc"></a>
+    <a href="#new-album"   data-i18n="nav.album"></a>
+    <a href="#concert"     data-i18n="nav.concert"></a>
+    <div class="lang-switch">
+      <button class="lang-btn active" id="btn-zh" onclick="setLang('zh-TW')">繁中</button>
+      <span class="lang-sep">|</span>
+      <button class="lang-btn" id="btn-en" onclick="setLang('en')">EN</button>
+    </div>
   </nav>
 
   <!-- Hero -->
   <section id="hero">
-    <p class="hero-label">Live in Concert · May 15, 2026</p>
+    <p class="hero-label" data-i18n="hero.label"></p>
     <h1 class="hero-name">Laufey</h1>
-    <p class="hero-subtitle">An Evening of Jazz, Strings & Stardust</p>
+    <p class="hero-subtitle" data-i18n="hero.subtitle"></p>
     <div class="divider"></div>
-    <p class="hero-date">Tomorrow Night &mdash; Doors Open 7:00 PM</p>
+    <p class="hero-date" data-i18n="hero.date"></p>
     <div id="countdown">
-      <div class="count-box"><span class="count-num" id="cd-h">00</span><span class="count-label">Hours</span></div>
-      <div class="count-box"><span class="count-num" id="cd-m">00</span><span class="count-label">Minutes</span></div>
-      <div class="count-box"><span class="count-num" id="cd-s">00</span><span class="count-label">Seconds</span></div>
+      <div class="count-box">
+        <span class="count-num" id="cd-h">00</span>
+        <span class="count-label" data-i18n="hero.hours"></span>
+      </div>
+      <div class="count-box">
+        <span class="count-num" id="cd-m">00</span>
+        <span class="count-label" data-i18n="hero.minutes"></span>
+      </div>
+      <div class="count-box">
+        <span class="count-num" id="cd-s">00</span>
+        <span class="count-label" data-i18n="hero.seconds"></span>
+      </div>
     </div>
-    <p class="hero-scroll">↓ &nbsp; Scroll to Explore</p>
+    <p class="hero-scroll" data-i18n="hero.scroll"></p>
   </section>
 
   <!-- Life Story -->
   <section id="story">
-    <p class="section-label">The Artist</p>
-    <h2>Her Story</h2>
-
-    <p>
-      Laufey Lín Jónsdóttir — known to the world simply as <em>Laufey</em> — was born on
-      June 23, 2001 in Reykjavík, Iceland. The daughter of an Icelandic father and a Chinese
-      mother, she grew up between two worlds: the quiet drama of Nordic landscapes and the
-      rich cultural tapestry of her Chinese heritage. From the earliest age, music was not
-      a hobby but a language.
-    </p>
+    <p class="section-label" data-i18n="story.label"></p>
+    <h2 data-i18n="story.h2"></h2>
+    <p data-i18n="story.intro"></p>
 
     <blockquote>
-      "I've always felt like music is the one place where I completely belong."
-      <cite>— Laufey</cite>
+      <span data-i18n="story.quote"></span>
+      <cite data-i18n="story.quote.cite"></cite>
     </blockquote>
 
     <div class="timeline">
       <div class="tl-item">
-        <p class="tl-year">Early Childhood · Reykjavík</p>
-        <h3>A Prodigy in the Making</h3>
-        <p>
-          Laufey began studying cello at age five, quickly demonstrating extraordinary
-          classical ability. Alongside her twin sister Steinunn, she grew up immersed in
-          both Icelandic folk traditions and the sweeping world of classical music. The
-          family home was always filled with Bach, Debussy, and the kind of quiet wonder
-          that later defined her songwriting.
-        </p>
+        <p class="tl-year" data-i18n="tl1.year"></p>
+        <h3 data-i18n="tl1.h3"></h3>
+        <p data-i18n="tl1.p"></p>
       </div>
-
       <div class="tl-item">
-        <p class="tl-year">Teenage Years · Reykjavík Music Academy</p>
-        <h3>Classical Roots, Jazz Wings</h3>
-        <p>
-          At the Reykjavík College of Music, Laufey immersed herself in classical cello
-          performance while quietly falling in love with a very different tradition — the
-          warm, late-night world of jazz. Artists like Chet Baker, Bill Evans, and
-          Nat King Cole shaped the emotional vocabulary she would eventually pour into
-          original songs. She taught herself guitar, piano, and the art of writing
-          melodies that ached with longing.
-        </p>
+        <p class="tl-year" data-i18n="tl2.year"></p>
+        <h3 data-i18n="tl2.h3"></h3>
+        <p data-i18n="tl2.p"></p>
       </div>
-
       <div class="tl-item">
-        <p class="tl-year">2019 – 2022 · Berklee College of Music, Boston</p>
-        <h3>Finding Her Voice</h3>
-        <p>
-          A scholarship brought her to Berklee, where the confluence of classical
-          training and jazz theory gave her compositions their signature depth. She began
-          posting original songs on social media, initially to a modest audience. Within
-          months, her intimate, string-laced ballads found millions of listeners who
-          recognized something rare: sincerity. Her debut EP <em>Typical of Me</em>
-          (2021) announced an artist already fully formed.
-        </p>
+        <p class="tl-year" data-i18n="tl3.year"></p>
+        <h3 data-i18n="tl3.h3"></h3>
+        <p data-i18n="tl3.p"></p>
       </div>
-
       <div class="tl-item">
-        <p class="tl-year">2022</p>
-        <h3>Everything I Know About Love</h3>
-        <p>
-          Her debut album arrived with the delicate force of a first snow. Spare
-          arrangements of cello, upright bass, and brushed drums cradled lyrics that
-          explored heartbreak, longing, and the bittersweet weight of growing up. Critics
-          and fans alike responded to its unusual poise — here was a 21-year-old writing
-          with the wisdom of someone who had lived many lives.
-        </p>
+        <p class="tl-year" data-i18n="tl4.year"></p>
+        <h3 data-i18n="tl4.h3"></h3>
+        <p data-i18n="tl4.p"></p>
       </div>
-
       <div class="tl-item">
-        <p class="tl-year">2023 – 2024</p>
-        <h3>Bewitched — A Grammy Moment</h3>
-        <p>
-          <em>Bewitched</em> cemented Laufey as a generational talent. Lush, orchestral,
-          and achingly romantic, the album earned her the Grammy Award for
-          <strong>Best Traditional Pop Vocal Album</strong> — the youngest artist ever to
-          claim the honour. An expanded <em>Goddess Edition</em> followed in 2024,
-          featuring new orchestral arrangements and intimate acoustic recordings that
-          stripped the songs back to their emotional core.
-        </p>
+        <p class="tl-year" data-i18n="tl5.year"></p>
+        <h3 data-i18n="tl5.h3"></h3>
+        <p data-i18n="tl5.p"></p>
       </div>
-
       <div class="tl-item">
-        <p class="tl-year">2025 – Present</p>
-        <h3>A New Chapter</h3>
-        <p>
-          Rather than repeat a proven formula, Laufey disappeared into the studio with
-          a small ensemble of trusted collaborators. She emerged with
-          <em>A Matter of Time: The Final Hour</em> — something both familiar and startling,
-          an album that pushes deeper into classical structure while pulsing with an
-          urgency her earlier work never needed. Tomorrow night marks its live premiere.
-        </p>
+        <p class="tl-year" data-i18n="tl6.year"></p>
+        <h3 data-i18n="tl6.h3"></h3>
+        <p data-i18n="tl6.p"></p>
       </div>
     </div>
   </section>
 
   <!-- Discography -->
   <section id="discography">
-    <p class="section-label">Catalogue</p>
-    <h2>The Music</h2>
+    <p class="section-label" data-i18n="disc.label"></p>
+    <h2 data-i18n="disc.h2"></h2>
     <div class="album-grid">
       <div class="album-card">
         <p class="album-year">2021</p>
         <p class="album-title">Typical of Me</p>
-        <p class="album-desc">The debut EP that introduced the world to Laufey's hazy, jazz-inflected take on heartbreak. Four songs, perfectly weighted.</p>
+        <p class="album-desc" data-i18n="disc.desc1"></p>
       </div>
       <div class="album-card">
         <p class="album-year">2022</p>
         <p class="album-title">Everything I Know About Love</p>
-        <p class="album-desc">A debut album of uncommon maturity — cello, brushed drums, and lyrics that cut straight to the chest.</p>
+        <p class="album-desc" data-i18n="disc.desc2"></p>
       </div>
       <div class="album-card">
         <p class="album-year">2022</p>
         <p class="album-title">A Night at the Symphony</p>
-        <p class="album-desc">Live with the Iceland Symphony Orchestra. Proof that Laufey's songs sound just as breathtaking at full orchestral scale.</p>
+        <p class="album-desc" data-i18n="disc.desc3"></p>
       </div>
       <div class="album-card">
         <p class="album-year">2023</p>
         <p class="album-title">Bewitched</p>
-        <p class="album-desc">Grammy-winning. Orchestral, romantic, and resolutely her own. The record that changed everything.</p>
+        <p class="album-desc" data-i18n="disc.desc4"></p>
       </div>
       <div class="album-card">
         <p class="album-year">2024</p>
         <p class="album-title">Bewitched: The Goddess Edition</p>
-        <p class="album-desc">Extended edition with new arrangements and stripped-back recordings — the same songs, heard for the first time.</p>
+        <p class="album-desc" data-i18n="disc.desc5"></p>
       </div>
     </div>
   </section>
 
   <!-- New Album -->
   <section id="new-album">
-    <p class="section-label">2025 · New Release</p>
-    <h2>The New Album</h2>
-
-    <p>
-      Recorded across studios in Reykjavík, London, and Los Angeles,
-      <em>A Matter of Time: The Final Hour</em> is Laufey's most ambitious and most urgent
-      work to date. Where <em>Bewitched</em> drifted in the timeless haze of new romance,
-      this record is acutely aware of time — its passage, its cruelty, the way a single
-      hour can hold an entire lifetime of feeling. Classical counterpoint weaves through
-      jazz chord voicings; strings swell and recede like a clock no one can stop.
-    </p>
-    <p>
-      Laufey plays every stringed instrument on the record herself, and conducted the
-      chamber ensemble that appears on seven of the ten tracks. It is a record about
-      urgency — the things we almost said, the moments we let slip, the impossible
-      weight of a final hour and what we choose to fill it with.
-    </p>
+    <p class="section-label" data-i18n="album.label"></p>
+    <h2 data-i18n="album.h2"></h2>
+    <p data-i18n="album.p1"></p>
+    <p data-i18n="album.p2"></p>
 
     <div class="album-spotlight">
-      <span class="spotlight-tag">Out Now</span>
+      <span class="spotlight-tag" data-i18n="album.tag"></span>
       <p class="spotlight-title">A Matter of Time: The Final Hour</p>
       <p class="spotlight-artist">Laufey · 2025</p>
 
       <ol class="track-list">
-        <li><span class="track-num">01</span> Before the Hour Strikes</li>
-        <li><span class="track-num">02</span> A Matter of Time</li>
-        <li><span class="track-num">03</span> The Clock on Your Wall</li>
-        <li><span class="track-num">04</span> Last Light in the Room</li>
-        <li><span class="track-num">05</span> Almost Too Late</li>
-        <li><span class="track-num">06</span> The Final Hour (Title Track)</li>
-        <li><span class="track-num">07</span> One More Minute</li>
-        <li><span class="track-num">08</span> What the Silence Said</li>
-        <li><span class="track-num">09</span> Goodnight, Reykjavík</li>
-        <li><span class="track-num">10</span> Time, After All</li>
+        <li class="track-item" data-track="0"><span class="track-num">01</span> Before the Hour Strikes<span class="track-hint">lyrics ↗</span></li>
+        <li class="track-item" data-track="1"><span class="track-num">02</span> A Matter of Time<span class="track-hint">lyrics ↗</span></li>
+        <li class="track-item" data-track="2"><span class="track-num">03</span> The Clock on Your Wall<span class="track-hint">lyrics ↗</span></li>
+        <li class="track-item" data-track="3"><span class="track-num">04</span> Last Light in the Room<span class="track-hint">lyrics ↗</span></li>
+        <li class="track-item" data-track="4"><span class="track-num">05</span> Almost Too Late<span class="track-hint">lyrics ↗</span></li>
+        <li class="track-item" data-track="5"><span class="track-num">06</span> The Final Hour<span class="track-hint">lyrics ↗</span></li>
+        <li class="track-item" data-track="6"><span class="track-num">07</span> One More Minute<span class="track-hint">lyrics ↗</span></li>
+        <li class="track-item" data-track="7"><span class="track-num">08</span> What the Silence Said<span class="track-hint">lyrics ↗</span></li>
+        <li class="track-item" data-track="8"><span class="track-num">09</span> Goodnight, Reykjavík<span class="track-hint">lyrics ↗</span></li>
+        <li class="track-item" data-track="9"><span class="track-num">10</span> Time, After All<span class="track-hint">lyrics ↗</span></li>
       </ol>
 
       <blockquote style="text-align:left; margin: 0 auto 1.5rem; max-width: 480px;">
-        "I kept thinking — what would you do with your last hour? What would you
-        finally say? This whole record is my answer to that question."
-        <cite>— Laufey on <em>A Matter of Time: The Final Hour</em></cite>
+        <span data-i18n="album.quote"></span>
+        <cite data-i18n="album.quote.cite"></cite>
       </blockquote>
     </div>
   </section>
 
-  <!-- Concert Info -->
+  <!-- Concert -->
   <section id="concert">
-    <p class="section-label">Tomorrow · May 15, 2026</p>
-    <h2>Concert Details</h2>
-
-    <p>
-      Tomorrow night, Laufey brings <em>A Matter of Time: The Final Hour</em> to life for
-      the first time on stage. Joined by the full chamber ensemble who recorded the album
-      alongside her, the show promises something rare — the intimacy of her recordings
-      at orchestral scale, with every second charged by the album's urgent theme.
-      Expect candlelight, cellos, and the feeling that this hour matters.
-    </p>
+    <p class="section-label" data-i18n="concert.label"></p>
+    <h2 data-i18n="concert.h2"></h2>
+    <p data-i18n="concert.p"></p>
 
     <div class="info-grid">
       <div class="info-card">
         <div class="info-icon">📅</div>
-        <p class="info-title">Date</p>
-        <p class="info-value">May 15, 2026</p>
+        <p class="info-title" data-i18n="concert.date.title"></p>
+        <p class="info-value" data-i18n="concert.date.value"></p>
       </div>
       <div class="info-card">
         <div class="info-icon">🕖</div>
-        <p class="info-title">Doors / Show</p>
-        <p class="info-value">7:00 PM / 8:00 PM</p>
+        <p class="info-title" data-i18n="concert.time.title"></p>
+        <p class="info-value" data-i18n="concert.time.value"></p>
       </div>
       <div class="info-card">
         <div class="info-icon">🎻</div>
-        <p class="info-title">Programme</p>
-        <p class="info-value">A Matter of Time · Bewitched · Classics</p>
+        <p class="info-title" data-i18n="concert.prog.title"></p>
+        <p class="info-value" data-i18n="concert.prog.value"></p>
       </div>
       <div class="info-card">
         <div class="info-icon">✨</div>
-        <p class="info-title">Support Act</p>
-        <p class="info-value">Chamber Ensemble</p>
+        <p class="info-title" data-i18n="concert.support.title"></p>
+        <p class="info-value" data-i18n="concert.support.value"></p>
       </div>
     </div>
 
     <blockquote style="margin-top:2.5rem;">
-      "Every concert feels like the first time I played for anyone — terrifying,
-      wonderful, necessary."
-      <cite>— Laufey</cite>
+      <span data-i18n="concert.quote"></span>
+      <cite data-i18n="concert.quote.cite"></cite>
     </blockquote>
   </section>
 
-  <!-- Footer -->
   <footer>
     <p class="footer-name">Laufey</p>
-    <p>A personal fan page · Made with love for the concert · May 2026</p>
+    <p data-i18n="footer.sub"></p>
   </footer>
 
   <script>
+    const translations = {
+      'zh-TW': {
+        'nav.story':   '故事',
+        'nav.disc':    '作品集',
+        'nav.album':   '新專輯',
+        'nav.concert': '音樂會',
+
+        'hero.label':   '現場音樂會 · 2026年5月15日',
+        'hero.subtitle':'爵士、弦樂與星塵之夜',
+        'hero.date':    '明晚 — 晚上7時開放入場',
+        'hero.hours':   '小時',
+        'hero.minutes': '分鐘',
+        'hero.seconds': '秒',
+        'hero.scroll':  '↓ 向下探索',
+
+        'story.label': '關於藝術家',
+        'story.h2':    '她的故事',
+        'story.intro': 'Laufey Lín Jónsdóttir — 世人只知她為 <em>Laufey</em> — 於2001年6月23日在冰島雷克雅維克出生。父親是冰島人，母親是華人，她在兩個世界之間長大：北歐大地的靜謐壯麗，與中華文化的深厚底蘊。從最早的年歲起，音樂對她而言不是嗜好，而是語言。',
+        'story.quote': '「音樂是我唯一感到完全歸屬的地方。」',
+        'story.quote.cite': '— Laufey',
+
+        'tl1.year': '童年 · 雷克雅維克',
+        'tl1.h3':   '天才少女的誕生',
+        'tl1.p':    '五歲起，Laufey 開始學習大提琴，很快展現出驚人的古典音樂天賦。她與雙胞胎姊妹 Steinunn 一同在冰島民間傳統與古典音樂的薰陶下成長。家中總是迴盪著巴哈、德布西的樂音，以及那種寧靜的驚嘆——正是那份驚嘆，後來成為她創作的底色。',
+
+        'tl2.year': '少年時期 · 雷克雅維克音樂學院',
+        'tl2.h3':   '古典根基，爵士羽翼',
+        'tl2.p':    '在雷克雅維克音樂學院修習古典大提琴期間，Laufey 悄悄愛上了另一個截然不同的傳統——爵士樂那溫暖、深夜般的世界。Chet Baker、Bill Evans、Nat King Cole 等大師的音樂，塑造了她情感表達的詞彙，並最終流淌進她的原創歌曲之中。她自學吉他、鋼琴，並學會了寫出令人心痛的旋律。',
+
+        'tl3.year': '2019 – 2022 · 波士頓伯克利音樂學院',
+        'tl3.h3':   '找到自己的聲音',
+        'tl3.p':    '憑藉獎學金進入伯克利，古典訓練與爵士理論的融合賦予了她作品獨特的深度。她開始在社群媒體上分享原創歌曲，起初只有少數聽眾，卻在數月之內，以她親密的弦樂民謠觸動了數百萬人——人們在她的音樂中感受到了一種罕見的東西：真誠。2021年的首張 EP <em>Typical of Me</em> 宣告了一位早已成熟的藝術家的到來。',
+
+        'tl4.year': '2022年',
+        'tl4.h3':   '關於愛，我所知道的一切',
+        'tl4.p':    '首張專輯如初雪般悄然而至，卻帶著一股難以忽視的力量。大提琴、直立低音提琴與刷鼓的素淨編排，輕柔地托起了探討心碎、思念與成長之苦澀的歌詞。樂評人與歌迷都被那種少見的沉著所折服——一個二十一歲的女孩，卻寫出了歷盡滄桑之人才有的智慧。',
+
+        'tl5.year': '2023 – 2024年',
+        'tl5.h3':   '《Bewitched》— 葛萊美時刻',
+        'tl5.p':    '<em>Bewitched</em> 確立了 Laufey 作為一個世代才華的地位。這張豐盛、管弦樂化、令人心碎地浪漫的專輯，為她贏得了葛萊美獎<strong>最佳傳統流行演唱專輯獎</strong>，她也成為有史以來最年輕的得獎者。2024年推出的擴充版 <em>Goddess Edition</em>，收錄了全新管弦編曲與親密的原聲錄音，讓人得以第一次真正「聽見」這些歌曲。',
+
+        'tl6.year': '2025年至今',
+        'tl6.h3':   '全新篇章',
+        'tl6.p':    'Laufey 沒有重複已被驗證的方程式，而是與一小群信任的音樂夥伴悄然回到錄音室。她帶著 <em>A Matter of Time: The Final Hour</em> 歸來——既熟悉又令人驚嘆，一張在古典結構中探索得更深，同時又充滿著她過去作品從未有過的急迫感的專輯。明晚，將是它的首次現場演出。',
+
+        'disc.label': '作品目錄',
+        'disc.h2':    '音樂作品',
+        'disc.desc1': '這張首張 EP 將 Laufey 充滿爵士氣息的失戀詮釋帶給了世界。四首歌，分量恰到好處。',
+        'disc.desc2': '一張成熟得罕見的首張專輯——大提琴、刷鼓，以及直擊胸口的歌詞。',
+        'disc.desc3': '與冰島交響樂團現場演出的錄音。證明了 Laufey 的歌曲在全管弦樂規模下同樣令人屏息。',
+        'disc.desc4': '葛萊美獲獎之作。管弦樂化、浪漫，徹頭徹尾屬於她自己。改變了一切的那張唱片。',
+        'disc.desc5': '收錄全新編曲與原聲錄音的擴充版——同樣的歌曲，卻像是第一次聆聽。',
+
+        'album.label': '2025 · 全新專輯',
+        'album.h2':    '最新專輯',
+        'album.p1':    '在雷克雅維克、倫敦與洛杉磯的錄音室錄製，<em>A Matter of Time: The Final Hour</em> 是 Laufey 迄今最具野心、最為急迫的作品。<em>Bewitched</em> 漂浮於新戀情的無時間感迷霧之中，而這張專輯卻對時間有著強烈的意識——它的流逝、它的殘酷，以及一個小時如何承載一生的感受。古典對位法穿梭於爵士和弦之間；弦樂如同一座無人能讓它停止的鐘，起伏張弛。',
+        'album.p2':    '她親自演奏專輯中每一件弦樂器，並為其中七首曲目的室內樂團擔任指揮。這是一張關於急迫的唱片——那些幾乎說出口的話，那些悄然溜走的時刻，那最後一個小時不可承受之重，以及我們選擇如何填滿它。',
+        'album.tag':   '立即聆聽',
+        'album.quote': '「我不斷地在想——如果只剩最後一個小時，你會做什麼？你終於會說出什麼？這整張唱片，是我對這個問題的回答。」',
+        'album.quote.cite': '— Laufey 談 <em>A Matter of Time: The Final Hour</em>',
+
+        'concert.label':        '明日 · 2026年5月15日',
+        'concert.h2':           '演唱會詳情',
+        'concert.p':            '明晚，Laufey 將首次在舞台上演繹 <em>A Matter of Time: The Final Hour</em>。她將與錄製這張專輯的完整室內樂團共同登台，呈現一場罕見的演出——以管弦樂的規模，保留錄音室的親密感，每一秒都因專輯的急迫主題而充滿張力。期待燭光、大提琴，以及「這一刻至關重要」的感受。',
+        'concert.date.title':   '日期',
+        'concert.date.value':   '2026年5月15日',
+        'concert.time.title':   '開門 / 演出',
+        'concert.time.value':   '晚上7時 / 晚上8時',
+        'concert.prog.title':   '曲目',
+        'concert.prog.value':   '時間之境 · Bewitched · 經典曲目',
+        'concert.support.title':'嘉賓',
+        'concert.support.value':'室內樂團',
+        'concert.quote':        '「每一場演唱會都像是我第一次為人演奏——既令人恐懼，又美麗，又不可或缺。」',
+        'concert.quote.cite':   '— Laufey',
+
+        'footer.sub': '個人粉絲頁面 · 為音樂會特別製作 · 2026年5月',
+      },
+
+      en: {
+        'nav.story':   'Story',
+        'nav.disc':    'Discography',
+        'nav.album':   'New Album',
+        'nav.concert': 'Concert',
+
+        'hero.label':    'Live in Concert · May 15, 2026',
+        'hero.subtitle': 'An Evening of Jazz, Strings &amp; Stardust',
+        'hero.date':     'Tomorrow Night &mdash; Doors Open 7:00 PM',
+        'hero.hours':    'Hours',
+        'hero.minutes':  'Minutes',
+        'hero.seconds':  'Seconds',
+        'hero.scroll':   '↓ &nbsp; Scroll to Explore',
+
+        'story.label': 'The Artist',
+        'story.h2':    'Her Story',
+        'story.intro': 'Laufey Lín Jónsdóttir — known to the world simply as <em>Laufey</em> — was born on June 23, 2001 in Reykjavík, Iceland. The daughter of an Icelandic father and a Chinese mother, she grew up between two worlds: the quiet drama of Nordic landscapes and the rich cultural tapestry of her Chinese heritage. From the earliest age, music was not a hobby but a language.',
+        'story.quote': '"I\'ve always felt like music is the one place where I completely belong."',
+        'story.quote.cite': '— Laufey',
+
+        'tl1.year': 'Early Childhood · Reykjavík',
+        'tl1.h3':   'A Prodigy in the Making',
+        'tl1.p':    'Laufey began studying cello at age five, quickly demonstrating extraordinary classical ability. Alongside her twin sister Steinunn, she grew up immersed in both Icelandic folk traditions and the sweeping world of classical music. The family home was always filled with Bach, Debussy, and the kind of quiet wonder that later defined her songwriting.',
+
+        'tl2.year': 'Teenage Years · Reykjavík Music Academy',
+        'tl2.h3':   'Classical Roots, Jazz Wings',
+        'tl2.p':    'At the Reykjavík College of Music, Laufey immersed herself in classical cello performance while quietly falling in love with a very different tradition — the warm, late-night world of jazz. Artists like Chet Baker, Bill Evans, and Nat King Cole shaped the emotional vocabulary she would eventually pour into original songs. She taught herself guitar, piano, and the art of writing melodies that ached with longing.',
+
+        'tl3.year': '2019 – 2022 · Berklee College of Music, Boston',
+        'tl3.h3':   'Finding Her Voice',
+        'tl3.p':    'A scholarship brought her to Berklee, where the confluence of classical training and jazz theory gave her compositions their signature depth. She began posting original songs on social media, initially to a modest audience. Within months, her intimate, string-laced ballads found millions of listeners who recognized something rare: sincerity. Her debut EP <em>Typical of Me</em> (2021) announced an artist already fully formed.',
+
+        'tl4.year': '2022',
+        'tl4.h3':   'Everything I Know About Love',
+        'tl4.p':    'Her debut album arrived with the delicate force of a first snow. Spare arrangements of cello, upright bass, and brushed drums cradled lyrics that explored heartbreak, longing, and the bittersweet weight of growing up. Critics and fans alike responded to its unusual poise — here was a 21-year-old writing with the wisdom of someone who had lived many lives.',
+
+        'tl5.year': '2023 – 2024',
+        'tl5.h3':   'Bewitched — A Grammy Moment',
+        'tl5.p':    '<em>Bewitched</em> cemented Laufey as a generational talent. Lush, orchestral, and achingly romantic, the album earned her the Grammy Award for <strong>Best Traditional Pop Vocal Album</strong> — the youngest artist ever to claim the honour. An expanded <em>Goddess Edition</em> followed in 2024, featuring new orchestral arrangements and intimate acoustic recordings that stripped the songs back to their emotional core.',
+
+        'tl6.year': '2025 – Present',
+        'tl6.h3':   'A New Chapter',
+        'tl6.p':    'Rather than repeat a proven formula, Laufey disappeared into the studio with a small ensemble of trusted collaborators. She emerged with <em>A Matter of Time: The Final Hour</em> — something both familiar and startling, an album that pushes deeper into classical structure while pulsing with an urgency her earlier work never needed. Tomorrow night marks its live premiere.',
+
+        'disc.label': 'Catalogue',
+        'disc.h2':    'The Music',
+        'disc.desc1': "The debut EP that introduced the world to Laufey's hazy, jazz-inflected take on heartbreak. Four songs, perfectly weighted.",
+        'disc.desc2': 'A debut album of uncommon maturity — cello, brushed drums, and lyrics that cut straight to the chest.',
+        'disc.desc3': "Live with the Iceland Symphony Orchestra. Proof that Laufey's songs sound just as breathtaking at full orchestral scale.",
+        'disc.desc4': 'Grammy-winning. Orchestral, romantic, and resolutely her own. The record that changed everything.',
+        'disc.desc5': 'Extended edition with new arrangements and stripped-back recordings — the same songs, heard for the first time.',
+
+        'album.label': '2025 · New Release',
+        'album.h2':    'The New Album',
+        'album.p1':    'Recorded across studios in Reykjavík, London, and Los Angeles, <em>A Matter of Time: The Final Hour</em> is Laufey\'s most ambitious and most urgent work to date. Where <em>Bewitched</em> drifted in the timeless haze of new romance, this record is acutely aware of time — its passage, its cruelty, the way a single hour can hold an entire lifetime of feeling. Classical counterpoint weaves through jazz chord voicings; strings swell and recede like a clock no one can stop.',
+        'album.p2':    'Laufey plays every stringed instrument on the record herself, and conducted the chamber ensemble that appears on seven of the ten tracks. It is a record about urgency — the things we almost said, the moments we let slip, the impossible weight of a final hour and what we choose to fill it with.',
+        'album.tag':   'Out Now',
+        'album.quote': '"I kept thinking — what would you do with your last hour? What would you finally say? This whole record is my answer to that question."',
+        'album.quote.cite': '— Laufey on <em>A Matter of Time: The Final Hour</em>',
+
+        'concert.label':        'Tomorrow · May 15, 2026',
+        'concert.h2':           'Concert Details',
+        'concert.p':            'Tomorrow night, Laufey brings <em>A Matter of Time: The Final Hour</em> to life for the first time on stage. Joined by the full chamber ensemble who recorded the album alongside her, the show promises something rare — the intimacy of her recordings at orchestral scale, with every second charged by the album\'s urgent theme. Expect candlelight, cellos, and the feeling that this hour matters.',
+        'concert.date.title':   'Date',
+        'concert.date.value':   'May 15, 2026',
+        'concert.time.title':   'Doors / Show',
+        'concert.time.value':   '7:00 PM / 8:00 PM',
+        'concert.prog.title':   'Programme',
+        'concert.prog.value':   'A Matter of Time · Bewitched · Classics',
+        'concert.support.title':'Support Act',
+        'concert.support.value':'Chamber Ensemble',
+        'concert.quote':        '"Every concert feels like the first time I played for anyone — terrifying, wonderful, necessary."',
+        'concert.quote.cite':   '— Laufey',
+
+        'footer.sub': 'A personal fan page · Made with love for the concert · May 2026',
+      }
+    };
+
+    let currentLang = 'zh-TW';
+
+    function applyLang(lang) {
+      const dict = translations[lang];
+      document.querySelectorAll('[data-i18n]').forEach(el => {
+        const key = el.dataset.i18n;
+        if (dict[key] !== undefined) el.innerHTML = dict[key];
+      });
+      document.documentElement.lang = lang;
+      document.getElementById('btn-zh').classList.toggle('active', lang === 'zh-TW');
+      document.getElementById('btn-en').classList.toggle('active', lang === 'en');
+      currentLang = lang;
+    }
+
+    function setLang(lang) { applyLang(lang); }
+
     /* Stars */
     (function () {
       const container = document.getElementById('stars');
@@ -667,8 +881,7 @@
         s.style.cssText = `
           left: ${Math.random() * 100}%;
           top:  ${Math.random() * 100}%;
-          width:  ${size}px;
-          height: ${size}px;
+          width: ${size}px; height: ${size}px;
           --d: ${(Math.random() * 4 + 2).toFixed(1)}s;
           --max-o: ${(Math.random() * 0.5 + 0.3).toFixed(2)};
           animation-delay: ${(Math.random() * 5).toFixed(1)}s;
@@ -683,26 +896,232 @@
       const hEl = document.getElementById('cd-h');
       const mEl = document.getElementById('cd-m');
       const sEl = document.getElementById('cd-s');
-
       function pad(n) { return String(n).padStart(2, '0'); }
-
       function tick() {
         const diff = target - Date.now();
-        if (diff <= 0) {
-          hEl.textContent = mEl.textContent = sEl.textContent = '00';
-          return;
-        }
-        const totalSec = Math.floor(diff / 1000);
-        const h = Math.floor(totalSec / 3600);
-        const m = Math.floor((totalSec % 3600) / 60);
-        const s = totalSec % 60;
-        hEl.textContent = pad(h);
-        mEl.textContent = pad(m);
-        sEl.textContent = pad(s);
+        if (diff <= 0) { hEl.textContent = mEl.textContent = sEl.textContent = '00'; return; }
+        const t = Math.floor(diff / 1000);
+        hEl.textContent = pad(Math.floor(t / 3600));
+        mEl.textContent = pad(Math.floor((t % 3600) / 60));
+        sEl.textContent = pad(t % 60);
       }
       tick();
       setInterval(tick, 1000);
     })();
+
+    /* Boot with Traditional Chinese */
+    applyLang('zh-TW');
+
+    /* ── Lyrics data ── */
+    const lyricsData = [
+      {
+        num: '01', title: 'Before the Hour Strikes',
+        stanzas: [
+          [
+            { en: 'Before the hour strikes and steals the night away,',    zh: '在鐘聲敲響、夜晚被偷走之前，' },
+            { en: "I'll hold your name inside my mouth like a prayer.",    zh: '我將你的名字如禱告般含於口中。' },
+            { en: 'The candles burn too low to keep the dark at bay,',     zh: '燭火燃得太低，再難抵擋那片黑暗，' },
+            { en: "And I'm still learning how to say I was there.",        zh: '而我仍在學習，如何說出「我曾在那裡」。' },
+          ],
+          [
+            { en: 'The hours fold like letters left unread,',              zh: '時光如未讀的信函般一封封折疊，' },
+            { en: 'I press my palm against the cooling glass.',            zh: '我將掌心貼上逐漸冷卻的玻璃。' },
+            { en: "You're somewhere I can't reach but haven't left,",     zh: '你在我觸碰不到卻又從未真正離去的地方，' },
+            { en: 'And time is all I have, and time shall pass.',          zh: '而時間是我僅有的一切，時間終將流逝。' },
+          ],
+        ]
+      },
+      {
+        num: '02', title: 'A Matter of Time',
+        stanzas: [
+          [
+            { en: "It's only a matter of time, my dear,",                 zh: '這只是時間的問題，我親愛的，' },
+            { en: 'Before the seasons turn without your face.',            zh: '在季節沒有你的面容地流轉之前。' },
+            { en: 'I keep the windows open just to hear',                 zh: '我讓窗戶保持開著，只為聆聽' },
+            { en: 'The sound of someone filling up your space.',           zh: '某個人填補你位置的聲音。' },
+          ],
+          [
+            { en: 'Clocks were never kind to those who wait,',            zh: '時鐘從不憐憫等待之人，' },
+            { en: 'They move too fast when you are in my arms.',          zh: '當你在我懷中，它們走得太快。' },
+            { en: "They slow to nothing when you're running late,",       zh: '當你遲遲未歸，它們幾乎停滯不前，' },
+            { en: 'And love, my love, has lost its daily charms.',        zh: '而愛，我的愛，已失去了它日常的魔力。' },
+          ],
+        ]
+      },
+      {
+        num: '03', title: 'The Clock on Your Wall',
+        stanzas: [
+          [
+            { en: 'The clock on your wall still reads the time you left,', zh: '你牆上的時鐘仍停在你離去的時刻，' },
+            { en: "I haven't had the heart to wind it up again.",          zh: '我沒有那個勇氣再次上發條。' },
+            { en: 'Some rooms are sacred, some are full of theft,',       zh: '有些房間是聖地，有些充滿了劫奪，' },
+            { en: 'And yours is both — a joy, an old refrain.',           zh: '而你的是兩者——一份喜悅，一段舊旋律。' },
+          ],
+          [
+            { en: 'The second hand has learned to hold its breath,',      zh: '秒針已學會屏住呼吸，' },
+            { en: 'A frozen witness to the life we made.',                zh: '靜靜見證我們共同建造的生活。' },
+            { en: "I dust around it, careful as a wreath,",              zh: '我輕輕拂去周圍的塵埃，如同擺放花圈般謹慎，' },
+            { en: 'Afraid to wake what time has gently frayed.',          zh: '害怕喚醒那被時光輕柔磨損的一切。' },
+          ],
+        ]
+      },
+      {
+        num: '04', title: 'Last Light in the Room',
+        stanzas: [
+          [
+            { en: 'I am the last light in the room tonight,',            zh: '今夜，我是這房間裡最後一盞燈，' },
+            { en: 'Burning for no one, burning all the same.',            zh: '為無人燃燒，卻依然燃燒如初。' },
+            { en: "You always said I'd learn to love the night,",        zh: '你總說我終將學會愛上黑夜，' },
+            { en: "But darling, darkness isn't quite the game.",         zh: '但親愛的，黑暗並非如此一場遊戲。' },
+          ],
+          [
+            { en: 'I pour the tea and let it slowly cool,',              zh: '我沏上茶，任它慢慢涼透，' },
+            { en: 'A ritual of one, a quiet grief.',                     zh: '一個人的儀式，一份靜默的哀傷。' },
+            { en: 'Outside the rain has made the cobbles full,',         zh: '屋外，雨水填滿了每一塊石板，' },
+            { en: 'And I am waiting for a strange relief.',               zh: '而我正等待著一種奇異的解脫。' },
+          ],
+        ]
+      },
+      {
+        num: '05', title: 'Almost Too Late',
+        stanzas: [
+          [
+            { en: 'I almost called you when the winter came,',           zh: '冬天來臨時，我幾乎撥了你的電話，' },
+            { en: 'I almost drove to where you used to live.',           zh: '我幾乎驅車前往你曾住過的地方。' },
+            { en: 'Almost is the cruelest kind of game,',               zh: '「幾乎」是最殘忍的一種遊戲，' },
+            { en: 'The word that takes much more than it can give.',     zh: '是那個索取遠多於給予的字眼。' },
+          ],
+          [
+            { en: 'I stopped the car outside your building gate,',      zh: '我把車停在你公寓的大門外，' },
+            { en: 'And watched the light behind your curtain glow.',     zh: '凝視著你窗簾後透出的燈光。' },
+            { en: 'Some things are meant to arrive almost too late,',   zh: '有些事注定幾乎太晚才抵達，' },
+            { en: 'Some loves are rivers only you can row.',             zh: '有些愛是只有你能划行的河流。' },
+          ],
+        ]
+      },
+      {
+        num: '06', title: 'The Final Hour',
+        stanzas: [
+          [
+            { en: "In the final hour I'd choose your voice,",           zh: '在最後一個小時，我會選擇你的聲音，' },
+            { en: 'Over every silence I have learned to wear.',          zh: '勝過我學會穿戴的每一片沉默。' },
+            { en: 'Love was never really a choice,',                    zh: '愛從來都不真的是一種選擇，' },
+            { en: 'It simply showed up breathing in the air.',           zh: '它只是呼吸著，出現在空氣之中。' },
+          ],
+          [
+            { en: 'The final hour is softer than I feared,',            zh: '最後這一個小時，比我想像的更為溫柔，' },
+            { en: 'It holds the whole of everything I know.',            zh: '它承載著我所知道的一切。' },
+            { en: 'And you, somehow, have always reappeared',            zh: '而你，以某種方式，始終重新出現' },
+            { en: 'In every place I turn, in every glow.',               zh: '在我轉身的每一處，在每一道光芒之中。' },
+          ],
+        ]
+      },
+      {
+        num: '07', title: 'One More Minute',
+        stanzas: [
+          [
+            { en: 'Give me one more minute by the sea,',                zh: '再給我一分鐘在海邊，' },
+            { en: 'One more song before the record ends.',              zh: '在唱片結束前再聽一首歌。' },
+            { en: 'Time has ways of taking things from me,',            zh: '時間總有辦法帶走我的東西，' },
+            { en: "But memory bends the way a river bends.",            zh: '但記憶如河流般，曲曲折折地延伸。' },
+          ],
+          [
+            { en: "One more morning in the amber light,",              zh: '再給我一個清晨，沐浴在琥珀色的光裡，' },
+            { en: "One more hand to hold before the cold.",             zh: '在寒冷來臨前，再握一次那雙手。' },
+            { en: "I've been counting minutes every night",             zh: '每一個夜晚，我都在數著分鐘，' },
+            { en: 'Since you became a story I was told.',               zh: '自從你變成了一個我被講述的故事。' },
+          ],
+        ]
+      },
+      {
+        num: '08', title: 'What the Silence Said',
+        stanzas: [
+          [
+            { en: 'What the silence said when you walked away',         zh: '當你離去時，那沉默所說的話，' },
+            { en: 'Was louder than any word you chose to keep.',        zh: '比你選擇保留的任何言語都要響亮。' },
+            { en: "I've been translating it for half a year,",         zh: '我已翻譯了它半年之久，' },
+            { en: 'And all it ever says is: go to sleep.',             zh: '而它所說的，始終只是：去睡吧。' },
+          ],
+          [
+            { en: 'Silence has a grammar all its own,',                zh: '沉默有著它獨有的文法，' },
+            { en: 'A syntax built of pauses, sighs, and air.',         zh: '由停頓、嘆息與空氣構成的句法。' },
+            { en: "I've learned its conjugations, verb by verb,",      zh: '我一個動詞一個動詞地學習它的變化，' },
+            { en: 'And still I cannot tell you I was there.',          zh: '卻仍然無法告訴你，我曾在那裡。' },
+          ],
+        ]
+      },
+      {
+        num: '09', title: 'Goodnight, Reykjavík',
+        stanzas: [
+          [
+            { en: 'Goodnight, Reykjavík, your stars are mine tonight,', zh: '晚安，雷克雅維克，今晚你的星星屬於我，' },
+            { en: "I'll borrow them and carry them to where I sleep.",  zh: '我要借走它們，帶到我入睡的地方。' },
+            { en: 'The Arctic sky is wide enough for light,',           zh: '北極的天空足夠廣闊，可以容納光，' },
+            { en: 'And all the promises I could not keep.',             zh: '也能容納所有我無法兌現的承諾。' },
+          ],
+          [
+            { en: 'The harbour hums a lullaby in grey,',               zh: '港口以灰色的嗡鳴低吟著搖籃曲，' },
+            { en: 'The mountain holds the fog like something dear.',    zh: '山巒如珍寶般緊擁著那片霧氣。' },
+            { en: 'I came from here, and here I chose to stay,',       zh: '我從這裡來，也選擇留在這裡，' },
+            { en: 'To write of love and loss and almost-fear.',        zh: '書寫關於愛、失去與近乎恐懼的一切。' },
+          ],
+        ]
+      },
+      {
+        num: '10', title: 'Time, After All',
+        stanzas: [
+          [
+            { en: "Time, after all, is just a river's mouth,",         zh: '時間，說到底，不過是河流的入海口，' },
+            { en: 'Opening into something vast and blue.',              zh: '敞開流入某個浩瀚的蔚藍之中。' },
+            { en: 'You are the north, I am the sliding south,',        zh: '你是北方，我是漂移的南方，' },
+            { en: 'And we were always pointed somewhere true.',         zh: '而我們始終都指向某個真實的方向。' },
+          ],
+          [
+            { en: 'And time, after all, will not forget your name,',   zh: '而時間，說到底，不會忘記你的名字，' },
+            { en: 'Or how you laughed at nothing, laughed at all.',    zh: '也不會忘記你為了一切、為了虛無而笑的樣子。' },
+            { en: 'The river keeps on running, still the same,',       zh: '河流繼續奔流，依然如故，' },
+            { en: 'And time, my love, was never small.',               zh: '而時間，我的愛，從來都不渺小。' },
+          ],
+        ]
+      },
+    ];
+
+    /* ── Modal logic ── */
+    const modal    = document.getElementById('lyrics-modal');
+    const lyricsContent = document.getElementById('lyrics-content');
+    const lyricsNumEl   = document.getElementById('lyrics-num');
+    const lyricsTitleEl = document.getElementById('lyrics-modal-title');
+
+    function openLyrics(idx) {
+      const track = lyricsData[idx];
+      lyricsNumEl.textContent   = track.num;
+      lyricsTitleEl.textContent = track.title;
+      lyricsContent.innerHTML = track.stanzas.map(stanza =>
+        `<div class="lyrics-stanza">${
+          stanza.map(pair =>
+            `<div class="lyrics-pair">
+              <p class="lyrics-en">${pair.en}</p>
+              <p class="lyrics-zh">${pair.zh}</p>
+            </div>`
+          ).join('')
+        }</div>`
+      ).join('');
+      modal.classList.add('open');
+      document.body.style.overflow = 'hidden';
+    }
+
+    function closeLyrics() {
+      modal.classList.remove('open');
+      document.body.style.overflow = '';
+    }
+
+    document.getElementById('lyrics-close').addEventListener('click', closeLyrics);
+    modal.addEventListener('click', e => { if (e.target === modal) closeLyrics(); });
+    document.addEventListener('keydown', e => { if (e.key === 'Escape') closeLyrics(); });
+
+    document.querySelectorAll('.track-item').forEach(el => {
+      el.addEventListener('click', () => openLyrics(Number(el.dataset.track)));
+    });
   </script>
 </body>
 </html>
