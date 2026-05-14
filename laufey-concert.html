@@ -254,11 +254,15 @@
       margin-top: 1rem;
     }
     .album-card {
+      display: block;
       background: rgba(255,255,255,.04);
       border: 1px solid rgba(200,169,110,.15);
       border-radius: 12px;
       padding: 1.6rem 1.4rem;
       transition: transform .3s, border-color .3s;
+      text-decoration: none;
+      color: inherit;
+      cursor: pointer;
     }
     .album-card:hover { transform: translateY(-4px); border-color: rgba(200,169,110,.45); }
     .album-year {
@@ -601,31 +605,31 @@
     <p class="section-label" data-i18n="disc.label"></p>
     <h2 data-i18n="disc.h2"></h2>
     <div class="album-grid">
-      <div class="album-card">
+      <a class="album-card" href="album.html?id=typical-of-me" target="_blank">
         <p class="album-year">2021</p>
         <p class="album-title">Typical of Me</p>
         <p class="album-desc" data-i18n="disc.desc1"></p>
-      </div>
-      <div class="album-card">
+      </a>
+      <a class="album-card" href="album.html?id=everything-i-know-about-love" target="_blank">
         <p class="album-year">2022</p>
         <p class="album-title">Everything I Know About Love</p>
         <p class="album-desc" data-i18n="disc.desc2"></p>
-      </div>
-      <div class="album-card">
+      </a>
+      <a class="album-card" href="album.html?id=a-night-at-the-symphony" target="_blank">
         <p class="album-year">2022</p>
         <p class="album-title">A Night at the Symphony</p>
         <p class="album-desc" data-i18n="disc.desc3"></p>
-      </div>
-      <div class="album-card">
+      </a>
+      <a class="album-card" href="album.html?id=bewitched" target="_blank">
         <p class="album-year">2023</p>
         <p class="album-title">Bewitched</p>
         <p class="album-desc" data-i18n="disc.desc4"></p>
-      </div>
-      <div class="album-card">
+      </a>
+      <a class="album-card" href="album.html?id=bewitched-goddess" target="_blank">
         <p class="album-year">2024</p>
         <p class="album-title">Bewitched: The Goddess Edition</p>
         <p class="album-desc" data-i18n="disc.desc5"></p>
-      </div>
+      </a>
     </div>
   </section>
 
