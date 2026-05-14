@@ -625,6 +625,24 @@
       return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
     }
 
+    function getCacheKey(title) {
+      return 'laufey_lyrics_' + title.toLowerCase().replace(/\s+/g, '_');
+    }
+
+    function saveCache(key, enLines, zhLines) {
+      try {
+        localStorage.setItem(key, JSON.stringify({ en: enLines, zh: zhLines, ts: Date.now() }));
+      } catch (_) {}
+    }
+
+    function getCache(key) {
+      try {
+        const raw = localStorage.getItem(key);
+        if (!raw) return null;
+        return JSON.parse(raw);
+      } catch (_) { return null; }
+    }
+
     async function translateLine(text) {
       const res = await fetch(
         'https://api.mymemory.translated.net/get?q=' +
@@ -636,12 +654,13 @@
       throw new Error('translate failed');
     }
 
-    function renderEnLines(rawLines) {
-      lyricsContent.innerHTML = rawLines.map((line, i) => {
+    function renderLines(enLines, zhLines) {
+      lyricsContent.innerHTML = enLines.map((line, i) => {
         if (!line.trim()) return '<div class="lyrics-gap"></div>';
+        const zh = (zhLines && zhLines[i]) ? zhLines[i] : '';
         return '<div class="lyrics-pair" data-line="' + i + '">' +
           '<p class="lyrics-en">' + escHtml(line) + '</p>' +
-          '<p class="lyrics-zh pending">…</p>' +
+          '<p class="lyrics-zh' + (zh ? '' : ' pending') + '">' + escHtml(zh || '…') + '</p>' +
           '</div>';
       }).join('');
     }
@@ -655,13 +674,17 @@
         nonEmpty.map(({ text }) => translateLine(text))
       );
 
+      const zhLines = new Array(rawLines.length).fill('');
       nonEmpty.forEach(({ idx }, i) => {
         const el = lyricsContent.querySelector('[data-line="' + idx + '"] .lyrics-zh');
-        if (!el) return;
         const r = results[i];
-        el.textContent = r.status === 'fulfilled' ? r.value : '';
+        const text = r.status === 'fulfilled' ? r.value : '';
+        zhLines[idx] = text;
+        if (!el) return;
+        el.textContent = text;
         el.classList.remove('pending');
       });
+      return zhLines;
     }
 
     async function openLyrics(track) {
@@ -677,6 +700,7 @@
 
       // Strip version suffixes for the API query: "(Symphony Version)", "(Acoustic)", etc.
       const cleanTitle = track.title.replace(/\s*\([^)]*\)\s*/g, '').trim();
+      const cacheKey = getCacheKey(cleanTitle);
 
       try {
         const res = await fetch(
@@ -687,12 +711,18 @@
         if (!data.lyrics) throw new Error('empty');
 
         const rawLines = data.lyrics.replace(/\r\n/g, '\n').split('\n');
-        renderEnLines(rawLines);
-        await translateAllLines(rawLines);
+        renderLines(rawLines, null);
+        const zhLines = await translateAllLines(rawLines);
+        saveCache(cacheKey, rawLines, zhLines);
       } catch (_) {
-        lyricsContent.innerHTML =
-          '<p class="lyrics-not-found" data-i18n="lyrics.notfound"></p>';
-        applyLang(currentLang);
+        const cached = getCache(cacheKey);
+        if (cached) {
+          renderLines(cached.en, cached.zh);
+        } else {
+          lyricsContent.innerHTML =
+            '<p class="lyrics-not-found" data-i18n="lyrics.notfound"></p>';
+          applyLang(currentLang);
+        }
       }
     }
 
