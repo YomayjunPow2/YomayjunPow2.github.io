@@ -1,0 +1,726 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Laufey — Album</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;1,400&family=Lato:wght@300;400&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --cream:  #f5ede0;
+      --gold:   #c8a96e;
+      --blush:  #e8b4b8;
+      --deep:   #0e0b14;
+      --mid:    #1c1528;
+      --muted:  #8c7fa0;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'Lato', sans-serif;
+      background-color: var(--deep);
+      color: var(--cream);
+      overflow-x: hidden;
+    }
+
+    /* Stars */
+    #stars {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 0;
+      overflow: hidden;
+    }
+    .star {
+      position: absolute;
+      border-radius: 50%;
+      background: #fff;
+      animation: twinkle var(--d, 3s) ease-in-out infinite alternate;
+      opacity: 0;
+    }
+    @keyframes twinkle {
+      0%   { opacity: 0; }
+      50%  { opacity: var(--max-o, 0.7); }
+      100% { opacity: 0.1; }
+    }
+
+    /* Nav */
+    nav {
+      position: fixed;
+      top: 0;
+      width: 100%;
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      padding: 1rem 2rem;
+      background: linear-gradient(to bottom, rgba(14,11,20,0.85) 0%, transparent 100%);
+      backdrop-filter: blur(4px);
+    }
+    .nav-back {
+      font-size: .78rem;
+      letter-spacing: .15em;
+      text-transform: uppercase;
+      text-decoration: none;
+      color: var(--muted);
+      transition: color .3s;
+    }
+    .nav-back:hover { color: var(--gold); }
+
+    .lang-switch {
+      position: absolute;
+      right: 2rem;
+      display: flex;
+      align-items: center;
+      gap: .35rem;
+    }
+    .lang-btn {
+      background: none;
+      border: none;
+      cursor: pointer;
+      font-family: 'Lato', sans-serif;
+      font-size: .72rem;
+      letter-spacing: .1em;
+      color: var(--muted);
+      padding: .2rem .4rem;
+      transition: color .3s;
+      line-height: 1;
+    }
+    .lang-btn:hover { color: var(--gold); }
+    .lang-btn.active { color: var(--gold); font-weight: 400; }
+    .lang-sep { color: rgba(140,127,160,.4); font-size: .7rem; }
+
+    /* Layout */
+    .page-wrap {
+      position: relative;
+      z-index: 1;
+      max-width: 860px;
+      margin: 0 auto;
+      padding: 0 1.5rem;
+    }
+
+    /* Hero */
+    #hero {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      gap: 1.1rem;
+      padding: 8rem 1.5rem 5rem;
+    }
+    .album-badge {
+      display: inline-block;
+      border: 1px solid rgba(200,169,110,.5);
+      border-radius: 999px;
+      padding: .3rem .9rem;
+      font-size: .65rem;
+      letter-spacing: .22em;
+      text-transform: uppercase;
+      color: var(--gold);
+    }
+    .album-hero-title {
+      font-family: 'Playfair Display', serif;
+      font-style: italic;
+      font-size: clamp(2.6rem, 9vw, 5.5rem);
+      font-weight: 400;
+      line-height: 1.05;
+      color: var(--cream);
+    }
+    .album-hero-year {
+      font-size: .78rem;
+      letter-spacing: .25em;
+      text-transform: uppercase;
+      color: var(--gold);
+    }
+    .divider {
+      width: 60px;
+      height: 1px;
+      background: var(--gold);
+      margin: .2rem auto;
+    }
+    .album-hero-desc {
+      font-weight: 300;
+      font-size: 1rem;
+      line-height: 1.9;
+      color: rgba(245,237,224,.78);
+      max-width: 580px;
+      margin: 0 auto;
+    }
+
+    /* Tracks section */
+    #tracks {
+      padding: 5rem 1.5rem 6rem;
+      max-width: 860px;
+      margin: 0 auto;
+    }
+    .section-label {
+      font-size: .7rem;
+      letter-spacing: .22em;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-bottom: .6rem;
+    }
+    h2 {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(1.8rem, 5vw, 2.6rem);
+      font-weight: 400;
+      margin-bottom: 2rem;
+      color: var(--cream);
+    }
+
+    #track-list-el {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+    }
+    .full-track-item {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      padding: .85rem .6rem;
+      border-bottom: 1px solid rgba(200,169,110,.1);
+      cursor: pointer;
+      transition: background .2s, color .2s;
+      border-radius: 6px;
+    }
+    .full-track-item:first-child { border-top: 1px solid rgba(200,169,110,.1); }
+    .full-track-item:hover {
+      background: rgba(200,169,110,.07);
+      color: var(--gold);
+    }
+    .full-track-num {
+      font-size: .63rem;
+      letter-spacing: .14em;
+      color: var(--gold);
+      width: 1.5rem;
+      text-align: right;
+      flex-shrink: 0;
+      font-weight: 400;
+    }
+    .full-track-name {
+      font-size: .95rem;
+      font-weight: 300;
+      color: rgba(245,237,224,.85);
+      flex: 1;
+      transition: color .2s;
+    }
+    .full-track-item:hover .full-track-name { color: var(--gold); }
+    .track-hint {
+      font-size: .6rem;
+      letter-spacing: .1em;
+      color: var(--muted);
+      opacity: 0;
+      transition: opacity .2s;
+      white-space: nowrap;
+    }
+    .full-track-item:hover .track-hint { opacity: 1; }
+
+    /* Not found */
+    #not-found {
+      display: none;
+      min-height: 100vh;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      gap: 1.2rem;
+      padding: 6rem 1.5rem;
+    }
+    .nf-title {
+      font-family: 'Playfair Display', serif;
+      font-style: italic;
+      font-size: clamp(2rem, 6vw, 3rem);
+      color: var(--cream);
+    }
+    .nf-desc {
+      font-size: 1rem;
+      font-weight: 300;
+      color: rgba(245,237,224,.7);
+      line-height: 1.8;
+    }
+    .nf-back {
+      font-size: .78rem;
+      letter-spacing: .15em;
+      text-transform: uppercase;
+      text-decoration: none;
+      color: var(--gold);
+      transition: opacity .2s;
+    }
+    .nf-back:hover { opacity: .75; }
+
+    /* Lyrics Modal */
+    #lyrics-modal {
+      position: fixed;
+      inset: 0;
+      z-index: 200;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: rgba(14,11,20,.88);
+      backdrop-filter: blur(8px);
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity .3s;
+    }
+    #lyrics-modal.open { opacity: 1; pointer-events: all; }
+    .lyrics-box {
+      background: var(--mid);
+      border: 1px solid rgba(200,169,110,.35);
+      border-radius: 16px;
+      padding: 2.5rem 2rem 2rem;
+      max-width: 560px;
+      width: 92%;
+      max-height: 82vh;
+      overflow-y: auto;
+      position: relative;
+      scrollbar-width: thin;
+      scrollbar-color: rgba(200,169,110,.3) transparent;
+    }
+    .lyrics-close {
+      position: absolute;
+      top: 1rem;
+      right: 1.2rem;
+      background: none;
+      border: none;
+      color: var(--muted);
+      font-size: 1.5rem;
+      cursor: pointer;
+      transition: color .2s;
+      line-height: 1;
+      font-family: serif;
+    }
+    .lyrics-close:hover { color: var(--gold); }
+    .lyrics-num {
+      font-size: .65rem;
+      letter-spacing: .18em;
+      color: var(--gold);
+      margin-bottom: .4rem;
+    }
+    .lyrics-title {
+      font-family: 'Playfair Display', serif;
+      font-style: italic;
+      font-size: 1.35rem;
+      color: var(--cream);
+      margin-bottom: 1.8rem;
+      padding-right: 2rem;
+    }
+    .lyrics-stanza { margin-bottom: 1.6rem; }
+    .lyrics-pair { margin-bottom: .55rem; }
+    .lyrics-en {
+      font-size: .93rem;
+      font-weight: 300;
+      color: rgba(245,237,224,.92);
+      line-height: 1.5;
+      margin: 0;
+    }
+    .lyrics-zh {
+      font-size: .78rem;
+      font-weight: 300;
+      color: var(--gold);
+      opacity: .75;
+      line-height: 1.5;
+      margin: 0;
+    }
+
+    /* Footer */
+    footer {
+      position: relative;
+      z-index: 1;
+      text-align: center;
+      padding: 3rem 1.5rem 2.5rem;
+      font-size: .75rem;
+      letter-spacing: .1em;
+      color: var(--muted);
+    }
+    footer .footer-name {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.5rem;
+      color: var(--gold);
+      margin-bottom: .6rem;
+    }
+    footer a {
+      color: var(--muted);
+      text-decoration: none;
+      transition: color .25s;
+    }
+    footer a:hover { color: var(--gold); }
+
+    /* ── Lyrics loading / error states ── */
+    .lyrics-loading {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 1rem;
+      padding: 3rem 1rem;
+    }
+    .loading-spinner {
+      width: 28px;
+      height: 28px;
+      border: 2px solid rgba(200,169,110,.2);
+      border-top-color: var(--gold);
+      border-radius: 50%;
+      animation: spin .8s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .lyrics-loading p {
+      font-size: .8rem;
+      color: var(--muted);
+      letter-spacing: .12em;
+    }
+    .lyrics-zh.pending { opacity: .35; font-style: italic; }
+    .lyrics-not-found {
+      text-align: center;
+      padding: 2rem;
+      color: var(--muted);
+      font-size: .88rem;
+      line-height: 1.8;
+    }
+    .lyrics-gap { height: .9rem; }
+  </style>
+</head>
+<body>
+
+  <div id="stars"></div>
+
+  <!-- Lyrics Modal -->
+  <div id="lyrics-modal" role="dialog" aria-modal="true">
+    <div class="lyrics-box" id="lyrics-box">
+      <button class="lyrics-close" id="lyrics-close" aria-label="Close">&#x2715;</button>
+      <p class="lyrics-num" id="lyrics-num"></p>
+      <p class="lyrics-title" id="lyrics-modal-title"></p>
+      <div id="lyrics-content"></div>
+    </div>
+  </div>
+
+  <nav>
+    <a class="nav-back" href="laufey-concert.html" data-i18n="nav.back"></a>
+    <div class="lang-switch">
+      <button class="lang-btn active" id="btn-zh" onclick="setLang('zh-TW')">繁中</button>
+      <span class="lang-sep">|</span>
+      <button class="lang-btn" id="btn-en" onclick="setLang('en')">EN</button>
+    </div>
+  </nav>
+
+  <!-- Album content -->
+  <section id="hero">
+    <span class="album-badge" id="album-badge-el"></span>
+    <h1 class="album-hero-title" id="album-title-el"></h1>
+    <p class="album-hero-year" id="album-year-el"></p>
+    <div class="divider"></div>
+    <p class="album-hero-desc" id="album-desc-el"></p>
+  </section>
+
+  <section id="tracks">
+    <p class="section-label" data-i18n="tracks.label"></p>
+    <h2 data-i18n="tracks.h2"></h2>
+    <ol id="track-list-el"></ol>
+  </section>
+
+  <!-- Not found -->
+  <div id="not-found">
+    <p class="nf-title" data-i18n="notfound.title"></p>
+    <p class="nf-desc" data-i18n="notfound.desc"></p>
+    <a class="nf-back" href="laufey-concert.html" data-i18n="nav.back"></a>
+  </div>
+
+  <footer>
+    <p class="footer-name">Laufey</p>
+    <a href="laufey-concert.html" data-i18n="footer.back"></a>
+  </footer>
+
+  <script>
+    /* ── i18n ── */
+    const translations = {
+      'zh-TW': {
+        'nav.back':         '← 返回音樂會',
+        'tracks.label':     '曲目列表',
+        'tracks.h2':        '歌曲',
+        'footer.back':      '← 返回音樂會頁面',
+        'notfound.title':   '找不到專輯',
+        'notfound.desc':    '找不到所請求的專輯。',
+        'lyrics.loading':   '正在載入歌詞…',
+        'lyrics.notfound':  '找不到歌詞 · 請稍後再試',
+      },
+      en: {
+        'nav.back':         '← Back to Concert',
+        'tracks.label':     'Tracklist',
+        'tracks.h2':        'The Songs',
+        'footer.back':      '← Return to Concert Page',
+        'notfound.title':   'Album not found',
+        'notfound.desc':    'The requested album could not be found.',
+        'lyrics.loading':   'Loading lyrics…',
+        'lyrics.notfound':  'Lyrics not found · Please try again later',
+      }
+    };
+
+    let currentLang = 'zh-TW';
+
+    function applyLang(lang) {
+      const dict = translations[lang];
+      document.querySelectorAll('[data-i18n]').forEach(el => {
+        const key = el.dataset.i18n;
+        if (dict[key] !== undefined) el.innerHTML = dict[key];
+      });
+      document.documentElement.lang = lang;
+      document.getElementById('btn-zh').classList.toggle('active', lang === 'zh-TW');
+      document.getElementById('btn-en').classList.toggle('active', lang === 'en');
+      currentLang = lang;
+
+      /* re-render album-specific bilingual fields */
+      const albumId = new URLSearchParams(window.location.search).get('id');
+      const album = ALBUMS[albumId];
+      if (album) {
+        document.getElementById('album-badge-el').textContent = lang === 'zh-TW' ? album.typeZh : album.typeEn;
+        document.getElementById('album-desc-el').textContent  = lang === 'zh-TW' ? album.descZh : album.descEn;
+      }
+    }
+
+    function setLang(lang) { applyLang(lang); }
+
+    /* ── Stars ── */
+    (function () {
+      const container = document.getElementById('stars');
+      for (let i = 0; i < 160; i++) {
+        const s = document.createElement('div');
+        s.className = 'star';
+        const size = Math.random() * 2.2 + 0.5;
+        s.style.cssText = `
+          left: ${Math.random() * 100}%;
+          top:  ${Math.random() * 100}%;
+          width: ${size}px; height: ${size}px;
+          --d: ${(Math.random() * 4 + 2).toFixed(1)}s;
+          --max-o: ${(Math.random() * 0.5 + 0.3).toFixed(2)};
+          animation-delay: ${(Math.random() * 5).toFixed(1)}s;
+        `;
+        container.appendChild(s);
+      }
+    })();
+
+    /* ── Album data (no stanzas — lyrics fetched at runtime) ── */
+    const ALBUMS = {
+      'typical-of-me': {
+        title: 'Typical of Me', year: '2021',
+        typeEn: 'Debut EP', typeZh: '首張 EP',
+        descEn: "Four songs that introduced the world to Laufey's hazy, jazz-inflected sound. Delicate arrangements of cello, guitar, and brushed percussion frame lyrics about love, longing, and the specific ache of saying too little, too late.",
+        descZh: '四首歌曲，將 Laufey 充滿爵士氣息的迷朦音樂帶給世界。大提琴、吉他與刷擊打擊樂的細膩編排，框住了關於愛、思念，以及說得太少、太遲的特殊痛苦的歌詞。',
+        tracks: [
+          { num: '01', title: 'Typical of Me' },
+          { num: '02', title: 'Street by the Lake' },
+          { num: '03', title: 'Like the Movies' },
+          { num: '04', title: 'Valentine' },
+        ],
+      },
+      'everything-i-know-about-love': {
+        title: 'Everything I Know About Love', year: '2022',
+        typeEn: 'Debut Album', typeZh: '首張專輯',
+        descEn: "Laufey's debut full-length arrived like a first snow — quiet, inevitable, impossible to ignore. Ten songs about heartbreak, friendship, longing, and the slow education of the heart. Cello, upright bass, and brushed drums frame lyrics of uncommon wisdom.",
+        descZh: 'Laufey 的首張全長專輯如初雪般降臨——安靜、無可避免、令人無法忽視。十首關於心碎、友誼、思念，以及心靈緩慢教育的歌曲。大提琴、直立低音提琴和刷鼓，框住了充滿非凡智慧的歌詞。',
+        tracks: [
+          { num: '01', title: 'Valentine' },
+          { num: '02', title: 'Falling Behind' },
+          { num: '03', title: 'Lovesick' },
+          { num: '04', title: 'Best Friend' },
+          { num: '05', title: 'Aedis' },
+          { num: '06', title: 'Stay High' },
+          { num: '07', title: 'Poet' },
+          { num: '08', title: 'Everything I Know About Love' },
+          { num: '09', title: 'Dear Soulmate' },
+          { num: '10', title: 'Gone' },
+        ],
+      },
+      'a-night-at-the-symphony': {
+        title: 'A Night at the Symphony', year: '2022',
+        typeEn: 'Live EP', typeZh: '現場 EP',
+        descEn: "Recorded live with the Iceland Symphony Orchestra, this EP captures Laufey's songs at their most majestic. The orchestral arrangements deepen the emotional weight of already beloved tracks, and Laufey's voice — steady above the strings — feels more intimate than ever.",
+        descZh: '與冰島交響樂團現場錄製，這張 EP 以最宏大的規模呈現了 Laufey 的歌曲。管弦樂編曲加深了這些已深受喜愛曲目的情感重量，而 Laufey 在弦樂之上穩定的嗓音，感覺比以往任何時候都更加親密。',
+        tracks: [
+          { num: '01', title: 'Lovesick' },
+          { num: '02', title: 'Valentine' },
+          { num: '03', title: 'Everything I Know About Love' },
+          { num: '04', title: 'Stay High' },
+          { num: '05', title: 'Poet' },
+          { num: '06', title: 'Falling Behind' },
+        ],
+      },
+      'bewitched': {
+        title: 'Bewitched', year: '2023',
+        typeEn: 'Grammy-Winning Album', typeZh: '葛萊美獲獎專輯',
+        descEn: 'The record that changed everything. Twelve songs of orchestral, achingly romantic pop earned Laufey the Grammy for Best Traditional Pop Vocal Album — making her the youngest ever recipient. Lush, intimate, and entirely her own.',
+        descZh: '改變了一切的那張唱片。十二首管弦樂化、令人心碎地浪漫的流行歌曲，為 Laufey 贏得了葛萊美最佳傳統流行演唱專輯獎，使她成為有史以來最年輕的得獎者。豐盛、親密，徹頭徹尾屬於她自己。',
+        tracks: [
+          { num: '01', title: 'Dreamer' },
+          { num: '02', title: 'Bewitched' },
+          { num: '03', title: 'From the Start' },
+          { num: '04', title: 'Valentine' },
+          { num: '05', title: 'California and Me' },
+          { num: '06', title: 'Serendipity' },
+          { num: '07', title: 'Goddess' },
+          { num: '08', title: 'While You Were Sleeping' },
+          { num: '09', title: 'Lovesick' },
+          { num: '10', title: 'Letter to My 13 Year Old Self' },
+          { num: '11', title: 'Second Best' },
+          { num: '12', title: 'Promise' },
+        ],
+      },
+      'bewitched-goddess': {
+        title: 'Bewitched: The Goddess Edition', year: '2024',
+        typeEn: 'Extended Edition', typeZh: '擴充版',
+        descEn: 'An expanded Bewitched featuring four additional tracks — a haunting new original, an acoustic take, an orchestral arrangement, and a stripped-back reprise. The fullest expression of the Bewitched universe.',
+        descZh: '《Bewitched》的擴充版，收錄四首額外曲目——一首縈繞人心的全新原創、一個原聲版本、一個管弦樂編曲，以及一個剝去一切的尾聲版本。《Bewitched》世界最完整的呈現。',
+        tracks: [
+          { num: '01', title: 'Dreamer' },
+          { num: '02', title: 'Bewitched' },
+          { num: '03', title: 'From the Start' },
+          { num: '04', title: 'Valentine' },
+          { num: '05', title: 'California and Me' },
+          { num: '06', title: 'Serendipity' },
+          { num: '07', title: 'Goddess' },
+          { num: '08', title: 'While You Were Sleeping' },
+          { num: '09', title: 'Lovesick' },
+          { num: '10', title: 'Letter to My 13 Year Old Self' },
+          { num: '11', title: 'Second Best' },
+          { num: '12', title: 'Promise' },
+          { num: '13', title: 'Haunted' },
+          { num: '14', title: 'Dreamer (Acoustic)' },
+          { num: '15', title: 'From the Start (Orchestral)' },
+          { num: '16', title: 'Goddess (Reprise)' },
+        ],
+      },
+    };
+
+    /* ── Modal elements ── */
+    const modal         = document.getElementById('lyrics-modal');
+    const lyricsContent = document.getElementById('lyrics-content');
+    const lyricsNumEl   = document.getElementById('lyrics-num');
+    const lyricsTitleEl = document.getElementById('lyrics-modal-title');
+
+    /* ── Lyrics API helpers ── */
+    function escHtml(str) {
+      return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+    }
+
+    async function translateLine(text) {
+      const res = await fetch(
+        'https://api.mymemory.translated.net/get?q=' +
+        encodeURIComponent(text) + '&langpair=en|zh-TW'
+      );
+      if (!res.ok) throw new Error('translate error');
+      const data = await res.json();
+      if (data.responseStatus === 200) return data.responseData.translatedText;
+      throw new Error('translate failed');
+    }
+
+    function renderEnLines(rawLines) {
+      lyricsContent.innerHTML = rawLines.map((line, i) => {
+        if (!line.trim()) return '<div class="lyrics-gap"></div>';
+        return '<div class="lyrics-pair" data-line="' + i + '">' +
+          '<p class="lyrics-en">' + escHtml(line) + '</p>' +
+          '<p class="lyrics-zh pending">…</p>' +
+          '</div>';
+      }).join('');
+    }
+
+    async function translateAllLines(rawLines) {
+      const nonEmpty = rawLines
+        .map((line, i) => ({ text: line.trim(), idx: i }))
+        .filter(({ text }) => text.length > 0);
+
+      const results = await Promise.allSettled(
+        nonEmpty.map(({ text }) => translateLine(text))
+      );
+
+      nonEmpty.forEach(({ idx }, i) => {
+        const el = lyricsContent.querySelector('[data-line="' + idx + '"] .lyrics-zh');
+        if (!el) return;
+        const r = results[i];
+        el.textContent = r.status === 'fulfilled' ? r.value : '';
+        el.classList.remove('pending');
+      });
+    }
+
+    async function openLyrics(track) {
+      lyricsNumEl.textContent   = track.num;
+      lyricsTitleEl.textContent = track.title;
+      lyricsContent.innerHTML =
+        '<div class="lyrics-loading">' +
+        '<div class="loading-spinner"></div>' +
+        '<p data-i18n="lyrics.loading"></p></div>';
+      applyLang(currentLang);
+      modal.classList.add('open');
+      document.body.style.overflow = 'hidden';
+
+      // Strip version suffixes for the API query: "(Symphony Version)", "(Acoustic)", etc.
+      const cleanTitle = track.title.replace(/\s*\([^)]*\)\s*/g, '').trim();
+
+      try {
+        const res = await fetch(
+          'https://api.lyrics.ovh/v1/Laufey/' + encodeURIComponent(cleanTitle)
+        );
+        if (!res.ok) throw new Error('not found');
+        const data = await res.json();
+        if (!data.lyrics) throw new Error('empty');
+
+        const rawLines = data.lyrics.replace(/\r\n/g, '\n').split('\n');
+        renderEnLines(rawLines);
+        await translateAllLines(rawLines);
+      } catch (_) {
+        lyricsContent.innerHTML =
+          '<p class="lyrics-not-found" data-i18n="lyrics.notfound"></p>';
+        applyLang(currentLang);
+      }
+    }
+
+    function closeLyrics() {
+      modal.classList.remove('open');
+      document.body.style.overflow = '';
+    }
+
+    document.getElementById('lyrics-close').addEventListener('click', closeLyrics);
+    modal.addEventListener('click', e => { if (e.target === modal) closeLyrics(); });
+    document.addEventListener('keydown', e => { if (e.key === 'Escape') closeLyrics(); });
+
+    /* ── Render page ── */
+    (function () {
+      const albumId = new URLSearchParams(window.location.search).get('id');
+      const album   = ALBUMS[albumId];
+
+      const heroEl   = document.getElementById('hero');
+      const tracksEl = document.getElementById('tracks');
+      const nfEl     = document.getElementById('not-found');
+
+      if (!album) {
+        heroEl.style.display   = 'none';
+        tracksEl.style.display = 'none';
+        nfEl.style.display     = 'flex';
+        applyLang('zh-TW');
+        return;
+      }
+
+      document.getElementById('album-title-el').textContent = album.title;
+      document.getElementById('album-year-el').textContent  = album.year;
+      document.title = 'Laufey — ' + album.title;
+
+      const list = document.getElementById('track-list-el');
+      album.tracks.forEach((track) => {
+        const li = document.createElement('li');
+        li.className = 'full-track-item';
+        li.innerHTML =
+          '<span class="full-track-num">' + track.num + '</span>' +
+          '<span class="full-track-name">' + escHtml(track.title) + '</span>' +
+          '<span class="track-hint">歌詞 ↗</span>';
+        li.addEventListener('click', () => openLyrics(track));
+        list.appendChild(li);
+      });
+
+      applyLang('zh-TW');
+    })();
+  </script>
+</body>
+</html>
