@@ -301,7 +301,10 @@
       padding: .35rem .9rem;
       border-radius: 999px;
       margin-bottom: 1.4rem;
+      text-decoration: none;
+      transition: opacity .2s;
     }
+    .spotlight-tag:hover { opacity: .85; }
     .spotlight-title {
       font-family: 'Playfair Display', serif;
       font-size: clamp(2rem, 6vw, 3rem);
@@ -634,7 +637,7 @@
     <p data-i18n="album.p2"></p>
 
     <div class="album-spotlight">
-      <span class="spotlight-tag" data-i18n="album.tag"></span>
+      <a class="spotlight-tag" data-i18n="album.tag" href="https://open.spotify.com/search/Laufey" target="_blank" rel="noopener noreferrer"></a>
       <p class="spotlight-title">A Matter of Time: The Final Hour</p>
       <p class="spotlight-artist">Laufey · 2025</p>
 
