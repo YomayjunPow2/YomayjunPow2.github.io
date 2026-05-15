@@ -469,7 +469,6 @@
       margin-bottom: 1.8rem;
       padding-right: 2rem;
     }
-    .lyrics-stanza { margin-bottom: 1.6rem; }
     .lyrics-pair { margin-bottom: .55rem; }
     .lyrics-en {
       font-size: .93rem;
@@ -486,6 +485,12 @@
       line-height: 1.5;
       margin: 0;
     }
+    .lyrics-zh.pending { opacity: .35; font-style: italic; }
+    .lyrics-gap { height: .8rem; }
+    .lyrics-not-found { text-align: center; opacity: .55; font-style: italic; padding: 2rem 0; }
+    .lyrics-loading { display: flex; flex-direction: column; align-items: center; gap: 1rem; padding: 2rem 0; opacity: .7; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .loading-spinner { width: 28px; height: 28px; border: 2px solid var(--gold); border-top-color: transparent; border-radius: 50%; animation: spin .8s linear infinite; }
 
     /* ── Footer ── */
     footer {
@@ -651,16 +656,25 @@
       <p class="spotlight-artist">Laufey · 2025</p>
 
       <ol class="track-list">
-        <li class="track-item" data-track="0"><span class="track-num">01</span> Before the Hour Strikes<span class="track-hint">lyrics ↗</span></li>
-        <li class="track-item" data-track="1"><span class="track-num">02</span> A Matter of Time<span class="track-hint">lyrics ↗</span></li>
-        <li class="track-item" data-track="2"><span class="track-num">03</span> The Clock on Your Wall<span class="track-hint">lyrics ↗</span></li>
-        <li class="track-item" data-track="3"><span class="track-num">04</span> Last Light in the Room<span class="track-hint">lyrics ↗</span></li>
-        <li class="track-item" data-track="4"><span class="track-num">05</span> Almost Too Late<span class="track-hint">lyrics ↗</span></li>
-        <li class="track-item" data-track="5"><span class="track-num">06</span> The Final Hour<span class="track-hint">lyrics ↗</span></li>
-        <li class="track-item" data-track="6"><span class="track-num">07</span> One More Minute<span class="track-hint">lyrics ↗</span></li>
-        <li class="track-item" data-track="7"><span class="track-num">08</span> What the Silence Said<span class="track-hint">lyrics ↗</span></li>
-        <li class="track-item" data-track="8"><span class="track-num">09</span> Goodnight, Reykjavík<span class="track-hint">lyrics ↗</span></li>
-        <li class="track-item" data-track="9"><span class="track-num">10</span> Time, After All<span class="track-hint">lyrics ↗</span></li>
+        <li class="track-item" data-track="0"><span class="track-num">01</span> Clockwork<span class="track-hint">lyrics ↗</span></li>
+        <li class="track-item" data-track="1"><span class="track-num">02</span> Lover Girl<span class="track-hint">lyrics ↗</span></li>
+        <li class="track-item" data-track="2"><span class="track-num">03</span> Snow White<span class="track-hint">lyrics ↗</span></li>
+        <li class="track-item" data-track="3"><span class="track-num">04</span> Castle in Hollywood<span class="track-hint">lyrics ↗</span></li>
+        <li class="track-item" data-track="4"><span class="track-num">05</span> Carousel<span class="track-hint">lyrics ↗</span></li>
+        <li class="track-item" data-track="5"><span class="track-num">06</span> Silver Lining<span class="track-hint">lyrics ↗</span></li>
+        <li class="track-item" data-track="6"><span class="track-num">07</span> Too Little, Too Late<span class="track-hint">lyrics ↗</span></li>
+        <li class="track-item" data-track="7"><span class="track-num">08</span> Cuckoo Ballet (Interlude)<span class="track-hint">lyrics ↗</span></li>
+        <li class="track-item" data-track="8"><span class="track-num">09</span> Forget-Me-Not<span class="track-hint">lyrics ↗</span></li>
+        <li class="track-item" data-track="9"><span class="track-num">10</span> Tough Luck<span class="track-hint">lyrics ↗</span></li>
+        <li class="track-item" data-track="10"><span class="track-num">11</span> A Cautionary Tale<span class="track-hint">lyrics ↗</span></li>
+        <li class="track-item" data-track="11"><span class="track-num">12</span> Mr. Eclectic<span class="track-hint">lyrics ↗</span></li>
+        <li class="track-item" data-track="12"><span class="track-num">13</span> Clean Air<span class="track-hint">lyrics ↗</span></li>
+        <li class="track-item" data-track="13"><span class="track-num">14</span> Sabotage<span class="track-hint">lyrics ↗</span></li>
+        <li class="track-item" data-track="14"><span class="track-num">15</span> Seems Like Old Times<span class="track-hint">lyrics ↗</span></li>
+        <li class="track-item" data-track="15"><span class="track-num">16</span> Madwoman<span class="track-hint">lyrics ↗</span></li>
+        <li class="track-item" data-track="16"><span class="track-num">17</span> How I Get<span class="track-hint">lyrics ↗</span></li>
+        <li class="track-item" data-track="17"><span class="track-num">18</span> I Wait, I Wait, I Wait<span class="track-hint">lyrics ↗</span></li>
+        <li class="track-item" data-track="18"><span class="track-num">19</span> I'll Forget About You (In Time)<span class="track-hint">lyrics ↗</span></li>
       </ol>
 
       <blockquote style="text-align:left; margin: 0 auto 1.5rem; max-width: 480px;">
@@ -763,7 +777,7 @@
         'disc.desc3': '與冰島交響樂團現場演出的錄音。證明了 Laufey 的歌曲在全管弦樂規模下同樣令人屏息。',
         'disc.desc4': '葛萊美獲獎之作。管弦樂化、浪漫，徹頭徹尾屬於她自己。改變了一切的那張唱片。',
         'disc.desc5': '收錄全新編曲與原聲錄音的擴充版——同樣的歌曲，卻像是第一次聆聽。',
-        'disc.desc6': '她最緊迫、最個人的作品。十首關於時間、急迫與最後一小時的歌曲。',
+        'disc.desc6': '她最緊迫、最個人的作品。十九首關於時間、急迫與最後一小時的歌曲。',
 
         'album.label': '2025 · 全新專輯',
         'album.h2':    '最新專輯',
@@ -926,8 +940,75 @@
     /* Boot with Traditional Chinese */
     applyLang('zh-TW');
 
-    /* ── Lyrics data ── */
-    const lyricsData = [
+    /* ── Tracks ── */
+    const tracks = [
+      { num: '01', title: 'Clockwork' },
+      { num: '02', title: 'Lover Girl' },
+      { num: '03', title: 'Snow White' },
+      { num: '04', title: 'Castle in Hollywood' },
+      { num: '05', title: 'Carousel' },
+      { num: '06', title: 'Silver Lining' },
+      { num: '07', title: 'Too Little, Too Late' },
+      { num: '08', title: 'Cuckoo Ballet (Interlude)' },
+      { num: '09', title: 'Forget-Me-Not' },
+      { num: '10', title: 'Tough Luck' },
+      { num: '11', title: 'A Cautionary Tale' },
+      { num: '12', title: 'Mr. Eclectic' },
+      { num: '13', title: 'Clean Air' },
+      { num: '14', title: 'Sabotage' },
+      { num: '15', title: 'Seems Like Old Times' },
+      { num: '16', title: 'Madwoman' },
+      { num: '17', title: 'How I Get' },
+      { num: '18', title: 'I Wait, I Wait, I Wait' },
+      { num: '19', title: "I'll Forget About You (In Time)" },
+    ];
+
+    /* ── Lyrics API helpers ── */
+    function escHtml(str) {
+      return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+    }
+    function getCacheKey(title) {
+      return 'laufey_lyrics_' + title.toLowerCase().replace(/\s+/g, '_');
+    }
+    function saveCache(key, enLines, zhLines) {
+      try { localStorage.setItem(key, JSON.stringify({ en: enLines, zh: zhLines, ts: Date.now() })); } catch (_) {}
+    }
+    function getCache(key) {
+      try { const r = localStorage.getItem(key); return r ? JSON.parse(r) : null; } catch (_) { return null; }
+    }
+    async function translateLine(text) {
+      const res = await fetch('https://api.mymemory.translated.net/get?q=' + encodeURIComponent(text) + '&langpair=en|zh-TW');
+      if (!res.ok) throw new Error('err');
+      const data = await res.json();
+      if (data.responseStatus === 200) return data.responseData.translatedText;
+      throw new Error('fail');
+    }
+    function renderLines(enLines, zhLines) {
+      lyricsContent.innerHTML = enLines.map((line, i) => {
+        if (!line.trim()) return '<div class="lyrics-gap"></div>';
+        const zh = (zhLines && zhLines[i]) ? zhLines[i] : '';
+        return '<div class="lyrics-pair" data-line="' + i + '">' +
+          '<p class="lyrics-en">' + escHtml(line) + '</p>' +
+          '<p class="lyrics-zh' + (zh ? '' : ' pending') + '">' + escHtml(zh || '…') + '</p>' +
+          '</div>';
+      }).join('');
+    }
+    async function translateAllLines(rawLines) {
+      const nonEmpty = rawLines.map((l, i) => ({ text: l.trim(), idx: i })).filter(({ text }) => text.length > 0);
+      const results = await Promise.allSettled(nonEmpty.map(({ text }) => translateLine(text)));
+      const zhLines = new Array(rawLines.length).fill('');
+      nonEmpty.forEach(({ idx }, i) => {
+        const el = lyricsContent.querySelector('[data-line="' + idx + '"] .lyrics-zh');
+        const r = results[i];
+        const text = r.status === 'fulfilled' ? r.value : '';
+        zhLines[idx] = text;
+        if (el) { el.textContent = text; el.classList.remove('pending'); }
+      });
+      return zhLines;
+    }
+
+    /* ── PLACEHOLDER for old lyricsData start (deleted) ── */
+    const _legacy_unused = [
       {
         num: '01', title: 'Before the Hour Strikes',
         stanzas: [
@@ -1106,22 +1187,38 @@
     const lyricsNumEl   = document.getElementById('lyrics-num');
     const lyricsTitleEl = document.getElementById('lyrics-modal-title');
 
-    function openLyrics(idx) {
-      const track = lyricsData[idx];
+    async function openLyrics(idx) {
+      const track = tracks[idx];
       lyricsNumEl.textContent   = track.num;
       lyricsTitleEl.textContent = track.title;
-      lyricsContent.innerHTML = track.stanzas.map(stanza =>
-        `<div class="lyrics-stanza">${
-          stanza.map(pair =>
-            `<div class="lyrics-pair">
-              <p class="lyrics-en">${pair.en}</p>
-              <p class="lyrics-zh">${pair.zh}</p>
-            </div>`
-          ).join('')
-        }</div>`
-      ).join('');
+      lyricsContent.innerHTML =
+        '<div class="lyrics-loading"><div class="loading-spinner"></div>' +
+        '<p data-i18n="lyrics.loading"></p></div>';
+      applyLang(currentLang);
       modal.classList.add('open');
       document.body.style.overflow = 'hidden';
+
+      const cleanTitle = track.title.replace(/\s*\([^)]*\)\s*/g, '').trim();
+      const cacheKey = getCacheKey(cleanTitle);
+
+      try {
+        const res = await fetch('https://api.lyrics.ovh/v1/Laufey/' + encodeURIComponent(cleanTitle));
+        if (!res.ok) throw new Error('not found');
+        const data = await res.json();
+        if (!data.lyrics) throw new Error('empty');
+        const rawLines = data.lyrics.replace(/\r\n/g, '\n').split('\n');
+        renderLines(rawLines, null);
+        const zhLines = await translateAllLines(rawLines);
+        saveCache(cacheKey, rawLines, zhLines);
+      } catch (_) {
+        const cached = getCache(cacheKey);
+        if (cached) {
+          renderLines(cached.en, cached.zh);
+        } else {
+          lyricsContent.innerHTML = '<p class="lyrics-not-found" data-i18n="lyrics.notfound"></p>';
+          applyLang(currentLang);
+        }
+      }
     }
 
     function closeLyrics() {
