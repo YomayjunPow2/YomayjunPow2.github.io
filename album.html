@@ -183,6 +183,7 @@
       flex-shrink: 0;
     }
     .full-track-item:hover .track-ext-links { opacity: 1; }
+    @media (hover: none) { .track-ext-links { opacity: 1; } }
     .track-ext-link {
       display: inline-flex;
       align-items: center;
@@ -455,7 +456,7 @@
   <div id="stars"></div>
 
   <!-- Lyrics Modal -->
-  <div id="lyrics-modal" role="dialog" aria-modal="true">
+  <div id="lyrics-modal" role="dialog" aria-modal="true" aria-labelledby="lyrics-modal-title">
     <div class="lyrics-box" id="lyrics-box">
       <button class="lyrics-close" id="lyrics-close" aria-label="Close">&#x2715;</button>
       <p class="lyrics-num" id="lyrics-num"></p>
@@ -543,6 +544,7 @@
 
     let currentLang = 'zh-TW';
     let currentBackstory = { en: null, zh: null };
+    let lastFocused = null;
 
     function applyLang(lang) {
       const dict = translations[lang];
@@ -554,6 +556,10 @@
       document.getElementById('btn-zh').classList.toggle('active', lang === 'zh-TW');
       document.getElementById('btn-en').classList.toggle('active', lang === 'en');
       currentLang = lang;
+
+      /* sync track-hint text to language */
+      const hintText = lang === 'zh-TW' ? '歌詞 ↗' : 'lyrics ↗';
+      document.querySelectorAll('.track-hint').forEach(el => { el.textContent = hintText; });
 
       /* re-render album-specific bilingual fields */
       const albumId = new URLSearchParams(window.location.search).get('id');
@@ -879,6 +885,7 @@
     }
 
     async function openLyrics(track) {
+      lastFocused = document.activeElement;
       lyricsNumEl.textContent   = track.num;
       lyricsTitleEl.textContent = track.title;
       lyricsContent.innerHTML =
@@ -887,6 +894,7 @@
         '<p data-i18n="lyrics.loading"></p></div>';
       applyLang(currentLang);
       modal.classList.add('open');
+      document.getElementById('lyrics-close').focus();
       document.body.style.overflow = 'hidden';
       document.getElementById('lyrics-bg-story').style.display = 'none';
 
@@ -934,6 +942,7 @@
       modal.classList.remove('open');
       document.body.style.overflow = '';
       currentBackstory = { en: null, zh: null };
+      if (lastFocused) lastFocused.focus();
     }
 
     document.getElementById('lyrics-close').addEventListener('click', closeLyrics);

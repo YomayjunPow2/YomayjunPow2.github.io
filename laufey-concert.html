@@ -421,6 +421,7 @@
       margin-left: .3rem;
     }
     .track-item:hover .track-ext-links { opacity: 1; }
+    @media (hover: none) { .track-ext-links { opacity: 1; } }
     .track-ext-link {
       display: inline-flex;
       align-items: center;
@@ -559,7 +560,7 @@
   <div id="stars"></div>
 
   <!-- Lyrics Modal -->
-  <div id="lyrics-modal" role="dialog" aria-modal="true">
+  <div id="lyrics-modal" role="dialog" aria-modal="true" aria-labelledby="lyrics-modal-title">
     <div class="lyrics-box" id="lyrics-box">
       <button class="lyrics-close" id="lyrics-close" aria-label="Close">&#x2715;</button>
       <p class="lyrics-num" id="lyrics-num"></p>
@@ -934,7 +935,7 @@
         'album.label': '2026 · Latest Edition',
         'album.h2':    'The New Album',
         'album.p1':    'Recorded across studios in Reykjavík, London, and Los Angeles, <em>A Matter of Time: The Final Hour</em> is Laufey\'s most ambitious and most urgent work to date. Where <em>Bewitched</em> drifted in the timeless haze of new romance, this record is acutely aware of time — its passage, its cruelty, the way a single hour can hold an entire lifetime of feeling. Classical counterpoint weaves through jazz chord voicings; strings swell and recede like a clock no one can stop.',
-        'album.p2':    'Laufey plays every stringed instrument on the record herself, and conducted the chamber ensemble that appears across the album\'s fourteen tracks. It is a record about urgency — the things we almost said, the moments we let slip, the impossible weight of a final hour and what we choose to fill it with.',
+        'album.p2':    'Laufey plays every stringed instrument on the record herself, and conducted the chamber ensemble that appears across the album\'s nineteen tracks. It is a record about urgency — the things we almost said, the moments we let slip, the impossible weight of a final hour and what we choose to fill it with.',
         'album.tag':   'Out Now',
         'album.yt':    'YouTube Music',
         'album.quote': '"I kept thinking — what would you do with your last hour? What would you finally say? This whole record is my answer to that question."',
@@ -960,6 +961,7 @@
 
     let currentLang = 'zh-TW';
     let currentBackstory = { en: null, zh: null };
+    let lastFocused = null;
 
     function applyLang(lang) {
       const dict = translations[lang];
@@ -971,6 +973,9 @@
       document.getElementById('btn-zh').classList.toggle('active', lang === 'zh-TW');
       document.getElementById('btn-en').classList.toggle('active', lang === 'en');
       currentLang = lang;
+
+      const hintText = lang === 'zh-TW' ? '歌詞 ↗' : 'lyrics ↗';
+      document.querySelectorAll('.track-hint').forEach(el => { el.textContent = hintText; });
     }
 
     function setLang(lang) {
@@ -1147,6 +1152,7 @@
     const lyricsTitleEl = document.getElementById('lyrics-modal-title');
 
     async function openLyrics(idx) {
+      lastFocused = document.activeElement;
       const track = tracks[idx];
       lyricsNumEl.textContent   = track.num;
       lyricsTitleEl.textContent = track.title;
@@ -1155,6 +1161,7 @@
         '<p data-i18n="lyrics.loading"></p></div>';
       applyLang(currentLang);
       modal.classList.add('open');
+      document.getElementById('lyrics-close').focus();
       document.body.style.overflow = 'hidden';
       document.getElementById('lyrics-bg-story').style.display = 'none';
 
@@ -1197,6 +1204,7 @@
       modal.classList.remove('open');
       document.body.style.overflow = '';
       currentBackstory = { en: null, zh: null };
+      if (lastFocused) lastFocused.focus();
     }
 
     document.getElementById('lyrics-close').addEventListener('click', closeLyrics);
