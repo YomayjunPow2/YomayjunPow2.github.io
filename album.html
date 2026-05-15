@@ -764,13 +764,14 @@
     }
 
     async function translateLine(text) {
+      const guarded = text.replace(/\bLaufey\b/gi, '«LAUFEY»');
       const res = await fetch(
         'https://api.mymemory.translated.net/get?q=' +
-        encodeURIComponent(text) + '&langpair=en|zh-TW'
+        encodeURIComponent(guarded) + '&langpair=en|zh-TW'
       );
       if (!res.ok) throw new Error('translate error');
       const data = await res.json();
-      if (data.responseStatus === 200) return data.responseData.translatedText;
+      if (data.responseStatus === 200) return data.responseData.translatedText.replace(/«LAUFEY»/gi, 'Laufey');
       throw new Error('translate failed');
     }
 
