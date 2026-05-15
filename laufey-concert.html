@@ -470,6 +470,27 @@
       margin-bottom: 1.8rem;
       padding-right: 2rem;
     }
+    #lyrics-bg-story {
+      border-left: 2px solid rgba(200,169,110,.3);
+      padding: .7rem 1rem;
+      margin-bottom: 1.6rem;
+      background: rgba(200,169,110,.04);
+      border-radius: 0 6px 6px 0;
+    }
+    .backstory-label {
+      font-size: .58rem;
+      letter-spacing: .2em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: .35rem;
+    }
+    .backstory-text {
+      font-size: .82rem;
+      line-height: 1.75;
+      color: rgba(245,237,224,.65);
+      font-style: italic;
+      margin: 0;
+    }
     .lyrics-pair { margin-bottom: .55rem; }
     .lyrics-en {
       font-size: .93rem;
@@ -521,6 +542,10 @@
       <button class="lyrics-close" id="lyrics-close" aria-label="Close">&#x2715;</button>
       <p class="lyrics-num" id="lyrics-num"></p>
       <p class="lyrics-title" id="lyrics-modal-title"></p>
+      <div id="lyrics-bg-story" style="display:none">
+        <p class="backstory-label" data-i18n="lyrics.story.label"></p>
+        <p class="backstory-text" id="lyrics-backstory-text"></p>
+      </div>
       <div id="lyrics-content"></div>
     </div>
   </div>
@@ -794,6 +819,7 @@
 
         'lyrics.loading':  '正在載入歌詞…',
         'lyrics.notfound': '找不到歌詞 · 請稍後再試',
+        'lyrics.story.label': '歌曲背景',
 
         'album.label': '2026 · 最新版本',
         'album.h2':    '最新專輯',
@@ -877,6 +903,7 @@
 
         'lyrics.loading':  'Loading lyrics…',
         'lyrics.notfound': 'Lyrics not found · Please try again later',
+        'lyrics.story.label': 'Background',
 
         'album.label': '2026 · Latest Edition',
         'album.h2':    'The New Album',
@@ -1007,6 +1034,36 @@
     function getCache(key) {
       try { const r = localStorage.getItem(key); return r ? JSON.parse(r) : null; } catch (_) { return null; }
     }
+    async function fetchBackstory(cleanTitle) {
+      const wikiKey = 'laufey_wiki_' + cleanTitle.toLowerCase().replace(/\s+/g, '_');
+      try {
+        const raw = localStorage.getItem(wikiKey);
+        if (raw) {
+          const p = JSON.parse(raw);
+          if (Date.now() - p.ts < 7 * 24 * 3600 * 1000) return p.text;
+        }
+      } catch (_) {}
+      const tries = [
+        cleanTitle + ' (Laufey song)',
+        cleanTitle + ' (song)',
+        'Laufey ' + cleanTitle,
+      ];
+      let found = null;
+      for (const t of tries) {
+        try {
+          const res = await fetch(
+            'https://en.wikipedia.org/api/rest_v1/page/summary/' + encodeURIComponent(t)
+          );
+          if (!res.ok) continue;
+          const data = await res.json();
+          const text = (data.extract || '').trim();
+          if (text.length > 80) { found = text; break; }
+        } catch (_) {}
+      }
+      try { localStorage.setItem(wikiKey, JSON.stringify({ text: found, ts: Date.now() })); } catch (_) {}
+      return found;
+    }
+
     async function translateLine(text) {
       const res = await fetch('https://api.mymemory.translated.net/get?q=' + encodeURIComponent(text) + '&langpair=en|zh-TW');
       if (!res.ok) throw new Error('err');
@@ -1054,9 +1111,11 @@
       applyLang(currentLang);
       modal.classList.add('open');
       document.body.style.overflow = 'hidden';
+      document.getElementById('lyrics-bg-story').style.display = 'none';
 
       const cleanTitle = track.title.replace(/\s*\([^)]*\)\s*/g, '').trim();
       const cacheKey = getCacheKey(cleanTitle);
+      const backstoryPromise = fetchBackstory(cleanTitle);
 
       try {
         const res = await fetch('https://api.lyrics.ovh/v1/Laufey/' + encodeURIComponent(cleanTitle));
@@ -1076,6 +1135,16 @@
           applyLang(currentLang);
         }
       }
+
+      try {
+        const story = await backstoryPromise;
+        const bgEl = document.getElementById('lyrics-bg-story');
+        const bgText = document.getElementById('lyrics-backstory-text');
+        if (story && bgEl && bgText) {
+          bgText.textContent = story;
+          bgEl.style.display = 'block';
+        }
+      } catch (_) {}
     }
 
     function closeLyrics() {
