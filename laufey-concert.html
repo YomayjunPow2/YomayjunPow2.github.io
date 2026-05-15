@@ -932,6 +932,7 @@
     };
 
     let currentLang = 'zh-TW';
+    let currentBackstory = { en: null, zh: null };
 
     function applyLang(lang) {
       const dict = translations[lang];
@@ -949,6 +950,12 @@
       applyLang(lang);
       const el = document.getElementById('live-tonight-text');
       if (el) el.textContent = lang === 'en' ? '✦ Live Tonight ✦' : '✦ 今晚演出 ✦';
+      const bgEl = document.getElementById('lyrics-bg-story');
+      const bgText = document.getElementById('lyrics-backstory-text');
+      if (bgEl && bgText && bgEl.style.display !== 'none') {
+        const txt = (lang === 'zh-TW' && currentBackstory.zh) ? currentBackstory.zh : (currentBackstory.en || '');
+        if (txt) bgText.textContent = txt;
+      }
     }
 
     /* Stars */
@@ -1040,28 +1047,38 @@
         const raw = localStorage.getItem(wikiKey);
         if (raw) {
           const p = JSON.parse(raw);
-          if (Date.now() - p.ts < 7 * 24 * 3600 * 1000) return p.text;
+          if (Date.now() - p.ts < 7 * 24 * 3600 * 1000)
+            return { en: p.en || p.text || null, zh: p.zh || null };
         }
       } catch (_) {}
-      const tries = [
-        cleanTitle + ' (Laufey song)',
-        cleanTitle + ' (song)',
-        'Laufey ' + cleanTitle,
-      ];
+      const tries = [cleanTitle + ' (Laufey song)', cleanTitle + ' (song)', 'Laufey ' + cleanTitle];
       let found = null;
       for (const t of tries) {
         try {
-          const res = await fetch(
-            'https://en.wikipedia.org/api/rest_v1/page/summary/' + encodeURIComponent(t)
-          );
+          const res = await fetch('https://en.wikipedia.org/api/rest_v1/page/summary/' + encodeURIComponent(t));
           if (!res.ok) continue;
           const data = await res.json();
           const text = (data.extract || '').trim();
           if (text.length > 80) { found = text; break; }
         } catch (_) {}
       }
-      try { localStorage.setItem(wikiKey, JSON.stringify({ text: found, ts: Date.now() })); } catch (_) {}
-      return found;
+      let zh = null;
+      if (found) { try { zh = await translateBackstory(found); } catch (_) {} }
+      try { localStorage.setItem(wikiKey, JSON.stringify({ en: found, zh, ts: Date.now() })); } catch (_) {}
+      return { en: found, zh };
+    }
+
+    async function translateBackstory(text) {
+      const sentences = text.match(/[^.!?]+[.!?]+[\s]*/g) || [text];
+      const chunks = [];
+      let buf = '';
+      for (const s of sentences) {
+        if ((buf + s).length > 480) { if (buf) chunks.push(buf.trim()); buf = s; }
+        else buf += s;
+      }
+      if (buf.trim()) chunks.push(buf.trim());
+      const results = await Promise.allSettled(chunks.map(c => translateLine(c)));
+      return results.map((r, i) => r.status === 'fulfilled' ? r.value : chunks[i]).join(' ');
     }
 
     async function translateLine(text) {
@@ -1138,10 +1155,11 @@
 
       try {
         const story = await backstoryPromise;
+        currentBackstory = story || { en: null, zh: null };
         const bgEl = document.getElementById('lyrics-bg-story');
         const bgText = document.getElementById('lyrics-backstory-text');
-        if (story && bgEl && bgText) {
-          bgText.textContent = story;
+        if (story && (story.en || story.zh) && bgEl && bgText) {
+          bgText.textContent = (currentLang === 'zh-TW' && story.zh) ? story.zh : (story.en || '');
           bgEl.style.display = 'block';
         }
       } catch (_) {}
@@ -1150,6 +1168,7 @@
     function closeLyrics() {
       modal.classList.remove('open');
       document.body.style.overflow = '';
+      currentBackstory = { en: null, zh: null };
     }
 
     document.getElementById('lyrics-close').addEventListener('click', closeLyrics);
