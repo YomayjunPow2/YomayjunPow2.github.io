@@ -661,7 +661,7 @@
     <p data-i18n="album.p2"></p>
 
     <div class="album-spotlight">
-      <a class="spotlight-tag" data-i18n="album.tag" href="https://open.spotify.com/search/Laufey" target="_blank" rel="noopener noreferrer"></a>
+      <a class="spotlight-tag" data-i18n="album.tag" href="https://open.spotify.com/album/4DWK6TLXHl1fly2zi5RlO7" target="_blank" rel="noopener noreferrer"></a>
       <p class="spotlight-title">A Matter of Time: The Final Hour</p>
       <p class="spotlight-artist">Laufey · 2025</p>
 
@@ -744,7 +744,7 @@
 
         'hero.label':   '現場音樂會 · 2026年5月15日',
         'hero.subtitle':'爵士、弦樂與星塵之夜',
-        'hero.date':    '明晚 — 晚上7時開放入場',
+        'hero.date':    '今晚 — 晚上7時開放入場',
         'hero.hours':   '小時',
         'hero.minutes': '分鐘',
         'hero.seconds': '秒',
@@ -824,7 +824,7 @@
 
         'hero.label':    'Live in Concert · May 15, 2026',
         'hero.subtitle': 'An Evening of Jazz, Strings &amp; Stardust',
-        'hero.date':     'Tomorrow Night &mdash; Doors Open 7:00 PM',
+        'hero.date':     'Tonight &mdash; Doors Open 7:00 PM',
         'hero.hours':    'Hours',
         'hero.minutes':  'Minutes',
         'hero.seconds':  'Seconds',
@@ -874,7 +874,7 @@
         'album.label': '2025 · New Release',
         'album.h2':    'The New Album',
         'album.p1':    'Recorded across studios in Reykjavík, London, and Los Angeles, <em>A Matter of Time: The Final Hour</em> is Laufey\'s most ambitious and most urgent work to date. Where <em>Bewitched</em> drifted in the timeless haze of new romance, this record is acutely aware of time — its passage, its cruelty, the way a single hour can hold an entire lifetime of feeling. Classical counterpoint weaves through jazz chord voicings; strings swell and recede like a clock no one can stop.',
-        'album.p2':    'Laufey plays every stringed instrument on the record herself, and conducted the chamber ensemble that appears on seven of the ten tracks. It is a record about urgency — the things we almost said, the moments we let slip, the impossible weight of a final hour and what we choose to fill it with.',
+        'album.p2':    'Laufey plays every stringed instrument on the record herself, and conducted the chamber ensemble that appears across the album\'s fourteen tracks. It is a record about urgency — the things we almost said, the moments we let slip, the impossible weight of a final hour and what we choose to fill it with.',
         'album.tag':   'Out Now',
         'album.quote': '"I kept thinking — what would you do with your last hour? What would you finally say? This whole record is my answer to that question."',
         'album.quote.cite': '— Laufey on <em>A Matter of Time: The Final Hour</em>',
@@ -941,7 +941,13 @@
       function pad(n) { return String(n).padStart(2, '0'); }
       function tick() {
         const diff = target - Date.now();
-        if (diff <= 0) { hEl.textContent = mEl.textContent = sEl.textContent = '00'; return; }
+        if (diff <= 0) {
+          document.getElementById('countdown').innerHTML =
+            '<p style="font-family:\'Playfair Display\',serif;font-size:clamp(1.4rem,4vw,2rem);color:var(--gold);letter-spacing:.18em;text-transform:uppercase;animation:none">' +
+            (document.documentElement.lang === 'en' ? '✦ Live Tonight ✦' : '✦ 今晚演出 ✦') +
+            '</p>';
+          return;
+        }
         const t = Math.floor(diff / 1000);
         hEl.textContent = pad(Math.floor(t / 3600));
         mEl.textContent = pad(Math.floor((t % 3600) / 60));
@@ -1020,180 +1026,6 @@
       });
       return zhLines;
     }
-
-    /* ── PLACEHOLDER for old lyricsData start (deleted) ── */
-    const _legacy_unused = [
-      {
-        num: '01', title: 'Before the Hour Strikes',
-        stanzas: [
-          [
-            { en: 'Before the hour strikes and steals the night away,',    zh: '在鐘聲敲響、夜晚被偷走之前，' },
-            { en: "I'll hold your name inside my mouth like a prayer.",    zh: '我將你的名字如禱告般含於口中。' },
-            { en: 'The candles burn too low to keep the dark at bay,',     zh: '燭火燃得太低，再難抵擋那片黑暗，' },
-            { en: "And I'm still learning how to say I was there.",        zh: '而我仍在學習，如何說出「我曾在那裡」。' },
-          ],
-          [
-            { en: 'The hours fold like letters left unread,',              zh: '時光如未讀的信函般一封封折疊，' },
-            { en: 'I press my palm against the cooling glass.',            zh: '我將掌心貼上逐漸冷卻的玻璃。' },
-            { en: "You're somewhere I can't reach but haven't left,",     zh: '你在我觸碰不到卻又從未真正離去的地方，' },
-            { en: 'And time is all I have, and time shall pass.',          zh: '而時間是我僅有的一切，時間終將流逝。' },
-          ],
-        ]
-      },
-      {
-        num: '02', title: 'A Matter of Time',
-        stanzas: [
-          [
-            { en: "It's only a matter of time, my dear,",                 zh: '這只是時間的問題，我親愛的，' },
-            { en: 'Before the seasons turn without your face.',            zh: '在季節沒有你的面容地流轉之前。' },
-            { en: 'I keep the windows open just to hear',                 zh: '我讓窗戶保持開著，只為聆聽' },
-            { en: 'The sound of someone filling up your space.',           zh: '某個人填補你位置的聲音。' },
-          ],
-          [
-            { en: 'Clocks were never kind to those who wait,',            zh: '時鐘從不憐憫等待之人，' },
-            { en: 'They move too fast when you are in my arms.',          zh: '當你在我懷中，它們走得太快。' },
-            { en: "They slow to nothing when you're running late,",       zh: '當你遲遲未歸，它們幾乎停滯不前，' },
-            { en: 'And love, my love, has lost its daily charms.',        zh: '而愛，我的愛，已失去了它日常的魔力。' },
-          ],
-        ]
-      },
-      {
-        num: '03', title: 'The Clock on Your Wall',
-        stanzas: [
-          [
-            { en: 'The clock on your wall still reads the time you left,', zh: '你牆上的時鐘仍停在你離去的時刻，' },
-            { en: "I haven't had the heart to wind it up again.",          zh: '我沒有那個勇氣再次上發條。' },
-            { en: 'Some rooms are sacred, some are full of theft,',       zh: '有些房間是聖地，有些充滿了劫奪，' },
-            { en: 'And yours is both — a joy, an old refrain.',           zh: '而你的是兩者——一份喜悅，一段舊旋律。' },
-          ],
-          [
-            { en: 'The second hand has learned to hold its breath,',      zh: '秒針已學會屏住呼吸，' },
-            { en: 'A frozen witness to the life we made.',                zh: '靜靜見證我們共同建造的生活。' },
-            { en: "I dust around it, careful as a wreath,",              zh: '我輕輕拂去周圍的塵埃，如同擺放花圈般謹慎，' },
-            { en: 'Afraid to wake what time has gently frayed.',          zh: '害怕喚醒那被時光輕柔磨損的一切。' },
-          ],
-        ]
-      },
-      {
-        num: '04', title: 'Last Light in the Room',
-        stanzas: [
-          [
-            { en: 'I am the last light in the room tonight,',            zh: '今夜，我是這房間裡最後一盞燈，' },
-            { en: 'Burning for no one, burning all the same.',            zh: '為無人燃燒，卻依然燃燒如初。' },
-            { en: "You always said I'd learn to love the night,",        zh: '你總說我終將學會愛上黑夜，' },
-            { en: "But darling, darkness isn't quite the game.",         zh: '但親愛的，黑暗並非如此一場遊戲。' },
-          ],
-          [
-            { en: 'I pour the tea and let it slowly cool,',              zh: '我沏上茶，任它慢慢涼透，' },
-            { en: 'A ritual of one, a quiet grief.',                     zh: '一個人的儀式，一份靜默的哀傷。' },
-            { en: 'Outside the rain has made the cobbles full,',         zh: '屋外，雨水填滿了每一塊石板，' },
-            { en: 'And I am waiting for a strange relief.',               zh: '而我正等待著一種奇異的解脫。' },
-          ],
-        ]
-      },
-      {
-        num: '05', title: 'Almost Too Late',
-        stanzas: [
-          [
-            { en: 'I almost called you when the winter came,',           zh: '冬天來臨時，我幾乎撥了你的電話，' },
-            { en: 'I almost drove to where you used to live.',           zh: '我幾乎驅車前往你曾住過的地方。' },
-            { en: 'Almost is the cruelest kind of game,',               zh: '「幾乎」是最殘忍的一種遊戲，' },
-            { en: 'The word that takes much more than it can give.',     zh: '是那個索取遠多於給予的字眼。' },
-          ],
-          [
-            { en: 'I stopped the car outside your building gate,',      zh: '我把車停在你公寓的大門外，' },
-            { en: 'And watched the light behind your curtain glow.',     zh: '凝視著你窗簾後透出的燈光。' },
-            { en: 'Some things are meant to arrive almost too late,',   zh: '有些事注定幾乎太晚才抵達，' },
-            { en: 'Some loves are rivers only you can row.',             zh: '有些愛是只有你能划行的河流。' },
-          ],
-        ]
-      },
-      {
-        num: '06', title: 'The Final Hour',
-        stanzas: [
-          [
-            { en: "In the final hour I'd choose your voice,",           zh: '在最後一個小時，我會選擇你的聲音，' },
-            { en: 'Over every silence I have learned to wear.',          zh: '勝過我學會穿戴的每一片沉默。' },
-            { en: 'Love was never really a choice,',                    zh: '愛從來都不真的是一種選擇，' },
-            { en: 'It simply showed up breathing in the air.',           zh: '它只是呼吸著，出現在空氣之中。' },
-          ],
-          [
-            { en: 'The final hour is softer than I feared,',            zh: '最後這一個小時，比我想像的更為溫柔，' },
-            { en: 'It holds the whole of everything I know.',            zh: '它承載著我所知道的一切。' },
-            { en: 'And you, somehow, have always reappeared',            zh: '而你，以某種方式，始終重新出現' },
-            { en: 'In every place I turn, in every glow.',               zh: '在我轉身的每一處，在每一道光芒之中。' },
-          ],
-        ]
-      },
-      {
-        num: '07', title: 'One More Minute',
-        stanzas: [
-          [
-            { en: 'Give me one more minute by the sea,',                zh: '再給我一分鐘在海邊，' },
-            { en: 'One more song before the record ends.',              zh: '在唱片結束前再聽一首歌。' },
-            { en: 'Time has ways of taking things from me,',            zh: '時間總有辦法帶走我的東西，' },
-            { en: "But memory bends the way a river bends.",            zh: '但記憶如河流般，曲曲折折地延伸。' },
-          ],
-          [
-            { en: "One more morning in the amber light,",              zh: '再給我一個清晨，沐浴在琥珀色的光裡，' },
-            { en: "One more hand to hold before the cold.",             zh: '在寒冷來臨前，再握一次那雙手。' },
-            { en: "I've been counting minutes every night",             zh: '每一個夜晚，我都在數著分鐘，' },
-            { en: 'Since you became a story I was told.',               zh: '自從你變成了一個我被講述的故事。' },
-          ],
-        ]
-      },
-      {
-        num: '08', title: 'What the Silence Said',
-        stanzas: [
-          [
-            { en: 'What the silence said when you walked away',         zh: '當你離去時，那沉默所說的話，' },
-            { en: 'Was louder than any word you chose to keep.',        zh: '比你選擇保留的任何言語都要響亮。' },
-            { en: "I've been translating it for half a year,",         zh: '我已翻譯了它半年之久，' },
-            { en: 'And all it ever says is: go to sleep.',             zh: '而它所說的，始終只是：去睡吧。' },
-          ],
-          [
-            { en: 'Silence has a grammar all its own,',                zh: '沉默有著它獨有的文法，' },
-            { en: 'A syntax built of pauses, sighs, and air.',         zh: '由停頓、嘆息與空氣構成的句法。' },
-            { en: "I've learned its conjugations, verb by verb,",      zh: '我一個動詞一個動詞地學習它的變化，' },
-            { en: 'And still I cannot tell you I was there.',          zh: '卻仍然無法告訴你，我曾在那裡。' },
-          ],
-        ]
-      },
-      {
-        num: '09', title: 'Goodnight, Reykjavík',
-        stanzas: [
-          [
-            { en: 'Goodnight, Reykjavík, your stars are mine tonight,', zh: '晚安，雷克雅維克，今晚你的星星屬於我，' },
-            { en: "I'll borrow them and carry them to where I sleep.",  zh: '我要借走它們，帶到我入睡的地方。' },
-            { en: 'The Arctic sky is wide enough for light,',           zh: '北極的天空足夠廣闊，可以容納光，' },
-            { en: 'And all the promises I could not keep.',             zh: '也能容納所有我無法兌現的承諾。' },
-          ],
-          [
-            { en: 'The harbour hums a lullaby in grey,',               zh: '港口以灰色的嗡鳴低吟著搖籃曲，' },
-            { en: 'The mountain holds the fog like something dear.',    zh: '山巒如珍寶般緊擁著那片霧氣。' },
-            { en: 'I came from here, and here I chose to stay,',       zh: '我從這裡來，也選擇留在這裡，' },
-            { en: 'To write of love and loss and almost-fear.',        zh: '書寫關於愛、失去與近乎恐懼的一切。' },
-          ],
-        ]
-      },
-      {
-        num: '10', title: 'Time, After All',
-        stanzas: [
-          [
-            { en: "Time, after all, is just a river's mouth,",         zh: '時間，說到底，不過是河流的入海口，' },
-            { en: 'Opening into something vast and blue.',              zh: '敞開流入某個浩瀚的蔚藍之中。' },
-            { en: 'You are the north, I am the sliding south,',        zh: '你是北方，我是漂移的南方，' },
-            { en: 'And we were always pointed somewhere true.',         zh: '而我們始終都指向某個真實的方向。' },
-          ],
-          [
-            { en: 'And time, after all, will not forget your name,',   zh: '而時間，說到底，不會忘記你的名字，' },
-            { en: 'Or how you laughed at nothing, laughed at all.',    zh: '也不會忘記你為了一切、為了虛無而笑的樣子。' },
-            { en: 'The river keeps on running, still the same,',       zh: '河流繼續奔流，依然如故，' },
-            { en: 'And time, my love, was never small.',               zh: '而時間，我的愛，從來都不渺小。' },
-          ],
-        ]
-      },
-    ];
 
     /* ── Modal logic ── */
     const modal    = document.getElementById('lyrics-modal');
