@@ -347,6 +347,35 @@
     }
     .track-search::placeholder { color: var(--muted); }
     .track-search:focus { border-color: rgba(200,169,110,.55); }
+    #search-results { display: none; flex-direction: column; gap: .5rem; margin-bottom: 1.6rem; }
+    #search-results.active { display: flex; }
+    .sr-group-label {
+      font-size: .62rem;
+      letter-spacing: .2em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin: .8rem 0 .4rem;
+    }
+    .sr-group-label:first-child { margin-top: 0; }
+    .sr-item {
+      display: flex;
+      align-items: center;
+      gap: .7rem;
+      padding: .6rem .9rem;
+      border-radius: 8px;
+      background: rgba(255,255,255,.04);
+      border: 1px solid rgba(200,169,110,.1);
+      text-decoration: none;
+      color: var(--cream);
+      font-size: .88rem;
+      cursor: pointer;
+      transition: border-color .2s, background .2s;
+    }
+    .sr-item:hover { border-color: rgba(200,169,110,.35); background: rgba(200,169,110,.07); }
+    .sr-item-title { flex: 1; font-weight: 300; }
+    .sr-item-meta { font-size: .65rem; letter-spacing: .1em; color: var(--muted); white-space: nowrap; }
+    .sr-item-num { font-size: .65rem; letter-spacing: .12em; color: var(--gold); width: 1.4rem; text-align: right; flex-shrink: 0; }
+    .sr-empty { text-align: center; color: var(--muted); font-size: .82rem; padding: 1.5rem 0; font-style: italic; }
     .track-list {
       list-style: none;
       display: inline-flex;
@@ -684,6 +713,7 @@
     <div class="track-search-wrap" style="margin-bottom:1.6rem">
       <input type="search" class="track-search" id="disc-search" autocomplete="off" spellcheck="false">
     </div>
+    <div id="search-results"></div>
     <div class="album-grid" id="album-grid">
       <a class="album-card" href="album.html?id=typical-of-me" target="_blank">
         <p class="album-year">2021</p>
@@ -1065,6 +1095,18 @@
     /* Boot with Traditional Chinese */
     applyLang('zh-TW');
 
+    /* ── Discography data for search ── */
+    const DISC = [
+      { id: 'typical-of-me',              title: 'Typical of Me',                        year: '2021' },
+      { id: 'everything-i-know-about-love', title: 'Everything I Know About Love',        year: '2022' },
+      { id: 'a-night-at-the-symphony',    title: 'A Night at the Symphony',               year: '2022' },
+      { id: 'a-very-laufey-holiday',      title: 'A Very Laufey Holiday',                 year: '2023' },
+      { id: 'bewitched',                  title: 'Bewitched',                             year: '2023' },
+      { id: 'bewitched-goddess',          title: 'Bewitched: The Goddess Edition',        year: '2024' },
+      { id: 'a-matter-of-time-standard',  title: 'A Matter of Time',                      year: '2025' },
+      { id: 'a-matter-of-time',           title: 'A Matter of Time: The Final Hour',      year: '2026' },
+    ];
+
     /* ── Tracks ── */
     const tracks = [
       { num: '01', title: 'Clockwork' },
@@ -1243,14 +1285,61 @@
       el.addEventListener('click', () => openLyrics(Number(el.dataset.track)));
     });
 
-    document.getElementById('disc-search').addEventListener('input', function () {
-      const q = this.value.trim().toLowerCase();
-      document.querySelectorAll('#album-grid .album-card').forEach(card => {
-        const title = card.querySelector('.album-title').textContent.toLowerCase();
-        const year  = card.querySelector('.album-year').textContent.toLowerCase();
-        card.style.display = (q && !title.includes(q) && !year.includes(q)) ? 'none' : '';
+    (function () {
+      const searchEl  = document.getElementById('disc-search');
+      const resultsEl = document.getElementById('search-results');
+      const gridEl    = document.getElementById('album-grid');
+
+      searchEl.addEventListener('input', function () {
+        const q = this.value.trim().toLowerCase();
+
+        if (!q) {
+          resultsEl.classList.remove('active');
+          resultsEl.innerHTML = '';
+          gridEl.style.display = '';
+          return;
+        }
+
+        gridEl.style.display = 'none';
+        resultsEl.classList.add('active');
+
+        const albumHits = DISC.filter(a => a.title.toLowerCase().includes(q) || a.year.includes(q));
+        const trackHits = tracks.filter(t => t.title.toLowerCase().includes(q));
+
+        if (!albumHits.length && !trackHits.length) {
+          resultsEl.innerHTML = '<p class="sr-empty">' +
+            (currentLang === 'zh-TW' ? '找不到符合結果' : 'No results found') + '</p>';
+          return;
+        }
+
+        let html = '';
+        if (albumHits.length) {
+          html += '<p class="sr-group-label">' +
+            (currentLang === 'zh-TW' ? '專輯' : 'Albums') + '</p>';
+          albumHits.forEach(a => {
+            html += '<a class="sr-item" href="album.html?id=' + a.id + '" target="_blank">' +
+              '<span class="sr-item-title">' + escHtml(a.title) + '</span>' +
+              '<span class="sr-item-meta">' + a.year + '</span></a>';
+          });
+        }
+        if (trackHits.length) {
+          html += '<p class="sr-group-label">' +
+            (currentLang === 'zh-TW' ? '曲目 · A Matter of Time: The Final Hour' : 'Tracks · A Matter of Time: The Final Hour') + '</p>';
+          trackHits.forEach(t => {
+            const idx = tracks.indexOf(t);
+            html += '<div class="sr-item" data-idx="' + idx + '">' +
+              '<span class="sr-item-num">' + t.num + '</span>' +
+              '<span class="sr-item-title">' + escHtml(t.title) + '</span>' +
+              '<span class="sr-item-meta">' + (currentLang === 'zh-TW' ? '歌詞 ↗' : 'lyrics ↗') + '</span></div>';
+          });
+        }
+
+        resultsEl.innerHTML = html;
+        resultsEl.querySelectorAll('.sr-item[data-idx]').forEach(el => {
+          el.addEventListener('click', () => openLyrics(Number(el.dataset.idx)));
+        });
       });
-    });
+    })();
   </script>
 </body>
 </html>
