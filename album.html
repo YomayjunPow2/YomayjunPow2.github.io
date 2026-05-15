@@ -153,6 +153,50 @@
       max-width: 580px;
       margin: 0 auto;
     }
+    .album-ext-links {
+      display: flex;
+      gap: .8rem;
+      justify-content: center;
+      flex-wrap: wrap;
+      margin-top: .4rem;
+    }
+    .album-ext-link {
+      display: inline-flex;
+      align-items: center;
+      gap: .45rem;
+      padding: .4rem 1.1rem;
+      border-radius: 999px;
+      font-size: .72rem;
+      letter-spacing: .12em;
+      text-decoration: none;
+      font-family: 'Lato', sans-serif;
+      transition: opacity .2s, transform .2s;
+    }
+    .album-ext-link:hover { opacity: .8; transform: translateY(-1px); }
+    .album-ext-link.spotify { background: #1DB954; color: #000; }
+    .album-ext-link.youtube { background: #FF0000; color: #fff; }
+    .track-ext-links {
+      display: flex;
+      gap: .4rem;
+      opacity: 0;
+      transition: opacity .2s;
+      flex-shrink: 0;
+    }
+    .full-track-item:hover .track-ext-links { opacity: 1; }
+    .track-ext-link {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      text-decoration: none;
+      font-size: 10px;
+      transition: transform .15s;
+    }
+    .track-ext-link:hover { transform: scale(1.2); }
+    .track-ext-link.sp { background: #1DB954; color: #000; }
+    .track-ext-link.yt { background: #FF0000; color: #fff; }
 
     /* Tracks section */
     #tracks {
@@ -440,6 +484,16 @@
     <p class="album-hero-year" id="album-year-el"></p>
     <div class="divider"></div>
     <p class="album-hero-desc" id="album-desc-el"></p>
+    <div class="album-ext-links" id="album-ext-links-el">
+      <a class="album-ext-link spotify" id="album-spotify-link" target="_blank" rel="noopener noreferrer">
+        <svg viewBox="0 0 24 24" width="14" height="14" aria-hidden="true"><path fill="currentColor" d="M12 0C5.4 0 0 5.4 0 12s5.4 12 12 12 12-5.4 12-12S18.66 0 12 0zm5.521 17.34c-.24.359-.66.48-1.021.24-2.82-1.74-6.36-2.101-10.561-1.141-.418.122-.779-.179-.899-.539-.12-.421.18-.78.54-.9 4.56-1.021 8.52-.6 11.64 1.32.42.18.479.659.301 1.02zm1.44-3.3c-.301.42-.841.6-1.262.3-3.239-1.98-8.159-2.58-11.939-1.38-.479.12-1.02-.12-1.14-.6-.12-.48.12-1.021.6-1.141C9.6 9.9 15 10.561 18.72 12.84c.361.181.54.78.241 1.2zm.12-3.36C15.24 8.4 8.82 8.16 5.16 9.301c-.6.179-1.2-.181-1.38-.721-.18-.601.18-1.2.72-1.381 4.26-1.26 11.28-1.02 15.721 1.621.539.3.719 1.02.419 1.56-.299.421-1.02.599-1.559.3z"/></svg>
+        Spotify
+      </a>
+      <a class="album-ext-link youtube" id="album-youtube-link" target="_blank" rel="noopener noreferrer">
+        <svg viewBox="0 0 24 24" width="14" height="14" aria-hidden="true"><path fill="currentColor" d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>
+        YouTube Music
+      </a>
+    </div>
   </section>
 
   <section id="tracks">
@@ -543,6 +597,8 @@
     const ALBUMS = {
       'typical-of-me': {
         title: 'Typical of Me', year: '2021',
+        spotifyUrl: 'https://open.spotify.com/search/Laufey%20Typical%20of%20Me',
+        youtubeUrl: 'https://music.youtube.com/search?q=Laufey+Typical+of+Me',
         typeEn: 'Debut EP', typeZh: '首張 EP',
         descEn: "Four songs that introduced the world to Laufey's hazy, jazz-inflected sound. Delicate arrangements of cello, guitar, and brushed percussion frame lyrics about love, longing, and the specific ache of saying too little, too late.",
         descZh: '四首歌曲，將 Laufey 充滿爵士氣息的迷朦音樂帶給世界。大提琴、吉他與刷擊打擊樂的細膩編排，框住了關於愛、思念，以及說得太少、太遲的特殊痛苦的歌詞。',
@@ -555,6 +611,8 @@
       },
       'everything-i-know-about-love': {
         title: 'Everything I Know About Love', year: '2022',
+        spotifyUrl: 'https://open.spotify.com/search/Laufey%20Everything%20I%20Know%20About%20Love',
+        youtubeUrl: 'https://music.youtube.com/search?q=Laufey+Everything+I+Know+About+Love',
         typeEn: 'Debut Album', typeZh: '首張專輯',
         descEn: "Laufey's debut full-length arrived like a first snow — quiet, inevitable, impossible to ignore. Ten songs about heartbreak, friendship, longing, and the slow education of the heart. Cello, upright bass, and brushed drums frame lyrics of uncommon wisdom.",
         descZh: 'Laufey 的首張全長專輯如初雪般降臨——安靜、無可避免、令人無法忽視。十首關於心碎、友誼、思念，以及心靈緩慢教育的歌曲。大提琴、直立低音提琴和刷鼓，框住了充滿非凡智慧的歌詞。',
@@ -573,6 +631,8 @@
       },
       'a-night-at-the-symphony': {
         title: 'A Night at the Symphony', year: '2022',
+        spotifyUrl: 'https://open.spotify.com/search/Laufey%20A%20Night%20at%20the%20Symphony',
+        youtubeUrl: 'https://music.youtube.com/search?q=Laufey+A+Night+at+the+Symphony',
         typeEn: 'Live EP', typeZh: '現場 EP',
         descEn: "Recorded live with the Iceland Symphony Orchestra, this EP captures Laufey's songs at their most majestic. The orchestral arrangements deepen the emotional weight of already beloved tracks, and Laufey's voice — steady above the strings — feels more intimate than ever.",
         descZh: '與冰島交響樂團現場錄製，這張 EP 以最宏大的規模呈現了 Laufey 的歌曲。管弦樂編曲加深了這些已深受喜愛曲目的情感重量，而 Laufey 在弦樂之上穩定的嗓音，感覺比以往任何時候都更加親密。',
@@ -587,6 +647,8 @@
       },
       'a-very-laufey-holiday': {
         title: 'A Very Laufey Holiday', year: '2023',
+        spotifyUrl: 'https://open.spotify.com/album/3yAHCdy8s77OpoBvVY9EJp',
+        youtubeUrl: 'https://music.youtube.com/search?q=Laufey+A+Very+Laufey+Holiday',
         typeEn: 'Holiday EP', typeZh: '節慶 EP',
         descEn: "Laufey reimagines holiday classics through her warm jazz lens. Intimate arrangements of cello and piano pair effortlessly with her velvet voice across five festive tracks, including a gentle duet with dodie on 'Love to Keep Me Warm'.",
         descZh: 'Laufey 以她溫暖的爵士視角重新詮釋節慶經典。大提琴與鋼琴的親密編排與她如絲絨般的嗓音完美搭配，五首節慶曲目中包含與 dodie 合唱的〈Love to Keep Me Warm〉。',
@@ -600,6 +662,8 @@
       },
       'bewitched': {
         title: 'Bewitched', year: '2023',
+        spotifyUrl: 'https://open.spotify.com/search/Laufey%20Bewitched%20album',
+        youtubeUrl: 'https://music.youtube.com/search?q=Laufey+Bewitched+album',
         typeEn: 'Grammy-Winning Album', typeZh: '葛萊美獲獎專輯',
         descEn: 'The record that changed everything. Twelve songs of orchestral, achingly romantic pop earned Laufey the Grammy for Best Traditional Pop Vocal Album — making her the youngest ever recipient. Lush, intimate, and entirely her own.',
         descZh: '改變了一切的那張唱片。十二首管弦樂化、令人心碎地浪漫的流行歌曲，為 Laufey 贏得了葛萊美最佳傳統流行演唱專輯獎，使她成為有史以來最年輕的得獎者。豐盛、親密，徹頭徹尾屬於她自己。',
@@ -620,6 +684,8 @@
       },
       'bewitched-goddess': {
         title: 'Bewitched: The Goddess Edition', year: '2024',
+        spotifyUrl: 'https://open.spotify.com/search/Laufey%20Bewitched%20Goddess%20Edition',
+        youtubeUrl: 'https://music.youtube.com/search?q=Laufey+Bewitched+Goddess+Edition',
         typeEn: 'Extended Edition', typeZh: '擴充版',
         descEn: 'An expanded Bewitched featuring four additional tracks — a haunting new original, an acoustic take, an orchestral arrangement, and a stripped-back reprise. The fullest expression of the Bewitched universe.',
         descZh: '《Bewitched》的擴充版，收錄四首額外曲目——一首縈繞人心的全新原創、一個原聲版本、一個管弦樂編曲，以及一個剝去一切的尾聲版本。《Bewitched》世界最完整的呈現。',
@@ -645,6 +711,8 @@
 
       'a-matter-of-time-standard': {
         title: 'A Matter of Time', year: '2025',
+        spotifyUrl: 'https://open.spotify.com/album/5rMOCuiWWbEBcHaKM69Hmv',
+        youtubeUrl: 'https://music.youtube.com/search?q=Laufey+A+Matter+of+Time',
         typeEn: 'Album', typeZh: '專輯',
         descEn: "Laufey's third studio album, released August 22 2025. Fourteen intimate, orchestral songs about urgency, passage of time, and the impossible weight of everything left unsaid.",
         descZh: 'Laufey 第三張錄音室專輯，於2025年8月22日發行。十四首親密的管弦樂歌曲，關於急迫、時間流逝，以及所有未說出口的話的無法承受之重。',
@@ -667,6 +735,8 @@
       },
       'a-matter-of-time': {
         title: 'A Matter of Time: The Final Hour', year: '2025',
+        spotifyUrl: 'https://open.spotify.com/album/4DWK6TLXHl1fly2zi5RlO7',
+        youtubeUrl: 'https://music.youtube.com/search?q=Laufey+A+Matter+of+Time+The+Final+Hour',
         typeEn: 'Album', typeZh: '專輯',
         descEn: "Laufey's most urgent and personal work to date. Recorded across Reykjavík, London, and Los Angeles, this record is acutely aware of time — its passage, its cruelty, and the way a single hour can hold an entire lifetime of feeling.",
         descZh: 'Laufey 迄今最急迫、最個人的作品。在雷克雅維克、倫敦與洛杉磯錄製，這張唱片對時間有著強烈的意識——它的流逝、它的殘酷，以及一個小時如何承載一生的感受。',
@@ -890,16 +960,31 @@
       document.getElementById('album-title-el').textContent = album.title;
       document.getElementById('album-year-el').textContent  = album.year;
       document.title = 'Laufey — ' + album.title;
+      document.getElementById('album-spotify-link').href = album.spotifyUrl;
+      document.getElementById('album-youtube-link').href = album.youtubeUrl;
 
       const list = document.getElementById('track-list-el');
+      const spBase = 'https://open.spotify.com/search/Laufey%20';
+      const ytBase = 'https://www.youtube.com/results?search_query=Laufey+';
       album.tracks.forEach((track) => {
         const li = document.createElement('li');
         li.className = 'full-track-item';
+        const enc = encodeURIComponent(track.title);
+        const ytEnc = track.title.replace(/\s+/g, '+');
         li.innerHTML =
           '<span class="full-track-num">' + track.num + '</span>' +
           '<span class="full-track-name">' + escHtml(track.title) + '</span>' +
-          '<span class="track-hint">歌詞 ↗</span>';
+          '<span class="track-hint">歌詞 ↗</span>' +
+          '<div class="track-ext-links">' +
+          '<a class="track-ext-link sp" href="' + spBase + enc + '" target="_blank" rel="noopener noreferrer" title="Spotify" aria-label="Open on Spotify">' +
+          '<svg viewBox="0 0 24 24" width="10" height="10"><path fill="currentColor" d="M12 0C5.4 0 0 5.4 0 12s5.4 12 12 12 12-5.4 12-12S18.66 0 12 0zm5.521 17.34c-.24.359-.66.48-1.021.24-2.82-1.74-6.36-2.101-10.561-1.141-.418.122-.779-.179-.899-.539-.12-.421.18-.78.54-.9 4.56-1.021 8.52-.6 11.64 1.32.42.18.479.659.301 1.02zm1.44-3.3c-.301.42-.841.6-1.262.3-3.239-1.98-8.159-2.58-11.939-1.38-.479.12-1.02-.12-1.14-.6-.12-.48.12-1.021.6-1.141C9.6 9.9 15 10.561 18.72 12.84c.361.181.54.78.241 1.2zm.12-3.36C15.24 8.4 8.82 8.16 5.16 9.301c-.6.179-1.2-.181-1.38-.721-.18-.601.18-1.2.72-1.381 4.26-1.26 11.28-1.02 15.721 1.621.539.3.719 1.02.419 1.56-.299.421-1.02.599-1.559.3z"/></svg>' +
+          '</a>' +
+          '<a class="track-ext-link yt" href="' + ytBase + ytEnc + '" target="_blank" rel="noopener noreferrer" title="YouTube" aria-label="Open on YouTube">' +
+          '<svg viewBox="0 0 24 24" width="10" height="10"><path fill="currentColor" d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>' +
+          '</a>' +
+          '</div>';
         li.addEventListener('click', () => openLyrics(track));
+        li.querySelectorAll('.track-ext-link').forEach(a => a.addEventListener('click', e => e.stopPropagation()));
         list.appendChild(li);
       });
 
