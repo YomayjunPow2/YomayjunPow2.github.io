@@ -219,6 +219,28 @@
       margin-bottom: 2rem;
       color: var(--cream);
     }
+    .track-search-wrap {
+      display: flex;
+      justify-content: center;
+      margin-bottom: 1.4rem;
+    }
+    .track-search {
+      width: 100%;
+      max-width: 340px;
+      background: rgba(255,255,255,.04);
+      border: 1px solid rgba(200,169,110,.2);
+      border-radius: 999px;
+      color: var(--cream);
+      font-family: 'Lato', sans-serif;
+      font-size: .82rem;
+      letter-spacing: .06em;
+      padding: .5rem 1.25rem;
+      outline: none;
+      transition: border-color .25s;
+      -webkit-appearance: none;
+    }
+    .track-search::placeholder { color: var(--muted); }
+    .track-search:focus { border-color: rgba(200,169,110,.55); }
 
     #track-list-el {
       list-style: none;
@@ -500,6 +522,9 @@
   <section id="tracks">
     <p class="section-label" data-i18n="tracks.label"></p>
     <h2 data-i18n="tracks.h2"></h2>
+    <div class="track-search-wrap">
+      <input type="search" class="track-search" id="track-search" autocomplete="off" spellcheck="false">
+    </div>
     <ol id="track-list-el"></ol>
   </section>
 
@@ -557,9 +582,11 @@
       document.getElementById('btn-en').classList.toggle('active', lang === 'en');
       currentLang = lang;
 
-      /* sync track-hint text to language */
+      /* sync track-hint and search placeholder to language */
       const hintText = lang === 'zh-TW' ? '歌詞 ↗' : 'lyrics ↗';
       document.querySelectorAll('.track-hint').forEach(el => { el.textContent = hintText; });
+      const srch = document.getElementById('track-search');
+      if (srch) srch.placeholder = lang === 'zh-TW' ? '搜尋曲目…' : 'Search tracks…';
 
       /* re-render album-specific bilingual fields */
       const albumId = new URLSearchParams(window.location.search).get('id');
@@ -998,6 +1025,14 @@
       });
 
       applyLang('zh-TW');
+
+      document.getElementById('track-search').addEventListener('input', function () {
+        const q = this.value.trim().toLowerCase();
+        document.querySelectorAll('.full-track-item').forEach(li => {
+          const name = li.querySelector('.full-track-name').textContent.toLowerCase();
+          li.style.display = (q && !name.includes(q)) ? 'none' : '';
+        });
+      });
     })();
   </script>
 </body>
