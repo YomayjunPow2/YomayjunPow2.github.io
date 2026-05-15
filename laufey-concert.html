@@ -310,6 +310,7 @@
       transition: opacity .2s;
     }
     .spotlight-tag:hover { opacity: .85; }
+    .spotlight-tag.yt { background: transparent; color: var(--blush); border: 1px solid rgba(232,180,184,.45); }
     .spotlight-title {
       font-family: 'Playfair Display', serif;
       font-size: clamp(2rem, 6vw, 3rem);
@@ -434,8 +435,8 @@
       vertical-align: middle;
     }
     .track-ext-link:hover { transform: scale(1.2); }
-    .track-ext-link.sp { background: #1DB954; color: #000; }
-    .track-ext-link.yt { background: #FF0000; color: #fff; }
+    .track-ext-link.sp { background: rgba(200,169,110,.15); color: var(--gold); border: 1px solid rgba(200,169,110,.35); }
+    .track-ext-link.yt { background: rgba(232,180,184,.15); color: var(--blush); border: 1px solid rgba(232,180,184,.35); }
 
     /* ── Lyrics Modal ── */
     #lyrics-modal {
@@ -712,7 +713,7 @@
     <div class="album-spotlight">
       <div style="display:flex;gap:.6rem;justify-content:center;flex-wrap:wrap;margin-bottom:1.4rem">
         <a class="spotlight-tag" style="margin-bottom:0" data-i18n="album.tag" href="https://open.spotify.com/album/4DWK6TLXHl1fly2zi5RlO7" target="_blank" rel="noopener noreferrer"></a>
-        <a class="spotlight-tag" style="margin-bottom:0;background:#FF0000;color:#fff" href="https://music.youtube.com/search?q=Laufey+A+Matter+of+Time+The+Final+Hour" target="_blank" rel="noopener noreferrer" data-i18n="album.yt"></a>
+        <a class="spotlight-tag yt" style="margin-bottom:0" href="https://music.youtube.com/search?q=Laufey+A+Matter+of+Time+The+Final+Hour" target="_blank" rel="noopener noreferrer" data-i18n="album.yt"></a>
       </div>
       <p class="spotlight-title">A Matter of Time: The Final Hour</p>
       <p class="spotlight-artist">Laufey · 2026</p>
