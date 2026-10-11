@@ -1,0 +1,951 @@
+<!DOCTYPE html>
+<html lang="zh-Hant-TW" data-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>藤井風 Fujii Kaze — 粉絲入門指南</title>
+  <meta name="theme-color" content="#1e0b08" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700&family=Noto+Serif+JP:wght@300;400&family=Lato:wght@300;400;700&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    /* ── Design tokens ── */
+    :root {
+      /* warm red-brown dark surfaces */
+      --surface:        #1e0b08;
+      --surface-raised: #2e1510;
+      --surface-high:   #3c1d18;
+
+      /* accent */
+      --action:  #e9d9a3;
+      --action-2: #c8a87c;
+
+      /* stage / neutral dark */
+      --stage:         #111110;
+      --stage-surface: #1e1e1c;
+      --stage-raised:  #2a2a28;
+      --stage-muted:   #a8a89e;
+      --stage-line:    rgba(255,255,255,.1);
+
+      /* ui (dark defaults) */
+      --ui-bg:      #111110;
+      --ui-surface: #1e1e1c;
+      --ui-raised:  #2a2a28;
+      --ui-text:    #f5f5f0;
+      --ui-muted:   #a8a89e;
+      --ui-line:    rgba(255,255,255,.1);
+      --ui-accent:  #e9d9a3;
+      --ui-hover:   rgba(255,255,255,.07);
+
+      --font-sans: 'Lato', 'Noto Sans JP', sans-serif;
+      --radius-sm: 8px;
+      --radius-md: 12px;
+      --radius-lg: 20px;
+    }
+
+    [data-theme="light"] {
+      --ui-bg:      #f5f5f0;
+      --ui-surface: #ffffff;
+      --ui-raised:  #eaeae5;
+      --ui-text:    #1d1d18;
+      --ui-muted:   #64645a;
+      --ui-line:    #e0e0d8;
+      --ui-accent:  #8a6020;
+      --ui-hover:   rgba(0,0,0,.055);
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: var(--font-sans);
+      background: var(--surface);
+      color: var(--ui-text);
+      line-height: 1.6;
+      overflow-x: hidden;
+      min-height: 100vh;
+    }
+
+    /* ── Stars (only in dark) ── */
+    #stars {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 0;
+      overflow: hidden;
+    }
+    [data-theme="light"] #stars { display: none; }
+    .star {
+      position: absolute;
+      border-radius: 50%;
+      background: #fff8f0;
+      animation: twinkle var(--d, 3s) ease-in-out infinite alternate;
+      opacity: 0;
+    }
+    @keyframes twinkle {
+      0%   { opacity: 0; }
+      50%  { opacity: var(--max-o,.6); }
+      100% { opacity: .08; }
+    }
+
+    /* ── Back nav ── */
+    .top-bar {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: .75rem 1.25rem;
+      background: rgba(30,11,8,.78);
+      backdrop-filter: blur(8px);
+      border-bottom: 1px solid rgba(233,217,163,.08);
+    }
+    [data-theme="light"] .top-bar {
+      background: rgba(245,245,240,.88);
+      border-color: rgba(0,0,0,.08);
+    }
+    .back-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: .45rem;
+      font-size: .78rem;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+      color: var(--ui-muted);
+      text-decoration: none;
+      transition: color .2s;
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: .3rem .5rem;
+      border-radius: var(--radius-sm);
+    }
+    .back-btn:hover { color: var(--ui-accent); }
+    .back-btn svg { width: 15px; height: 15px; }
+
+    .bar-controls {
+      display: flex;
+      align-items: center;
+      gap: .6rem;
+    }
+    .theme-btn {
+      width: 36px; height: 36px;
+      border-radius: 50%;
+      background: var(--ui-hover);
+      border: 1px solid var(--ui-line);
+      color: var(--ui-muted);
+      cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      transition: background .2s, color .2s;
+    }
+    .theme-btn:hover { background: var(--ui-raised); color: var(--ui-text); }
+    .theme-btn svg { width: 16px; height: 16px; }
+    .lang-btn {
+      font-size: .72rem;
+      letter-spacing: .08em;
+      background: none;
+      border: 1px solid var(--ui-line);
+      color: var(--ui-muted);
+      cursor: pointer;
+      padding: .25rem .6rem;
+      border-radius: 999px;
+      transition: border-color .2s, color .2s;
+    }
+    .lang-btn:hover, .lang-btn.active {
+      border-color: var(--ui-accent);
+      color: var(--ui-accent);
+    }
+
+    /* ── Hero ── */
+    .hero {
+      position: relative;
+      z-index: 1;
+      min-height: 100svh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 6rem 1.5rem 4rem;
+      background:
+        linear-gradient(to bottom, rgba(30,11,8,.6) 0%, rgba(30,11,8,.3) 40%, rgba(30,11,8,.8) 100%),
+        radial-gradient(ellipse at 50% 30%, rgba(233,217,163,.07) 0%, transparent 65%);
+    }
+    .hero-eyebrow {
+      font-size: .68rem;
+      letter-spacing: .3em;
+      text-transform: uppercase;
+      color: var(--ui-accent);
+      margin-bottom: .9rem;
+    }
+    .hero-name {
+      font-family: 'Noto Serif JP', serif;
+      font-size: clamp(2.6rem, 9vw, 6.5rem);
+      font-weight: 300;
+      letter-spacing: .25em;
+      color: var(--ui-text);
+      line-height: 1.15;
+      margin-bottom: .5rem;
+    }
+    .hero-name-en {
+      font-family: 'Lato', sans-serif;
+      font-size: clamp(1rem, 3.5vw, 1.6rem);
+      font-weight: 300;
+      letter-spacing: .35em;
+      text-transform: uppercase;
+      color: var(--ui-accent);
+      margin-bottom: 1.5rem;
+    }
+    .hero-divider {
+      width: 48px;
+      height: 1px;
+      background: linear-gradient(to right, transparent, var(--ui-accent), transparent);
+      margin: 0 auto 1.5rem;
+    }
+    .hero-tagline {
+      font-size: clamp(.9rem, 2.5vw, 1.1rem);
+      color: var(--ui-muted);
+      max-width: 440px;
+      line-height: 1.8;
+      margin-bottom: 2.5rem;
+    }
+    .hero-cta {
+      display: inline-flex;
+      align-items: center;
+      gap: .5rem;
+      background: var(--ui-accent);
+      color: var(--surface);
+      font-family: var(--font-sans);
+      font-size: .85rem;
+      font-weight: 700;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+      text-decoration: none;
+      padding: .75rem 1.8rem;
+      border-radius: 999px;
+      transition: opacity .2s;
+      border: none;
+      cursor: pointer;
+    }
+    .hero-cta:hover { opacity: .85; }
+    .hero-cta svg { width: 14px; height: 14px; }
+
+    /* ── Content wrapper ── */
+    .content {
+      position: relative;
+      z-index: 1;
+      max-width: 680px;
+      margin: 0 auto;
+      padding: 0 1.25rem 5rem;
+    }
+
+    /* ── Accordion cards ── */
+    .info-section {
+      display: flex;
+      flex-direction: column;
+      gap: .75rem;
+      margin-bottom: 1.5rem;
+    }
+    .info-card {
+      background: var(--ui-surface);
+      border: 1px solid var(--ui-line);
+      border-radius: var(--radius-md);
+      overflow: hidden;
+    }
+    .info-card-toggle {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      gap: .9rem;
+      padding: 1.1rem 1.25rem;
+      background: none;
+      border: none;
+      cursor: pointer;
+      color: var(--ui-text);
+      font-family: var(--font-sans);
+      font-size: .95rem;
+      font-weight: 500;
+      text-align: left;
+      transition: background .15s;
+    }
+    .info-card-toggle:hover { background: var(--ui-hover); }
+    .info-card-icon {
+      font-size: 1.2rem;
+      flex-shrink: 0;
+      line-height: 1;
+    }
+    .info-card-label { flex: 1; }
+    .info-card-chevron {
+      width: 18px; height: 18px;
+      color: var(--ui-muted);
+      transition: transform .2s;
+      flex-shrink: 0;
+    }
+    .info-card[open] .info-card-chevron { transform: rotate(180deg); }
+    .info-card-body {
+      padding: 0 1.25rem 1.25rem;
+      border-top: 1px solid var(--ui-line);
+    }
+    .info-card[open] .info-card-body { display: block; }
+    .info-card:not([open]) .info-card-body { display: none; }
+
+    /* ── Fact list ── */
+    .fact-list {
+      display: flex;
+      flex-direction: column;
+      gap: .8rem;
+      padding-top: 1rem;
+    }
+    .fact-row {
+      display: grid;
+      grid-template-columns: 100px 1fr;
+      gap: .5rem;
+      font-size: .88rem;
+    }
+    .fact-key {
+      color: var(--ui-muted);
+      font-weight: 400;
+    }
+    .fact-val { color: var(--ui-text); }
+    .fact-val a {
+      color: var(--ui-accent);
+      text-decoration: none;
+    }
+    .fact-val a:hover { text-decoration: underline; }
+
+    /* ── Guide track list ── */
+    .guide-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      padding-top: 1rem;
+    }
+    .guide-item {
+      display: grid;
+      grid-template-columns: 2rem 1fr auto;
+      gap: .5rem .9rem;
+      align-items: center;
+      padding: .85rem 0;
+      border-bottom: 1px solid var(--ui-line);
+    }
+    .guide-item:last-child { border-bottom: none; }
+    .guide-n {
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: rgba(233,217,163,.25);
+      text-align: center;
+      line-height: 1;
+    }
+    .guide-info { min-width: 0; }
+    .guide-title {
+      font-size: .95rem;
+      color: var(--ui-text);
+      margin-bottom: .1rem;
+    }
+    .guide-title-jp {
+      font-family: 'Noto Serif JP', serif;
+      font-size: .75rem;
+      color: var(--ui-accent);
+      letter-spacing: .05em;
+      margin-bottom: .25rem;
+    }
+    .guide-desc {
+      font-size: .8rem;
+      color: var(--ui-muted);
+      line-height: 1.55;
+    }
+    .guide-links {
+      display: flex;
+      gap: .35rem;
+      flex-shrink: 0;
+    }
+    .g-link {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 32px; height: 32px;
+      border-radius: 50%;
+      background: var(--ui-raised);
+      border: 1px solid var(--ui-line);
+      color: var(--ui-muted);
+      text-decoration: none;
+      transition: background .15s, color .15s;
+    }
+    .g-link:hover { background: var(--ui-accent); color: var(--surface); border-color: var(--ui-accent); }
+    .g-link svg { width: 14px; height: 14px; }
+    @media (max-width: 480px) {
+      .guide-item { grid-template-columns: 2rem 1fr; }
+      .guide-links { grid-column: 2; padding-bottom: .4rem; }
+    }
+
+    /* ── Album grid ── */
+    .album-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+      gap: .9rem;
+      padding-top: 1rem;
+    }
+    .album-card {
+      border-radius: var(--radius-sm);
+      overflow: hidden;
+      background: var(--ui-raised);
+      border: 1px solid var(--ui-line);
+      transition: transform .2s, box-shadow .2s;
+    }
+    .album-card:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 8px 20px rgba(0,0,0,.35);
+    }
+    .album-cover {
+      aspect-ratio: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 2.2rem;
+    }
+    .album-meta { padding: .6rem .75rem .75rem; }
+    .album-year {
+      font-size: .62rem;
+      letter-spacing: .18em;
+      text-transform: uppercase;
+      color: var(--ui-accent);
+      margin-bottom: .25rem;
+    }
+    .album-name {
+      font-size: .85rem;
+      font-weight: 500;
+      color: var(--ui-text);
+      line-height: 1.3;
+    }
+    .album-type {
+      display: inline-block;
+      margin-top: .3rem;
+      font-size: .6rem;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+      color: var(--ui-muted);
+      border: 1px solid var(--ui-line);
+      border-radius: 999px;
+      padding: .1rem .45rem;
+    }
+
+    /* ── External links row ── */
+    .ext-links {
+      display: flex;
+      gap: .6rem;
+      flex-wrap: wrap;
+      padding-top: 1rem;
+    }
+    .ext-link {
+      display: inline-flex;
+      align-items: center;
+      gap: .4rem;
+      font-size: .8rem;
+      letter-spacing: .06em;
+      color: var(--ui-text);
+      text-decoration: none;
+      padding: .5rem 1rem;
+      border-radius: 999px;
+      background: var(--ui-raised);
+      border: 1px solid var(--ui-line);
+      transition: background .15s, border-color .15s;
+    }
+    .ext-link:hover {
+      background: var(--ui-accent);
+      color: var(--surface);
+      border-color: var(--ui-accent);
+    }
+    .ext-link svg { width: 14px; height: 14px; }
+
+    /* ── Prose ── */
+    .prose {
+      font-size: .92rem;
+      line-height: 1.85;
+      color: var(--ui-muted);
+      padding-top: 1rem;
+    }
+    .prose p + p { margin-top: .9rem; }
+    .prose strong { color: var(--ui-text); font-weight: 500; }
+
+    /* ── Etiquette list ── */
+    .etiq-list {
+      list-style: none;
+      padding-top: 1rem;
+      display: flex;
+      flex-direction: column;
+      gap: .6rem;
+    }
+    .etiq-item {
+      display: flex;
+      gap: .75rem;
+      align-items: flex-start;
+      font-size: .88rem;
+      line-height: 1.65;
+      color: var(--ui-muted);
+    }
+    .etiq-item::before {
+      content: attr(data-icon);
+      font-size: 1rem;
+      flex-shrink: 0;
+      margin-top: .1rem;
+    }
+    .etiq-item strong { color: var(--ui-text); }
+
+    /* ── Section heading (inside cards) ── */
+    .card-section-head {
+      font-size: .68rem;
+      letter-spacing: .22em;
+      text-transform: uppercase;
+      color: var(--ui-accent);
+      margin: 1.2rem 0 .5rem;
+    }
+
+    /* ── Footer ── */
+    footer {
+      position: relative;
+      z-index: 1;
+      text-align: center;
+      padding: 2.5rem 1.5rem;
+      font-size: .78rem;
+      color: var(--ui-muted);
+      border-top: 1px solid var(--ui-line);
+      letter-spacing: .04em;
+    }
+    footer a { color: var(--ui-accent); text-decoration: none; }
+    footer a:hover { text-decoration: underline; }
+  </style>
+</head>
+<body>
+
+<div id="stars"></div>
+
+<!-- ── Top bar ── -->
+<header class="top-bar">
+  <a href="laufey-concert.html" class="back-btn">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>
+    <span data-i18n="nav-back">返回首頁</span>
+  </a>
+  <div class="bar-controls">
+    <button class="lang-btn" id="btn-zh" onclick="applyLang('zh-TW')">中</button>
+    <button class="lang-btn" id="btn-en" onclick="applyLang('en')">EN</button>
+    <button class="theme-btn" id="theme-toggle" aria-label="切換主題">
+      <svg id="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+      <svg id="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display:none"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
+    </button>
+  </div>
+</header>
+
+<!-- ── Hero ── -->
+<section class="hero">
+  <p class="hero-eyebrow" data-i18n="hero-eyebrow">Singer-Songwriter · Soul · Gospel · Piano</p>
+  <h1 class="hero-name">藤井　風</h1>
+  <p class="hero-name-en">Fujii Kaze</p>
+  <div class="hero-divider"></div>
+  <p class="hero-tagline" data-i18n="hero-tagline">來自岡山的靈魂樂詩人，以鋼琴、福音與岡山方言，構築了一個無邊界的聲音宇宙。</p>
+  <a href="#guide" class="hero-cta">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 19V5M5 12l7 7 7-7"/></svg>
+    <span data-i18n="hero-cta">開始探索</span>
+  </a>
+</section>
+
+<!-- ── Content ── -->
+<main class="content">
+  <div class="info-section" id="guide">
+
+    <!-- About -->
+    <details class="info-card" open>
+      <summary class="info-card-toggle">
+        <span class="info-card-icon">🌿</span>
+        <span class="info-card-label" data-i18n="card-about">關於藤井風</span>
+        <svg class="info-card-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+      </summary>
+      <div class="info-card-body">
+        <div class="prose">
+          <p data-i18n="about-p1">藤井風，1997年出生於岡山縣淺口市，在父親播放的西方靈魂樂和岡山民謠中長大。起初在YouTube以鋼琴翻唱起步，純粹的音樂性與毫無架子的岡山腔，讓他在出道前就積累了數十萬訂閱。</p>
+          <p data-i18n="about-p2">2020年以首張專輯《Help Ever Hurt Never》正式出道，立即被譽為日本樂壇的破格之作。他的音樂將Soul、Gospel、R&B與爵士無縫融入日語歌詞，打破所有對J-Pop的既有期待。</p>
+          <p data-i18n="about-p3">他的現場幾乎是一種靈修體驗——鋼琴即興、不羈的嗓音、舞台上的真誠。觀眾與藝術家之間的距離，在他的演唱會上從不存在。</p>
+        </div>
+        <p class="card-section-head" data-i18n="artist-info">藝術家資訊</p>
+        <div class="fact-list">
+          <div class="fact-row">
+            <span class="fact-key" data-i18n="fact-born">出生</span>
+            <span class="fact-val">1997年6月14日・岡山縣淺口市</span>
+          </div>
+          <div class="fact-row">
+            <span class="fact-key" data-i18n="fact-genre">音樂類型</span>
+            <span class="fact-val" data-i18n="fact-genre-val">Soul · Gospel · R&B · Jazz · J-Pop</span>
+          </div>
+          <div class="fact-row">
+            <span class="fact-key" data-i18n="fact-label">唱片公司</span>
+            <span class="fact-val">Universal Music Japan</span>
+          </div>
+          <div class="fact-row">
+            <span class="fact-key" data-i18n="fact-debut">出道</span>
+            <span class="fact-val" data-i18n="fact-debut-val">2020年，首張專輯《Help Ever Hurt Never》</span>
+          </div>
+        </div>
+      </div>
+    </details>
+
+    <!-- Listening guide -->
+    <details class="info-card" open>
+      <summary class="info-card-toggle">
+        <span class="info-card-icon">🎵</span>
+        <span class="info-card-label" data-i18n="card-guide">新手聆聽指南</span>
+        <svg class="info-card-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+      </summary>
+      <div class="info-card-body">
+        <div class="prose" style="padding-bottom:.75rem;">
+          <p data-i18n="guide-intro">不知從何聽起？以下六首是認識藤井風的最佳起點。</p>
+        </div>
+        <ul class="guide-list">
+
+          <li class="guide-item">
+            <span class="guide-n">1</span>
+            <div class="guide-info">
+              <div class="guide-title">Hakujitsu</div>
+              <div class="guide-title-jp">白日</div>
+              <div class="guide-desc" data-i18n="g1-desc">他的名片。讓人胸口發緊的鋼琴與靈魂。第一首聽這首。</div>
+            </div>
+            <div class="guide-links">
+              <a class="g-link" href="https://open.spotify.com/track/5A4ozOIb0sVJXRBJ9xNaAy" target="_blank" rel="noopener" title="Spotify">
+                <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.4 0 0 5.4 0 12s5.4 12 12 12 12-5.4 12-12S18.66 0 12 0zm5.521 17.34c-.24.359-.66.48-1.021.24-2.82-1.74-6.36-2.101-10.561-1.141-.418.122-.779-.179-.899-.539-.12-.421.18-.78.54-.9 4.56-1.021 8.52-.6 11.64 1.32.42.18.479.659.301 1.02zm1.44-3.3c-.301.42-.841.6-1.262.3-3.239-1.98-8.159-2.58-11.939-1.38-.479.12-1.02-.12-1.14-.6-.12-.48.12-1.021.6-1.141C9.6 9.9 15 10.561 18.72 12.84c.361.181.54.78.241 1.2zm.12-3.36C15.24 8.4 8.82 8.16 5.16 9.301c-.6.179-1.2-.181-1.38-.721-.18-.601.18-1.2.72-1.381 4.26-1.26 11.28-1.02 15.721 1.621.539.3.719 1.02.419 1.56-.299.421-1.02.599-1.559.3z"/></svg>
+              </a>
+              <a class="g-link" href="https://www.youtube.com/watch?v=dFqkFTW2yGw" target="_blank" rel="noopener" title="YouTube">
+                <svg viewBox="0 0 24 24" fill="currentColor"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>
+              </a>
+            </div>
+          </li>
+
+          <li class="guide-item">
+            <span class="guide-n">2</span>
+            <div class="guide-info">
+              <div class="guide-title">Kirari</div>
+              <div class="guide-title-jp">きらり</div>
+              <div class="guide-desc" data-i18n="g2-desc">輕盈閃亮，讓人忍不住跳舞。陽光版藤井風。</div>
+            </div>
+            <div class="guide-links">
+              <a class="g-link" href="https://open.spotify.com/track/3dDVELkRNXFPJCKKKBz0HB" target="_blank" rel="noopener" title="Spotify">
+                <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.4 0 0 5.4 0 12s5.4 12 12 12 12-5.4 12-12S18.66 0 12 0zm5.521 17.34c-.24.359-.66.48-1.021.24-2.82-1.74-6.36-2.101-10.561-1.141-.418.122-.779-.179-.899-.539-.12-.421.18-.78.54-.9 4.56-1.021 8.52-.6 11.64 1.32.42.18.479.659.301 1.02zm1.44-3.3c-.301.42-.841.6-1.262.3-3.239-1.98-8.159-2.58-11.939-1.38-.479.12-1.02-.12-1.14-.6-.12-.48.12-1.021.6-1.141C9.6 9.9 15 10.561 18.72 12.84c.361.181.54.78.241 1.2zm.12-3.36C15.24 8.4 8.82 8.16 5.16 9.301c-.6.179-1.2-.181-1.38-.721-.18-.601.18-1.2.72-1.381 4.26-1.26 11.28-1.02 15.721 1.621.539.3.719 1.02.419 1.56-.299.421-1.02.599-1.559.3z"/></svg>
+              </a>
+              <a class="g-link" href="https://www.youtube.com/watch?v=o50ROFPg3xQ" target="_blank" rel="noopener" title="YouTube">
+                <svg viewBox="0 0 24 24" fill="currentColor"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>
+              </a>
+            </div>
+          </li>
+
+          <li class="guide-item">
+            <span class="guide-n">3</span>
+            <div class="guide-info">
+              <div class="guide-title">Matsuri</div>
+              <div class="guide-title-jp">まつり</div>
+              <div class="guide-desc" data-i18n="g3-desc">現場必備神曲。全場一起喊「まつり」，世界短暫消失。</div>
+            </div>
+            <div class="guide-links">
+              <a class="g-link" href="https://open.spotify.com/track/1IK7OgMWfHJjKXpBt0FHBP" target="_blank" rel="noopener" title="Spotify">
+                <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.4 0 0 5.4 0 12s5.4 12 12 12 12-5.4 12-12S18.66 0 12 0zm5.521 17.34c-.24.359-.66.48-1.021.24-2.82-1.74-6.36-2.101-10.561-1.141-.418.122-.779-.179-.899-.539-.12-.421.18-.78.54-.9 4.56-1.021 8.52-.6 11.64 1.32.42.18.479.659.301 1.02zm1.44-3.3c-.301.42-.841.6-1.262.3-3.239-1.98-8.159-2.58-11.939-1.38-.479.12-1.02-.12-1.14-.6-.12-.48.12-1.021.6-1.141C9.6 9.9 15 10.561 18.72 12.84c.361.181.54.78.241 1.2zm.12-3.36C15.24 8.4 8.82 8.16 5.16 9.301c-.6.179-1.2-.181-1.38-.721-.18-.601.18-1.2.72-1.381 4.26-1.26 11.28-1.02 15.721 1.621.539.3.719 1.02.419 1.56-.299.421-1.02.599-1.559.3z"/></svg>
+              </a>
+              <a class="g-link" href="https://www.youtube.com/watch?v=lO_HH_RHBmg" target="_blank" rel="noopener" title="YouTube">
+                <svg viewBox="0 0 24 24" fill="currentColor"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>
+              </a>
+            </div>
+          </li>
+
+          <li class="guide-item">
+            <span class="guide-n">4</span>
+            <div class="guide-info">
+              <div class="guide-title">Grace</div>
+              <div class="guide-title-jp">Grace</div>
+              <div class="guide-desc" data-i18n="g4-desc">靈性與音樂性的完美結合。鋼琴貫穿始終，聲音升華為信仰。</div>
+            </div>
+            <div class="guide-links">
+              <a class="g-link" href="https://open.spotify.com/track/4wDKPSGvgSmXwfPOF5VJM5" target="_blank" rel="noopener" title="Spotify">
+                <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.4 0 0 5.4 0 12s5.4 12 12 12 12-5.4 12-12S18.66 0 12 0zm5.521 17.34c-.24.359-.66.48-1.021.24-2.82-1.74-6.36-2.101-10.561-1.141-.418.122-.779-.179-.899-.539-.12-.421.18-.78.54-.9 4.56-1.021 8.52-.6 11.64 1.32.42.18.479.659.301 1.02zm1.44-3.3c-.301.42-.841.6-1.262.3-3.239-1.98-8.159-2.58-11.939-1.38-.479.12-1.02-.12-1.14-.6-.12-.48.12-1.021.6-1.141C9.6 9.9 15 10.561 18.72 12.84c.361.181.54.78.241 1.2zm.12-3.36C15.24 8.4 8.82 8.16 5.16 9.301c-.6.179-1.2-.181-1.38-.721-.18-.601.18-1.2.72-1.381 4.26-1.26 11.28-1.02 15.721 1.621.539.3.719 1.02.419 1.56-.299.421-1.02.599-1.559.3z"/></svg>
+              </a>
+              <a class="g-link" href="https://www.youtube.com/watch?v=N_8Ij1RKRLo" target="_blank" rel="noopener" title="YouTube">
+                <svg viewBox="0 0 24 24" fill="currentColor"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>
+              </a>
+            </div>
+          </li>
+
+          <li class="guide-item">
+            <span class="guide-n">5</span>
+            <div class="guide-info">
+              <div class="guide-title">Shinunoga E-Wa</div>
+              <div class="guide-title-jp">死ぬのがいいわ</div>
+              <div class="guide-desc" data-i18n="g5-desc">岡山方言・爵士節奏・迷離感。TikTok席捲全球，深度不減一絲。</div>
+            </div>
+            <div class="guide-links">
+              <a class="g-link" href="https://open.spotify.com/track/1mNAMSMY8fKPAZi84oXKJQ" target="_blank" rel="noopener" title="Spotify">
+                <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.4 0 0 5.4 0 12s5.4 12 12 12 12-5.4 12-12S18.66 0 12 0zm5.521 17.34c-.24.359-.66.48-1.021.24-2.82-1.74-6.36-2.101-10.561-1.141-.418.122-.779-.179-.899-.539-.12-.421.18-.78.54-.9 4.56-1.021 8.52-.6 11.64 1.32.42.18.479.659.301 1.02zm1.44-3.3c-.301.42-.841.6-1.262.3-3.239-1.98-8.159-2.58-11.939-1.38-.479.12-1.02-.12-1.14-.6-.12-.48.12-1.021.6-1.141C9.6 9.9 15 10.561 18.72 12.84c.361.181.54.78.241 1.2zm.12-3.36C15.24 8.4 8.82 8.16 5.16 9.301c-.6.179-1.2-.181-1.38-.721-.18-.601.18-1.2.72-1.381 4.26-1.26 11.28-1.02 15.721 1.621.539.3.719 1.02.419 1.56-.299.421-1.02.599-1.559.3z"/></svg>
+              </a>
+              <a class="g-link" href="https://www.youtube.com/watch?v=dK-b0sFAEK8" target="_blank" rel="noopener" title="YouTube">
+                <svg viewBox="0 0 24 24" fill="currentColor"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>
+              </a>
+            </div>
+          </li>
+
+          <li class="guide-item">
+            <span class="guide-n">6</span>
+            <div class="guide-info">
+              <div class="guide-title">Roaming</div>
+              <div class="guide-title-jp">Roaming</div>
+              <div class="guide-desc" data-i18n="g6-desc">慢燃、漂泊、思念故鄉。英語演唱，給旅途中放空的夜晚。</div>
+            </div>
+            <div class="guide-links">
+              <a class="g-link" href="https://open.spotify.com/track/3QHyvDz9YxCtBIv2PRPFXC" target="_blank" rel="noopener" title="Spotify">
+                <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.4 0 0 5.4 0 12s5.4 12 12 12 12-5.4 12-12S18.66 0 12 0zm5.521 17.34c-.24.359-.66.48-1.021.24-2.82-1.74-6.36-2.101-10.561-1.141-.418.122-.779-.179-.899-.539-.12-.421.18-.78.54-.9 4.56-1.021 8.52-.6 11.64 1.32.42.18.479.659.301 1.02zm1.44-3.3c-.301.42-.841.6-1.262.3-3.239-1.98-8.159-2.58-11.939-1.38-.479.12-1.02-.12-1.14-.6-.12-.48.12-1.021.6-1.141C9.6 9.9 15 10.561 18.72 12.84c.361.181.54.78.241 1.2zm.12-3.36C15.24 8.4 8.82 8.16 5.16 9.301c-.6.179-1.2-.181-1.38-.721-.18-.601.18-1.2.72-1.381 4.26-1.26 11.28-1.02 15.721 1.621.539.3.719 1.02.419 1.56-.299.421-1.02.599-1.559.3z"/></svg>
+              </a>
+              <a class="g-link" href="https://www.youtube.com/watch?v=UOLlBJqPNzs" target="_blank" rel="noopener" title="YouTube">
+                <svg viewBox="0 0 24 24" fill="currentColor"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>
+              </a>
+            </div>
+          </li>
+
+        </ul>
+      </div>
+    </details>
+
+    <!-- Discography -->
+    <details class="info-card">
+      <summary class="info-card-toggle">
+        <span class="info-card-icon">💿</span>
+        <span class="info-card-label" data-i18n="card-disc">唱片作品</span>
+        <svg class="info-card-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+      </summary>
+      <div class="info-card-body">
+        <div class="album-grid">
+          <div class="album-card">
+            <div class="album-cover" style="background:linear-gradient(135deg,#0e2218,#153320);">🌿</div>
+            <div class="album-meta">
+              <div class="album-year">2020</div>
+              <div class="album-name">Help Ever Hurt Never</div>
+              <span class="album-type" data-i18n="type-album">專輯</span>
+            </div>
+          </div>
+          <div class="album-card">
+            <div class="album-cover" style="background:linear-gradient(135deg,#1a0e28,#250e3a);">🌌</div>
+            <div class="album-meta">
+              <div class="album-year">2022</div>
+              <div class="album-name">LOVE ALL SERVE ALL</div>
+              <span class="album-type" data-i18n="type-album">專輯</span>
+            </div>
+          </div>
+          <div class="album-card">
+            <div class="album-cover" style="background:linear-gradient(135deg,#1a1408,#28200e);">✨</div>
+            <div class="album-meta">
+              <div class="album-year">2023</div>
+              <div class="album-name">Oblivion</div>
+              <span class="album-type" data-i18n="type-ep">EP</span>
+            </div>
+          </div>
+          <div class="album-card">
+            <div class="album-cover" style="background:linear-gradient(135deg,#201608,#2e2010);">🌅</div>
+            <div class="album-meta">
+              <div class="album-year">2024</div>
+              <div class="album-name">Golden Hour</div>
+              <span class="album-type" data-i18n="type-album">專輯</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </details>
+
+    <!-- Concert etiquette -->
+    <details class="info-card">
+      <summary class="info-card-toggle">
+        <span class="info-card-icon">🙏</span>
+        <span class="info-card-label" data-i18n="card-etiq">演唱會禮儀・新手須知</span>
+        <svg class="info-card-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+      </summary>
+      <div class="info-card-body">
+        <ul class="etiq-list">
+          <li class="etiq-item" data-icon="📱" data-i18n="etiq1"><strong>手機閃光燈</strong>：不開閃光燈，以免影響藤井風本人及其他觀眾的視線與沉浸感。</li>
+          <li class="etiq-item" data-icon="🎥" data-i18n="etiq2"><strong>禁止錄影錄音</strong>：日本演唱會通常禁止錄製，請以耳朵和心記住這一切。</li>
+          <li class="etiq-item" data-icon="🎵" data-i18n="etiq3"><strong>跟唱與呼喊</strong>：他的現場氛圍自由，跟著唱、跟著喊 "まつり" 是被鼓勵的。</li>
+          <li class="etiq-item" data-icon="💃" data-i18n="etiq4"><strong>站席須知</strong>：站席區請保持與周圍的空間，小心不要推擠。</li>
+          <li class="etiq-item" data-icon="🌿" data-i18n="etiq5"><strong>珍惜當下</strong>：他的每場演出都是即興的，沒有兩場完全一樣。放下手機，活在當下。</li>
+        </ul>
+      </div>
+    </details>
+
+    <!-- Official links -->
+    <details class="info-card">
+      <summary class="info-card-toggle">
+        <span class="info-card-icon">🔗</span>
+        <span class="info-card-label" data-i18n="card-links">官方連結</span>
+        <svg class="info-card-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+      </summary>
+      <div class="info-card-body">
+        <div class="ext-links">
+          <a class="ext-link" href="https://fujiikaze.com" target="_blank" rel="noopener">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+            <span data-i18n="link-official">官網</span>
+          </a>
+          <a class="ext-link" href="https://open.spotify.com/artist/5RP3OJhjELFKlWPKpXFPo5" target="_blank" rel="noopener">
+            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.4 0 0 5.4 0 12s5.4 12 12 12 12-5.4 12-12S18.66 0 12 0zm5.521 17.34c-.24.359-.66.48-1.021.24-2.82-1.74-6.36-2.101-10.561-1.141-.418.122-.779-.179-.899-.539-.12-.421.18-.78.54-.9 4.56-1.021 8.52-.6 11.64 1.32.42.18.479.659.301 1.02zm1.44-3.3c-.301.42-.841.6-1.262.3-3.239-1.98-8.159-2.58-11.939-1.38-.479.12-1.02-.12-1.14-.6-.12-.48.12-1.021.6-1.141C9.6 9.9 15 10.561 18.72 12.84c.361.181.54.78.241 1.2zm.12-3.36C15.24 8.4 8.82 8.16 5.16 9.301c-.6.179-1.2-.181-1.38-.721-.18-.601.18-1.2.72-1.381 4.26-1.26 11.28-1.02 15.721 1.621.539.3.719 1.02.419 1.56-.299.421-1.02.599-1.559.3z"/></svg>
+            Spotify
+          </a>
+          <a class="ext-link" href="https://www.youtube.com/@fujii_kaze" target="_blank" rel="noopener">
+            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>
+            YouTube
+          </a>
+          <a class="ext-link" href="https://www.instagram.com/kaze_official_gr/" target="_blank" rel="noopener">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg>
+            Instagram
+          </a>
+          <a class="ext-link" href="https://x.com/fujiikaze_staff" target="_blank" rel="noopener">
+            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+            X / Twitter
+          </a>
+        </div>
+      </div>
+    </details>
+
+  </div>
+</main>
+
+<footer>
+  <p data-i18n="footer-text">藤井風粉絲指南 · 非官方 · 純粹出於熱愛 · <a href="laufey-concert.html" data-i18n="footer-laufey">← Laufey 頁面</a></p>
+</footer>
+
+<script>
+  /* ── Stars ── */
+  (function () {
+    const c = document.getElementById('stars');
+    for (let i = 0; i < 100; i++) {
+      const s = document.createElement('div');
+      s.className = 'star';
+      const sz = Math.random() * 2 + 0.5;
+      s.style.cssText = `width:${sz}px;height:${sz}px;left:${Math.random()*100}%;top:${Math.random()*100}%;--d:${(Math.random()*4+2).toFixed(1)}s;--max-o:${(Math.random()*.4+.15).toFixed(2)};animation-delay:${(Math.random()*6).toFixed(1)}s`;
+      c.appendChild(s);
+    }
+  })();
+
+  /* ── Theme toggle ── */
+  (function () {
+    const html = document.documentElement;
+    const btn = document.getElementById('theme-toggle');
+    const moon = document.getElementById('icon-moon');
+    const sun = document.getElementById('icon-sun');
+    function setTheme(t) {
+      html.setAttribute('data-theme', t);
+      moon.style.display = t === 'dark' ? '' : 'none';
+      sun.style.display  = t === 'light' ? '' : 'none';
+      try { localStorage.setItem('fk_theme', t); } catch(e) {}
+    }
+    btn.addEventListener('click', () => setTheme(html.getAttribute('data-theme') === 'dark' ? 'light' : 'dark'));
+    try {
+      const saved = localStorage.getItem('fk_theme');
+      if (saved) { setTheme(saved); return; }
+    } catch(e) {}
+    setTheme(window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+  })();
+
+  /* ── i18n ── */
+  const dict = {
+    'zh-TW': {
+      'nav-back':      '返回首頁',
+      'hero-eyebrow':  'Singer-Songwriter · Soul · Gospel · Piano',
+      'hero-tagline':  '來自岡山的靈魂樂詩人，以鋼琴、福音與岡山方言，構築了一個無邊界的聲音宇宙。',
+      'hero-cta':      '開始探索',
+      'card-about':    '關於藤井風',
+      'about-p1':      '藤井風，1997年出生於岡山縣淺口市，在父親播放的西方靈魂樂和岡山民謠中長大。起初在YouTube以鋼琴翻唱起步，純粹的音樂性與毫無架子的岡山腔，讓他在出道前就積累了數十萬訂閱。',
+      'about-p2':      '2020年以首張專輯《Help Ever Hurt Never》正式出道，立即被譽為日本樂壇的破格之作。他的音樂將Soul、Gospel、R&B與爵士無縫融入日語歌詞，打破所有對J-Pop的既有期待。',
+      'about-p3':      '他的現場幾乎是一種靈修體驗——鋼琴即興、不羈的嗓音、舞台上的真誠。觀眾與藝術家之間的距離，在他的演唱會上從不存在。',
+      'artist-info':   '藝術家資訊',
+      'fact-born':     '出生',
+      'fact-genre':    '音樂類型',
+      'fact-genre-val':'Soul · Gospel · R&B · Jazz · J-Pop',
+      'fact-label':    '唱片公司',
+      'fact-debut':    '出道',
+      'fact-debut-val':'2020年，首張專輯《Help Ever Hurt Never》',
+      'card-guide':    '新手聆聽指南',
+      'guide-intro':   '不知從何聽起？以下六首是認識藤井風的最佳起點。',
+      'g1-desc':       '他的名片。讓人胸口發緊的鋼琴與靈魂。第一首聽這首。',
+      'g2-desc':       '輕盈閃亮，讓人忍不住跳舞。陽光版藤井風。',
+      'g3-desc':       '現場必備神曲。全場一起喊「まつり」，世界短暫消失。',
+      'g4-desc':       '靈性與音樂性的完美結合。鋼琴貫穿始終，聲音升華為信仰。',
+      'g5-desc':       '岡山方言・爵士節奏・迷離感。TikTok席捲全球，深度不減一絲。',
+      'g6-desc':       '慢燃、漂泊、思念故鄉。英語演唱，給旅途中放空的夜晚。',
+      'card-disc':     '唱片作品',
+      'type-album':    '專輯',
+      'type-ep':       'EP',
+      'card-etiq':     '演唱會禮儀・新手須知',
+      'etiq1':         '<strong>手機閃光燈</strong>：不開閃光燈，以免影響藤井風本人及其他觀眾的視線與沉浸感。',
+      'etiq2':         '<strong>禁止錄影錄音</strong>：日本演唱會通常禁止錄製，請以耳朵和心記住這一切。',
+      'etiq3':         '<strong>跟唱與呼喊</strong>：他的現場氛圍自由，跟著唱、跟著喊 "まつり" 是被鼓勵的。',
+      'etiq4':         '<strong>站席須知</strong>：站席區請保持與周圍的空間，小心不要推擠。',
+      'etiq5':         '<strong>珍惜當下</strong>：他的每場演出都是即興的，沒有兩場完全一樣。放下手機，活在當下。',
+      'card-links':    '官方連結',
+      'link-official': '官網',
+      'footer-text':   '藤井風粉絲指南 · 非官方 · 純粹出於熱愛 · <a href="laufey-concert.html">← Laufey 頁面</a>',
+      'footer-laufey': '← Laufey 頁面',
+    },
+    'en': {
+      'nav-back':      'Back',
+      'hero-eyebrow':  'Singer-Songwriter · Soul · Gospel · Piano',
+      'hero-tagline':  'A soul poet from Okayama who built a boundless sonic universe from piano, gospel, and his hometown dialect.',
+      'hero-cta':      'Start Exploring',
+      'card-about':    'About Fujii Kaze',
+      'about-p1':      'Born June 14, 1997 in Asakuchi, Okayama, Fujii Kaze grew up listening to the Western soul music and folk songs his father played. He began uploading piano covers on YouTube, and his pure musicality and unaffected Okayama dialect earned him hundreds of thousands of subscribers before his official debut.',
+      'about-p2':      'His 2020 debut album Help Ever Hurt Never was immediately recognized as a departure from every J-Pop expectation. His music weaves soul, gospel, R&B, and jazz into Japanese lyrics in a way that feels genuinely singular.',
+      'about-p3':      'His live shows are almost a spiritual experience — improvised piano, a voice that wanders gloriously off-script, and a stage presence stripped of artifice. The distance between artist and audience simply does not exist at his concerts.',
+      'artist-info':   'Artist Info',
+      'fact-born':     'Born',
+      'fact-genre':    'Genre',
+      'fact-genre-val':'Soul · Gospel · R&B · Jazz · J-Pop',
+      'fact-label':    'Label',
+      'fact-debut':    'Debut',
+      'fact-debut-val':'2020 — Help Ever Hurt Never',
+      'card-guide':    'Beginner\'s Listening Guide',
+      'guide-intro':   'Not sure where to start? These six tracks are the best introduction to Fujii Kaze.',
+      'g1-desc':       'His calling card. Piano and soul that tighten something in your chest. Start here.',
+      'g2-desc':       'Light, bright, impossible not to move to. The sunny side of Fujii Kaze.',
+      'g3-desc':       'The live anthem. A stadium shouting "matsuri" together makes the world briefly stop.',
+      'g4-desc':       'The perfect union of spirituality and musicianship. Piano throughout; voice ascends into something beyond human.',
+      'g5-desc':       'Okayama dialect, jazz rhythm, intoxicating haze. Swept TikTok globally without losing an ounce of depth.',
+      'g6-desc':       'A slow burn about wandering and longing. Sung in English, for the nights you want to drift.',
+      'card-disc':     'Discography',
+      'type-album':    'Album',
+      'type-ep':       'EP',
+      'card-etiq':     'Concert Etiquette for First-Timers',
+      'etiq1':         '<strong>No flash photography</strong>: Keep your phone flash off to protect everyone\'s immersion — including Kaze\'s.',
+      'etiq2':         '<strong>No recording</strong>: Japanese concerts typically prohibit recording. Let your ears and heart remember this.',
+      'etiq3':         '<strong>Singing along</strong>: The atmosphere is free-spirited. Singing along and shouting "matsuri" is absolutely encouraged.',
+      'etiq4':         '<strong>Standing area</strong>: Keep your space, and don\'t push. Everyone deserves their moment.',
+      'etiq5':         '<strong>Be present</strong>: Every performance is improvised — no two are alike. Put down your phone and live in it.',
+      'card-links':    'Official Links',
+      'link-official': 'Website',
+      'footer-text':   'Fujii Kaze fan guide · Unofficial · Made with love · <a href="laufey-concert.html">← Laufey page</a>',
+      'footer-laufey': '← Laufey page',
+    }
+  };
+
+  let currentLang = 'zh-TW';
+
+  function applyLang(lang) {
+    currentLang = lang;
+    const d = dict[lang];
+    document.querySelectorAll('[data-i18n]').forEach(el => {
+      const key = el.getAttribute('data-i18n');
+      if (d[key] !== undefined) el.innerHTML = d[key];
+    });
+    document.documentElement.lang = lang === 'zh-TW' ? 'zh-Hant-TW' : 'en';
+    document.getElementById('btn-zh').classList.toggle('active', lang === 'zh-TW');
+    document.getElementById('btn-en').classList.toggle('active', lang === 'en');
+    try { localStorage.setItem('fk_lang', lang); } catch(e) {}
+  }
+
+  (function () {
+    try {
+      const s = localStorage.getItem('fk_lang');
+      if (s && dict[s]) { applyLang(s); return; }
+    } catch(e) {}
+    applyLang('zh-TW');
+  })();
+</script>
+</body>
+</html>
