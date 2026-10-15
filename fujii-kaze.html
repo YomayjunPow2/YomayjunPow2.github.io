@@ -694,6 +694,7 @@
       'footer-text': '藤井風粉絲指南 · 非官方 · 純粹出於熱愛 · <a href="laufey-concert.html">← Laufey 頁面</a>',
       'footer-laufey': '← Laufey 頁面',
       'days-future': '還有 {n} 天',
+      'days-one': '還有 1 天',
       'days-today': '就是今天',
       'days-past': '演出已結束',
       'artist-info': '藝術家資訊',
@@ -771,6 +772,7 @@
       'footer-text': 'Fujii Kaze fan guide · Unofficial · Made with love · <a href="laufey-concert.html">← Laufey page</a>',
       'footer-laufey': '← Laufey page',
       'days-future': '{n} days to go',
+      'days-one': '1 day to go',
       'days-today': 'Today is the day',
       'days-past': 'This show has taken place',
       'artist-info': 'Artist Info',
@@ -853,18 +855,22 @@
     updateDays();
   }
 
-  /* Days until the Kaohsiung show (Oct 31, 2026, 19:00 Taiwan time) */
+  /* Days until the Kaohsiung show (Oct 31, 2026, 19:00 Taiwan time), counted in Taiwan calendar days */
   function updateDays() {
     const el = document.getElementById('days-left');
     if (!el) return;
     const d = dict[currentLang];
-    const show = new Date('2026-10-31T19:00:00+08:00');
-    const diff = show - Date.now();
-    const day = 86400000;
-    if (diff > day) el.textContent = d['days-future'].replace('{n}', Math.ceil(diff / day));
-    else if (diff > -4 * 3600000) el.textContent = d['days-today'];
-    else el.textContent = d['days-past'];
+    const show = new Date('2026-10-31T19:00:00+08:00').getTime();
+    const now = Date.now();
+    const taiwanDay = ms => Math.floor((ms + 8 * 3600000) / 86400000);
+    const left = taiwanDay(show) - taiwanDay(now);
+    if (now > show + 4 * 3600000) el.textContent = d['days-past'];
+    else if (left <= 0) el.textContent = d['days-today'];
+    else if (left === 1) el.textContent = d['days-one'];
+    else el.textContent = d['days-future'].replace('{n}', left);
   }
+  setInterval(updateDays, 60000);
+
 
   (function () {
     try {
