@@ -360,6 +360,21 @@
     .spotify-wrap[hidden], .player-wrap[hidden] { display: none; }
     .prema-cover { display: block; width: min(220px, 60%); height: auto; aspect-ratio: 1; object-fit: cover; border-radius: 2px; margin-bottom: 1.4rem; background: var(--raised); }
 
+
+    /* ── Most played ── */
+    .play-list { list-style: none; border-top: 1px solid var(--text); }
+    .play-row { display: grid; grid-template-columns: 2.6rem minmax(0, 1fr) minmax(0, 14rem) auto; gap: .4rem 1rem; align-items: center; padding: .8rem 0; border-bottom: 1px solid var(--line); }
+    .play-rank { font-family: var(--serif); font-size: 1.5rem; line-height: 1; color: var(--muted); font-variant-numeric: tabular-nums; }
+    .play-name { min-width: 0; }
+    .play-title { font-family: var(--serif); font-weight: 700; font-size: 1.25rem; line-height: 1.25; }
+    .play-orig { display: block; font-size: .9rem; color: var(--accent); }
+    .play-meter { display: block; min-width: 0; }
+    .play-count { display: block; font-variant-numeric: tabular-nums; text-align: right; margin-bottom: .25rem; }
+    .play-bar { display: block; height: 4px; background: var(--line); border-radius: 2px; overflow: hidden; }
+    .play-bar > span { display: block; height: 100%; background: var(--seal); }
+    .more-btn { margin-top: 1rem; font: 500 .95rem/1 var(--sans); background: none; color: var(--text); border: 1px solid var(--line); border-radius: 999px; padding: .75rem 1.2rem; cursor: pointer; transition: background .2s, color .2s; }
+    .more-btn:hover { background: var(--text); color: var(--bg); }
+
     /* ── Etiquette ── */
     .etiq-list { list-style: none; border-top: 1px solid var(--text); max-width: 46em; }
     .etiq-item { padding: 1.05rem 0; border-bottom: 1px solid var(--line); color: var(--muted); line-height: 1.7; }
@@ -429,6 +444,8 @@
       .guide-item::before { left: -.7rem; }
       .fact-row { grid-template-columns: minmax(0, 1fr); gap: .1rem; }
       .prema-item { grid-template-columns: 2rem minmax(0, 1fr) auto; }
+      .play-row { grid-template-columns: 2rem minmax(0, 1fr) auto; }
+      .play-meter { grid-column: 2 / 4; grid-row: 2; }
     }
     @media (prefers-reduced-motion: reduce) {
       html { scroll-behavior: auto; }
@@ -641,6 +658,18 @@
       </div>
     </details>
 
+    <!-- Most played -->
+    <details class="info-card" open id="most-played">
+      <summary class="info-card-toggle">
+        <span class="info-card-label" data-i18n="card-plays"></span>
+      </summary>
+      <div class="info-card-body">
+        <ol class="play-list" id="play-list"></ol>
+        <button type="button" class="more-btn" id="plays-more"></button>
+        <p class="source-note" data-i18n="plays-source"></p>
+      </div>
+    </details>
+
     <!-- Official links -->
     <details class="info-card">
       <summary class="info-card-toggle">
@@ -705,6 +734,10 @@
       'title-note': '中文曲名／專輯名：官方網站未提供中文名稱，採用通用譯名，並附原名。',
       'play-title': '在上方播放',
       'card-disc': '唱片作品',
+      'card-plays': '累計播放排行',
+      'plays-source': '累計播放次數為 Spotify 串流次數，數字整理自 <a href="https://kworb.net/spotify/artist/6bDWAcdtVR3WHz2xtiIPUi_songs.html" target="_blank" rel="noopener">kworb.net</a>（資料日期 2026/10/14）。這不是官方來源，數字會隨時間增加；只列出本頁可播放專輯內的歌曲。',
+      'plays-more': '顯示全部 24 首',
+      'plays-less': '只看前 10 首',
       'card-links': '官方連結',
       'link-official': '官網',
       'link-tour': '巡演官網',
@@ -773,8 +806,8 @@
       'fact-debut-val': '2020年，“何なんw” Music Video',
       'fact-first': '首張專輯',
       'fact-first-val': 'HELP EVER HURT NEVER（2020年5月）',
-      'disc-listen': '試聽',
-      'sp-note': 'Spotify 嵌入播放器：未登入 Spotify 時只能試聽片段。',
+      'disc-listen': '收聽',
+      'sp-note': 'Spotify 嵌入播放器：未登入 Spotify 時只能播放片段。',
       'disc-source': '曲目與格式標示依 <a href="https://fujiikaze.com/music/" target="_blank" rel="noopener">fujiikaze.com/music</a>。官方頁面未列出發行日期。封面圖片與播放連結來自官方網站與官方智慧連結（fujii-kaze.lnk.to）；現場專輯曲名省略了結尾的 (Fujii Kaze Stadium Live “Feelin’ Good”)。',
     },
     'en': {
@@ -789,6 +822,10 @@
       'title-note': '',
       'play-title': 'Play above',
       'card-disc': 'Discography',
+      'card-plays': 'Most played of all time',
+      'plays-source': 'Play counts are all-time Spotify streams as tracked by <a href="https://kworb.net/spotify/artist/6bDWAcdtVR3WHz2xtiIPUi_songs.html" target="_blank" rel="noopener">kworb.net</a> (data as of 2026/10/14). This is not an official source, and the numbers keep growing. Only songs from the albums playable on this page are listed.',
+      'plays-more': 'Show all 24',
+      'plays-less': 'Show top 10 only',
       'card-links': 'Official Links',
       'link-official': 'Website',
       'link-tour': 'Tour site',
@@ -931,6 +968,17 @@
   ];
   const LYRICS = {};
 
+  /* All-time Spotify streams per song (kworb.net, snapshot 2026/10/14). Each row points at the track
+     to play: [albumId, trackIndex, streams]. Songs outside the playable albums are left out. */
+  const PLAYS = [
+    ['hehn', 7, 855289744], ['lasa', 0, 348668472], ['lasa', 1, 225299047], ['lasa', 5, 151912996],
+    ['best-of', 9, 144279758], ['best-of', 4, 137631039], ['lasa', 10, 102603373], ['hehn', 0, 100342310],
+    ['lasa', 6, 88040258], ['hehn', 2, 80705464], ['hehn', 10, 72340301], ['pre-prema', 0, 68319652],
+    ['hehn', 9, 57334111], ['hehn', 1, 48288261], ['lasa', 4, 42389927], ['pre-prema', 6, 41686789],
+    ['hehn', 4, 38080996], ['pre-prema', 1, 36213891], ['pre-prema', 2, 35436118], ['hehn', 3, 33987390],
+    ['lasa', 9, 33869593], ['prema', 4, 31218508], ['hehn', 6, 31116504], ['prema', 2, 29818121],
+  ];
+
   /* Chinese titles: only for songs whose official title is Japanese (no official Chinese title exists,
      so these are the common renderings). English-only official titles stay in English. */
   const ZH = {
@@ -988,7 +1036,7 @@
         '<span class="album-meta"><span class="album-name"></span><span class="album-type"></span></span>';
       b.querySelector('.album-name').textContent = albumName(a);
       b.querySelector('.album-type').textContent = a.tag;
-      b.addEventListener('click', () => selectAlbum(a, 0, true));
+      b.addEventListener('click', () => selectAlbum(a, 0, false));
       gridEl.appendChild(b);
     });
 
@@ -1130,15 +1178,45 @@
       syncTrBtn(); fillTranslations();
     });
 
+
+    /* Most played list: top 10, or all 24 */
+    let playsAll = false;
+    function renderPlays() {
+      const listEl2 = document.getElementById('play-list');
+      const max = PLAYS[0][2];
+      listEl2.innerHTML = '';
+      PLAYS.slice(0, playsAll ? PLAYS.length : 10).forEach(([albumId, idx, n], i) => {
+        const a = ALBUMS.find(x => x.id === albumId), t = a.tracks[idx];
+        const li = document.createElement('li');
+        li.className = 'play-row';
+        li.innerHTML = '<span class="play-rank"></span><span class="play-name"><span class="play-title"></span><span class="play-orig"></span></span>' +
+          '<span class="play-meter"><span class="play-count"></span><span class="play-bar"><span></span></span></span>' +
+          '<button type="button" class="g-link play" data-album="' + albumId + '" data-idx="' + idx + '"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg></button>';
+        li.querySelector('.play-rank').textContent = i + 1;
+        li.querySelector('.play-title').textContent = trackName(t);
+        const o = li.querySelector('.play-orig');
+        if (origLine(t)) o.textContent = origLine(t); else o.remove();
+        li.querySelector('.play-count').textContent = n.toLocaleString('en-US');
+        li.querySelector('.play-bar > span').style.width = (n / max * 100).toFixed(1) + '%';
+        const btn = li.querySelector('button');
+        btn.title = dict[currentLang]['play-title'];
+        btn.setAttribute('aria-label', dict[currentLang]['play-title'] + ': ' + trackName(t));
+        btn.addEventListener('click', () => window.playAlbumTrack(albumId, idx));
+        listEl2.appendChild(li);
+      });
+      document.getElementById('plays-more').textContent = dict[currentLang][playsAll ? 'plays-less' : 'plays-more'];
+    }
+    document.getElementById('plays-more').addEventListener('click', () => { playsAll = !playsAll; renderPlays(); });
+
     function refreshLang() {
       gridEl.querySelectorAll('.album-card').forEach(b => { b.querySelector('.album-name').textContent = albumName(ALBUMS.find(a => a.id === b.dataset.id)); });
-      renderTracks(); markPlaying(); syncTrBtn();
+      renderTracks(); markPlaying(); syncTrBtn(); renderPlays();
       document.querySelectorAll('.prema-item').forEach(li => {
         const b = li.querySelector('button[data-album]');
         const a = ALBUMS.find(x => x.id === b.dataset.album), t = a.tracks[Number(b.dataset.idx)];
         const el = li.querySelector('.prema-t');
         el.textContent = trackName(t);
-        if (origLine(t)) { const o = document.createElement('span'); o.className = 'orig'; o.textContent = origLine(t); el.appendChild(o); }
+        if (origLine(t)) { el.appendChild(document.createTextNode(' ')); const o = document.createElement('span'); o.className = 'orig'; o.textContent = origLine(t); el.appendChild(o); }
       });
       fillTranslations();
     }
