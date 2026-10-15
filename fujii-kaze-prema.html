@@ -96,12 +96,15 @@
     .lang-btn:hover { color: var(--text); }
     .lang-btn.active { color: var(--text); border-bottom-color: var(--seal); }
     .theme-btn {
-      width: 40px; height: 40px;
+      height: 40px;
       margin-left: .4rem;
-      border-radius: 50%;
+      padding: 0 .9rem 0 .75rem;
+      gap: .45rem;
+      border-radius: 999px;
       background: none;
       border: 1px solid var(--line);
       color: var(--muted);
+      font: 500 .9rem/1 var(--sans);
       cursor: pointer;
       display: flex; align-items: center; justify-content: center;
       transition: background .2s, color .2s;
@@ -281,6 +284,11 @@
     .song-info h4 { font-family: var(--serif); font-size: 1.05rem; margin-bottom: .6rem; }
     .song-info p { font-size: .92rem; line-height: 1.7; margin-top: .4rem; }
     .song-info .si-meta { color: var(--muted); }
+    .song-bg { margin-top: .8rem; }
+    .song-bg .bg-head { font-family: var(--sans); font-size: .95rem; font-weight: 700; margin-bottom: .5rem; }
+    .song-bg .bg-text { font-size: .95rem; line-height: 1.75; margin: 0; }
+    .song-bg .source-note { margin-top: .7rem; }
+    .song-bg .source-note a + a::before { content: '、'; color: var(--muted); text-decoration: none; display: inline-block; margin-right: .1rem; }
     .lyric-line.active { color: var(--text); opacity: 1; transform: scale(1.05); font-weight: 700; }
     .lyrics-empty {
       position: absolute; inset: 3rem 0 0;
@@ -476,6 +484,7 @@
       <button class="theme-btn" id="theme-toggle" aria-label="切換主題">
         <svg id="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
         <svg id="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display:none"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
+        <span id="theme-label"></span>
       </button>
     </div>
   </div>
@@ -656,6 +665,7 @@
           <p class="source-note" data-i18n="sp-note"></p>
         </div>
         <div class="song-info" id="song-info"></div>
+        <div class="song-info song-bg" id="song-bg"></div>
         <p class="card-section-head" id="view-album" style="margin-top:1.6rem"></p>
         <ol class="guide-list" id="track-list"></ol>
 
@@ -709,6 +719,7 @@
       moon.style.display = t === 'dark' ? '' : 'none';
       sun.style.display  = t === 'light' ? '' : 'none';
       try { localStorage.setItem('fk_theme', t); } catch(e) {}
+      try { updateThemeLabel(); } catch(e) {}   /* dict is defined further down; applyLang fills it in on load */
     }
     btn.addEventListener('click', () => setTheme(html.getAttribute('data-theme') === 'dark' ? 'light' : 'dark'));
     try {
@@ -726,12 +737,17 @@
       'lyrics-loading': '歌詞載入中…',
       'tr-on': '譯文：開', 'tr-off': '譯文：關',
       'tr-note': '歌詞譯文為機器翻譯（MyMemory），僅供參考；非官方譯詞。',
+      'bg-head': '背景（整理自訪談與媒體，不是官方網站的說明）',
+      'bg-none': '找不到訪談或報導提到這首歌的背景，因此不在此編造。',
+      'bg-sources': '來源',
       'si-head': '關於這首歌', 'si-album': '收錄專輯', 'si-track': '曲序', 'si-release': '發行日',
       'si-none': '官方網站沒有這首歌的背景說明，因此不在此編造。',
       'si-page': '官方頁面', 'si-credit': '官方頁面的製作資訊（摘要，非逐字）',
       'title-note': '中文曲名／專輯名：官方網站未提供中文名稱，採用通用譯名，並附原名。',
       'play-title': '在上方播放',
       'card-disc': '唱片作品',
+      'theme-to-light': '淺色',
+      'theme-to-dark': '深色',
       'card-plays': '累計播放排行',
       'plays-source': '累計播放次數為 Spotify 串流次數，數字整理自 <a href="https://kworb.net/spotify/artist/6bDWAcdtVR3WHz2xtiIPUi_songs.html" target="_blank" rel="noopener">kworb.net</a>（資料日期 2026/10/14）。這不是官方來源，數字會隨時間增加；只列出本頁可播放專輯內的歌曲。',
       'plays-more': '顯示全部 24 首',
@@ -814,12 +830,17 @@
       'lyrics-loading': 'Loading lyrics…',
       'tr-on': 'Translation: on', 'tr-off': 'Translation: off',
       'tr-note': 'Lyric translations are machine-generated (MyMemory) and unofficial.',
+      'bg-head': 'Background (compiled from interviews and media, not the official site)',
+      'bg-none': 'No interview or article about this song was found, so none is invented here.',
+      'bg-sources': 'Sources',
       'si-head': 'About this song', 'si-album': 'Album', 'si-track': 'Track', 'si-release': 'Released',
       'si-none': 'The official site gives no background text for this song, so none is invented here.',
       'si-page': 'Official page', 'si-credit': 'Credits from the official page (summary, not verbatim)',
       'title-note': '',
       'play-title': 'Play above',
       'card-disc': 'Discography',
+      'theme-to-light': 'Light',
+      'theme-to-dark': 'Dark',
       'card-plays': 'Most played of all time',
       'plays-source': 'Play counts are all-time Spotify streams as tracked by <a href="https://kworb.net/spotify/artist/6bDWAcdtVR3WHz2xtiIPUi_songs.html" target="_blank" rel="noopener">kworb.net</a> (data as of 2026/10/14). This is not an official source, and the numbers keep growing. Only songs from the albums playable on this page are listed.',
       'plays-more': 'Show all 24',
@@ -912,6 +933,16 @@
     document.getElementById('btn-en').classList.toggle('active', lang === 'en');
     try { localStorage.setItem('fk_lang', lang); } catch(e) {}
     updateDays();
+    updateThemeLabel();
+  }
+
+  /* The button names the mode it will switch to */
+  function updateThemeLabel() {
+    const label = document.getElementById('theme-label'), btn = document.getElementById('theme-toggle');
+    if (!label) return;
+    const text = dict[currentLang][document.documentElement.getAttribute('data-theme') === 'dark' ? 'theme-to-light' : 'theme-to-dark'];
+    label.textContent = text;
+    btn.setAttribute('aria-label', text);
   }
 
   /* Days until the Kaohsiung show (Oct 31, 2026, 19:00 Taiwan time), counted in Taiwan calendar days */
@@ -976,6 +1007,335 @@
     ['hehn', 4, 38080996], ['pre-prema', 1, 36213891], ['pre-prema', 2, 35436118], ['hehn', 3, 33987390],
     ['lasa', 9, 33869593], ['prema', 4, 31218508], ['hehn', 6, 31116504], ['prema', 2, 29818121],
   ];
+
+  /* Song backgrounds compiled from interviews and other published sources, for songs where the official
+     site has no background text. Quotes are word for word; each entry links the sources it summarises. */
+const BACKGROUND = {
+  "Casket Girl": {
+    "zh": "藤井風在 Apple Music 的曲目說明裡寫道：這首歌原名《Basket Boys》，是他為 FIBA 籃球世界盃的電視轉播寫音樂時誕生的；被困在洛杉磯錄音室裡，反而讓他有力氣繼續當藝術家，也終於看見一點希望。",
+    "en": "In his Apple Music notes Fujii says the song was originally titled “Basket Boys” and was born while he was writing music for the FIBA Basketball World Cup TV broadcast. Being stuck in a studio in LA somehow gave him the energy to keep going as an artist, and he finally found some kind of hope.",
+    "src": [
+      [
+        "Apple Music: Fujii Kaze’s own notes on Prema",
+        "https://music.apple.com/us/album/prema/1819419299"
+      ]
+    ]
+  },
+  "I Need U Back": {
+    "zh": "他在 Apple Music 寫道，這首歌直接表達了他的倦怠狀態與對人生新方向的渴望（This one directly expresses my burnt-out state and craving for a new direction in my life），製作參考 1980 年代末到 90 年代初 Jimmy Jam 與 Terry Lewis 的風格。他對 NME 說：「I'm very clear and honest on that song. I was very indifferent. I simply lost all of my passion or energy.」",
+    "en": "In his Apple Music notes Fujii writes that it “directly expresses my burnt-out state and craving for a new direction in my life”, with production inspired by the late-’80s to early-’90s style of Jimmy Jam and Terry Lewis. To NME he said: “I'm very clear and honest on that song. I was very indifferent. I simply lost all of my passion or energy.”",
+    "src": [
+      [
+        "Apple Music: Fujii Kaze’s own notes on Prema",
+        "https://music.apple.com/us/album/prema/1819419299"
+      ],
+      [
+        "NME interview",
+        "https://www.nme.com/features/music-interviews/fujii-kaze-prema-interview-3890259"
+      ]
+    ]
+  },
+  "Hachikō": {
+    "zh": "他在 Apple Music 寫道，這首歌代表他的玩心，以及願意嘗試新事物（This represents my playfulness and willingness to try something new）。對 NME 他說：「It's the only song that I worked on from scratch with other people.」也說：「I never thought about putting a little bit of Japanese into my English songs.」",
+    "en": "In his Apple Music notes Fujii writes: “This represents my playfulness and willingness to try something new.” To NME he said: “It's the only song that I worked on from scratch with other people” and “I never thought about putting a little bit of Japanese into my English songs.”",
+    "src": [
+      [
+        "Apple Music: Fujii Kaze’s own notes on Prema",
+        "https://music.apple.com/us/album/prema/1819419299"
+      ],
+      [
+        "NME interview",
+        "https://www.nme.com/features/music-interviews/fujii-kaze-prema-interview-3890259"
+      ]
+    ]
+  },
+  "Love Like This": {
+    "zh": "他在 Apple Music 寫道，這首歌的靈感來自 Gwen Stefani 的〈Cool〉，也是專輯裡最老的一首歌：「Inspired by Gwen Stefani's 'Cool,' this is the oldest tune on the album.」",
+    "en": "In his Apple Music notes Fujii writes: “Inspired by Gwen Stefani's 'Cool,' this is the oldest tune on the album.”",
+    "src": [
+      [
+        "Apple Music: Fujii Kaze’s own notes on Prema",
+        "https://music.apple.com/us/album/prema/1819419299"
+      ]
+    ]
+  },
+  "Prema": {
+    "zh": "他在 Apple Music 寫道：「I knew I needed the song called 'Prema,' and when I asked, God let me have it.」（我知道自己需要一首叫〈Prema〉的歌，我開口求，神就讓我擁有了它。）談到專輯名稱時他對 NME 說：「I always wanted to [feel] 100 per cent love, a little bit higher kind of love.」",
+    "en": "In his Apple Music notes Fujii writes: “I knew I needed the song called 'Prema,' and when I asked, God let me have it.” On the album title he told NME: “I always wanted to [feel] 100 per cent love, a little bit higher kind of love.”",
+    "src": [
+      [
+        "Apple Music: Fujii Kaze’s own notes on Prema",
+        "https://music.apple.com/us/album/prema/1819419299"
+      ],
+      [
+        "NME interview",
+        "https://www.nme.com/features/music-interviews/fujii-kaze-prema-interview-3890259"
+      ]
+    ]
+  },
+  "It Ain't Over": {
+    "zh": "他在 Apple Music 說，自己以前從沒在唱片裡吹過薩克斯風，是製作人 250 提議了這個做法（I never played the saxophone on a record before, but the producer 250 suggested it）。",
+    "en": "In his Apple Music notes Fujii says: “I never played the saxophone on a record before, but the producer 250 suggested it”.",
+    "src": [
+      [
+        "Apple Music: Fujii Kaze’s own notes on Prema",
+        "https://music.apple.com/us/album/prema/1819419299"
+      ]
+    ]
+  },
+  "You": {
+    "zh": "他在 Apple Music 寫道，和 Shy Carter 一起寫這些歌詞是美好的經驗：「Writing these lyrics with Shy Carter was a beautiful experience.」",
+    "en": "In his Apple Music notes Fujii writes: “Writing these lyrics with Shy Carter was a beautiful experience.”",
+    "src": [
+      [
+        "Apple Music: Fujii Kaze’s own notes on Prema",
+        "https://music.apple.com/us/album/prema/1819419299"
+      ]
+    ]
+  },
+  "Okay, Goodbye": {
+    "zh": "他在 Apple Music 寫道：「I've always sung about the importance of letting go, and so far, this is my favorite of them all.」（我一直在唱放下的重要，到目前為止，這是我最喜歡的一首。）",
+    "en": "In his Apple Music notes Fujii writes: “I've always sung about the importance of letting go, and so far, this is my favorite of them all.”",
+    "src": [
+      [
+        "Apple Music: Fujii Kaze’s own notes on Prema",
+        "https://music.apple.com/us/album/prema/1819419299"
+      ]
+    ]
+  },
+  "Forever Young": {
+    "zh": "他在 Apple Music 寫道：「When this melody came into my body in Bali, I knew I was finally gonna be able to finish the album.」（旋律在峇里島進入我身體的時候，我知道自己終於能完成這張專輯了。）",
+    "en": "In his Apple Music notes Fujii writes: “When this melody came into my body in Bali, I knew I was finally gonna be able to finish the album.”",
+    "src": [
+      [
+        "Apple Music: Fujii Kaze’s own notes on Prema",
+        "https://music.apple.com/us/album/prema/1819419299"
+      ]
+    ]
+  },
+  "grace": {
+    "zh": "這首歌是為「docomo future project」寫的（NTT docomo 創立 30 週年企劃，學生把藤井風未發行的歌拍成短片）。他表示用 grace 想表達類似「恵み」（恩惠）的意思，並呼籲大家不要放棄發光，每個人都擁有無限的愛、光與可能性。MV 全程在印度拍攝，包括他在哈里德瓦恆河沐浴的畫面。",
+    "en": "The song was written for the “docomo future project”, a campaign for NTT docomo’s 30th anniversary in which students turned an unreleased Fujii song into short films. Fujii said he used “grace” to mean something like a blessing (恵み), and urged people not to give up on shining, since everyone carries limitless love, light and potential. The music video was shot entirely in India, including a scene of him bathing in the Ganges at Haridwar.",
+    "src": [
+      [
+        "ja.wikipedia: grace",
+        "https://ja.wikipedia.org/wiki/Grace_(%E8%97%A4%E4%BA%95%E9%A2%A8%E3%81%AE%E6%9B%B2)"
+      ],
+      [
+        "Kyodo News PR Wire: docomo future project",
+        "https://kyodonewsprwire.jp/release/202203228948"
+      ]
+    ]
+  },
+  "Feelin' Go(o)d": {
+    "zh": "日文維基百科的作品列表記載：這首歌是 Landrin「GOOD TEA TIME」廣告歌曲，與 A・G・Cook 在洛杉磯製作，2024 年 7 月 26 日發行。",
+    "en": "The discography on Japanese Wikipedia lists it as the song for the Landrin “GOOD TEA TIME” commercial, produced with A. G. Cook in Los Angeles and released on July 26, 2024.",
+    "src": [
+      [
+        "ja.wikipedia: 藤井風 (discography)",
+        "https://ja.wikipedia.org/wiki/%E8%97%A4%E4%BA%95%E9%A2%A8"
+      ]
+    ]
+  },
+  "Workin' Hard": {
+    "zh": "2023 年 8 月 25 日發行的第 10 張單曲，是 2023 年 FIBA 籃球世界盃的主題曲，後來也用於 Dip 廣告（日文維基百科作品列表）。",
+    "en": "Released on August 25, 2023 as his 10th single, it was the theme of the 2023 FIBA Basketball World Cup and was later used in a Dip commercial (Japanese Wikipedia discography).",
+    "src": [
+      [
+        "ja.wikipedia: 藤井風 (discography)",
+        "https://ja.wikipedia.org/wiki/%E8%97%A4%E4%BA%95%E9%A2%A8"
+      ]
+    ]
+  },
+  "It's Alright": {
+    "zh": "收錄於 2026 年 4 月 3 日的《Pre: Prema》，MV 於 2026 年 4 月 23 日公開（日文維基百科）。我們沒有找到藤井風談這首歌的訪談。",
+    "en": "It is on Pre: Prema (April 3, 2026) and its music video came out on April 23, 2026 (Japanese Wikipedia). We found no interview in which Fujii talks about it.",
+    "src": [
+      [
+        "ja.wikipedia: 藤井風 (discography)",
+        "https://ja.wikipedia.org/wiki/%E8%97%A4%E4%BA%95%E9%A2%A8"
+      ]
+    ]
+  },
+  "Hana": {
+    "zh": "UDiscoverMusic 的報導（經英文維基百科轉述）指出，藤井風在首次亞洲巡演期間寫下這首歌，形容它是在「尋找內在的花，並且相信它」（searching for the flower within, and trusting in it），並把花的綻放與凋零比作人。它是富士電視台日劇《いちばんすきな花》的主題曲。",
+    "en": "UDiscoverMusic (as cited on Wikipedia) reports that Fujii wrote it during his first Asian tour and described it as being about “searching for the flower within, and trusting in it”, comparing the flower’s blooming and dying to people. It was the theme song of the Fuji TV drama My Beloved Flower (いちばんすきな花).",
+    "src": [
+      [
+        "UDiscoverMusic: Fujii Kaze Returns With New Single “Hana”",
+        "https://www.udiscovermusic.com/news/fujii-kaze-hana/"
+      ],
+      [
+        "Wikipedia: Hana (Fujii Kaze song)",
+        "https://en.wikipedia.org/wiki/Hana_(Fujii_Kaze_song)"
+      ]
+    ]
+  },
+  "Michi Teyu Ku (Overflowing)": {
+    "zh": "2024 年電影《四月になれば彼女は》的主題曲，也是他第一首真人電影主題曲（日文維基百科、Music Natalie 報導）。",
+    "en": "It is the theme song of the 2024 film April Come She Will (四月になれば彼女は), his first theme for a live-action film (Japanese Wikipedia, Music Natalie).",
+    "src": [
+      [
+        "ja.wikipedia: 藤井風 (discography)",
+        "https://ja.wikipedia.org/wiki/%E8%97%A4%E4%BA%95%E9%A2%A8"
+      ],
+      [
+        "Music Natalie: 藤井風が映画主題歌配信",
+        "https://natalie.mu/music/news/564529"
+      ],
+      [
+        "Wikipedia: Michiteyuku",
+        "https://en.wikipedia.org/wiki/Michiteyuku"
+      ]
+    ]
+  },
+  "masshiro (pure white)": {
+    "zh": "2025 年 2 月 28 日發行，是可口可樂日本「い・ろ・は・す」的廣告歌曲（日文維基百科作品列表）。",
+    "en": "Released on February 28, 2025, it was the song for Coca-Cola Japan’s I LOHAS commercial (Japanese Wikipedia discography).",
+    "src": [
+      [
+        "ja.wikipedia: 藤井風 (discography)",
+        "https://ja.wikipedia.org/wiki/%E8%97%A4%E4%BA%95%E9%A2%A8"
+      ]
+    ]
+  },
+  "Shinunoga E-Wa": {
+    "zh": "日文維基百科整理：他在專輯聆聽派對上說，副歌是搬到東京後在唐吉訶德（Don Quijote）購物時浮現的；他覺得旋律與歌詞很昭和，但搭上現代的陷阱（trap）風節拍，讓這首歌變得獨特。談到含意，他在 2022 年底的訪談中說，歌裡的「你」是所愛的人，也是自己內在最強的那個人；這首歌是與自己對話、努力接近理想自我的掙扎，他認為很少聽眾這樣解讀。在 NHK《MUSIC SPECIAL》他說：「そもそも日本では一番聴かれてなくて、でもワシは凄い好きな曲だった」（它原本在日本是聽的人最少的一首，但我超喜歡）。",
+    "en": "Japanese Wikipedia summarises: at the album listening party Fujii said the chorus came to him while shopping at Don Quijote after moving to Tokyo; he found the melody and words very Showa-era, and pairing them with a modern trap-style beat made the song distinctive. On the meaning, he said in late-2022 interviews that the “you” is a loved one and also the strongest person within himself, that the song is a dialogue with himself and a struggle to reach his ideal self, and that he believed few listeners read it that way. On NHK’s MUSIC SPECIAL he said: “そもそも日本では一番聴かれてなくて、でもワシは凄い好きな曲だった” (it was originally the least-listened song in Japan, but I loved it).",
+    "src": [
+      [
+        "ja.wikipedia: 死ぬのがいいわ",
+        "https://ja.wikipedia.org/wiki/%E6%AD%BB%E3%81%AC%E3%81%AE%E3%81%8C%E3%81%84%E3%81%84%E3%82%8F"
+      ],
+      [
+        "Model Press interview (Dec 29, 2022)",
+        "https://mdpr.jp/news/detail/3531088"
+      ],
+      [
+        "COCONUTS interview (Dec 29, 2022)",
+        "https://coconutsjapan.com/entertainment/post-93338/93338/"
+      ]
+    ]
+  },
+  "Kirari": {
+    "zh": "Honda「VEZEL」新車廣告歌曲，2021 年 5 月 3 日發行（日文維基百科、Music Natalie）。英文維基百科引用 Mikiki 的報導，說這首歌表達日常生活中「きらり」（瞬間閃現的光）時刻的重要。",
+    "en": "It was written as the song for the Honda VEZEL commercial and released on May 3, 2021 (Japanese Wikipedia, Music Natalie). English Wikipedia, citing Mikiki, says it expresses the importance of the “kirari” moments in daily life, kirari being a word for a momentary flash of light.",
+    "src": [
+      [
+        "ja.wikipedia: 藤井風 (discography)",
+        "https://ja.wikipedia.org/wiki/%E8%97%A4%E4%BA%95%E9%A2%A8"
+      ],
+      [
+        "Music Natalie: Kirari commercial song",
+        "https://natalie.mu/music/news/425449"
+      ],
+      [
+        "Mikiki: 藤井 風 “きらり”",
+        "https://mikiki.tokyo.jp/articles/-/28580"
+      ],
+      [
+        "Wikipedia: Kirari",
+        "https://en.wikipedia.org/wiki/Kirari_(Fujii_Kaze_song)"
+      ]
+    ]
+  },
+  "Matsuri": {
+    "zh": "這是專輯《LOVE ALL SERVE ALL》最後才動筆的一首歌。他在聆聽派對的自述中寫道：「第2のデビュー曲、とでも言ってもいいくらい今の自分にとって大切なお祝いソング。」（重要到幾乎可以稱作「第二首出道曲」的慶祝之歌。）《MUSICA》2022 年 5 月號的訪談提到，部分旋律在他國中時就有片段。他也說希望這首歌在自己的葬禮上播放。",
+    "en": "It was the last song he started on the album LOVE ALL SERVE ALL. In his listening-party notes he wrote: “第2のデビュー曲、とでも言ってもいいくらい今の自分にとって大切なお祝いソング。” (a celebration song so important to me now that it could be called a “second debut song”). A MUSICA interview (May 2022) says fragments of the melody date from his junior-high days, and he has said he wants it played at his funeral.",
+    "src": [
+      [
+        "ja.wikipedia: まつり",
+        "https://ja.wikipedia.org/wiki/%E3%81%BE%E3%81%A4%E3%82%8A_(%E8%97%A4%E4%BA%95%E9%A2%A8%E3%81%AE%E6%9B%B2)"
+      ],
+      [
+        "YouTube: LOVE ALL SERVE ALL Listening Party",
+        "https://www.youtube.com/watch?v=Haz1AGu9lKg"
+      ]
+    ]
+  },
+  "Tabiji": {
+    "zh": "TV 朝日週四日劇《にじいろカルテ》的主題曲，2021 年 3 月 1 日發行。為了寫這首歌，他探訪片場、見了演員與工作人員並讀了劇本。他說：「初めてのタイアップ作品になりました。こんなに難しいとは思いませんでした。」，並想為這部戲添上「もっと自然で、自分の内側から勝手に溢れてくるような、あったかい音楽」。",
+    "en": "It was the theme of the TV Asahi Thursday drama にじいろカルテ (Nijiiro Karte), released on March 1, 2021. To write it Fujii visited the set, met the cast and staff and read the script. He said: “初めてのタイアップ作品になりました。こんなに難しいとは思いませんでした。” (my first tie-up, and I didn’t think it would be this hard), and wanted to add “もっと自然で、自分の内側から勝手に溢れてくるような、あったかい音楽” (warm music that feels more natural, as if overflowing from within).",
+    "src": [
+      [
+        "ja.wikipedia: 旅路",
+        "https://ja.wikipedia.org/wiki/%E6%97%85%E8%B7%AF_(%E8%97%A4%E4%BA%95%E9%A2%A8%E3%81%AE%E6%9B%B2)"
+      ],
+      [
+        "SPICE interview",
+        "https://spice.eplus.jp/articles/281143"
+      ]
+    ]
+  },
+  "Nan-Nan": {
+    "zh": "日文維基百科：這是他的第一首數位單曲，在他高中畢業、19 歲時寫下。歌曲談的是每個人內在的「更高的自我」，他形容那是沒有自我、嫉妒等負面情緒的愛，歌中的更高自我對有缺點的自己說話，催促他走向更好的路。在 NHK《MUSIC SPECIAL》（2021 年 10 月）他說，他先做旋律，再找「被旋律呼喚的詞」；歌詞用岡山腔，他說是因為「ワシ」這個字的節奏需要方言才有律動，不是在表明身分（COCONUTS）。",
+    "en": "Japanese Wikipedia: his first digital single, written at 19 after finishing high school. The song is about the “higher self” in everyone, which he describes as love free of ego, jealousy and other negative feelings; in the song the higher self speaks to his flawed self and urges him toward a better path. On NHK’s MUSIC SPECIAL (October 2021) he said he builds the melody first and then looks for words “called by the melody”. The lyrics use Okayama dialect because, he said, the rhythm of the word “ワシ” needed it for the groove, not as a statement of identity (COCONUTS).",
+    "src": [
+      [
+        "ja.wikipedia: 何なんw",
+        "https://ja.wikipedia.org/wiki/%E4%BD%95%E3%81%AA%E3%82%93w"
+      ],
+      [
+        "COCONUTS: Nan-Nan interview",
+        "https://coconutsjapan.com/entertainment/post-69198/69198/"
+      ]
+    ]
+  },
+  "YASASHISA": {
+    "zh": "日文維基百科轉述他在《HELP EVER HURT NEVER》聆聽派對自述中的說法：他把「優しさ」視為一種強大，並稱這首歌是寫給溫柔的情歌。",
+    "en": "Japanese Wikipedia relays his self-written notes from the HELP EVER HURT NEVER listening party: he describes kindness as a kind of strength and calls the song a love song to kindness.",
+    "src": [
+      [
+        "ja.wikipedia: HELP EVER HURT NEVER",
+        "https://ja.wikipedia.org/wiki/HELP_EVER_HURT_NEVER"
+      ]
+    ]
+  },
+  "damn": {
+    "zh": "他在單曲自述中說：「セルフラブソングとでも言いましょう」（姑且說這是一首自愛之歌）。",
+    "en": "In his notes for the single he said: “セルフラブソングとでも言いましょう” (let’s call it a self-love song).",
+    "src": [
+      [
+        "ja.wikipedia: LOVE ALL SERVE ALL",
+        "https://ja.wikipedia.org/wiki/LOVE_ALL_SERVE_ALL"
+      ]
+    ]
+  },
+  "Seishun Sick": {
+    "zh": "2020 年 10 月 29 日在日本武道館「NAN-NAN SHOW 2020」首演，10 月 30 日發行。MV 公開時藤井風寫道：「今回はティザーも、語る言葉も何もありませんでした。要りませんでした。ただ、感じてもらえますように。」（這次沒有預告，也沒有要說的話，不需要，只希望大家能感受到。）",
+    "en": "It premiered at the Nippon Budokan show “NAN-NAN SHOW 2020” on October 29, 2020 and was released the next day. When the music video came out Fujii wrote: “今回はティザーも、語る言葉も何もありませんでした。要りませんでした。ただ、感じてもらえますように。” (this time there was no teaser and no words; they weren’t needed; I just hope you can feel it).",
+    "src": [
+      [
+        "ja.wikipedia: 青春病",
+        "https://ja.wikipedia.org/wiki/%E9%9D%92%E6%98%A5%E7%97%85"
+      ],
+      [
+        "Musicman: MV premiere",
+        "https://www.musicman.co.jp/artist/363215"
+      ]
+    ]
+  },
+  "Garden": {
+    "zh": "日文維基百科的作品列表記載，這首歌是 2023 年 Naturelab「Landrin」廣告歌曲，藤井風也在廣告中擔任旁白。",
+    "en": "The discography on Japanese Wikipedia lists it as the song for the 2023 Naturelab Landrin commercial, in which Fujii also narrates.",
+    "src": [
+      [
+        "ja.wikipedia: 藤井風 (discography)",
+        "https://ja.wikipedia.org/wiki/%E8%97%A4%E4%BA%95%E9%A2%A8"
+      ]
+    ]
+  },
+  "MO-EH-YO (Ignite)": {
+    "zh": "日文維基百科作品列表：這首歌與 2021 年 Google 企劃「じぶんらしく燃えよ」有關，在日產體育場的直播中首演，MV 全程使用 Google Pixel 6 拍攝。",
+    "en": "Japanese Wikipedia’s discography ties it to Google’s 2021 “じぶんらしく燃えよ” project: it debuted at the Nissan Stadium livestream and its music video was shot entirely on a Google Pixel 6.",
+    "src": [
+      [
+        "ja.wikipedia: 藤井風 (discography)",
+        "https://ja.wikipedia.org/wiki/%E8%97%A4%E4%BA%95%E9%A2%A8"
+      ]
+    ]
+  }
+};
 
   /* Chinese titles: only for songs whose official title is Japanese (no official Chinese title exists,
      so these are the common renderings). English-only official titles stay in English. */
@@ -1081,9 +1441,30 @@
       const t = album.tracks[trackIdx];
       titleEl.textContent = t ? trackName(t) : '—';
       renderInfo();
+      renderBackground();
     }
 
     /* Song background block: official facts only */
+    /* Background compiled from interviews and media (separate from the official-site block above) */
+    function renderBackground() {
+      const d = dict[currentLang], t = album.tracks[trackIdx];
+      const bgEl = document.getElementById('song-bg');
+      if (!t) { bgEl.innerHTML = ''; return; }
+      const b = BACKGROUND[t[0]];
+      bgEl.innerHTML = '';
+      const head = document.createElement('h4'); head.className = 'bg-head'; head.textContent = d['bg-head']; bgEl.appendChild(head);
+      if (!b) {
+        const p = document.createElement('p'); p.className = 'si-meta'; p.textContent = d['bg-none']; bgEl.appendChild(p);
+        return;
+      }
+      const p = document.createElement('p'); p.className = 'bg-text'; p.textContent = zhMode() ? b.zh : b.en; bgEl.appendChild(p);
+      const s = document.createElement('p'); s.className = 'source-note';
+      s.appendChild(document.createTextNode(d['bg-sources'] + '：'));
+      b.src.forEach(([label, url]) => {
+        const a = document.createElement('a'); a.href = url; a.target = '_blank'; a.rel = 'noopener'; a.textContent = label; s.appendChild(a);
+      });
+      bgEl.appendChild(s);
+    }
     function renderInfo() {
       const d = dict[currentLang], t = album.tracks[trackIdx];
       if (!t) { infoEl.innerHTML = ''; return; }
