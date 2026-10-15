@@ -379,6 +379,79 @@
       .guide-item { grid-template-columns: 2rem 1fr; }
       .guide-links { grid-column: 2; padding-bottom: .4rem; }
     }
+    button.g-link { cursor: pointer; font: inherit; padding: 0; }
+    .guide-item.playing .guide-n { color: var(--ui-accent); }
+    .guide-item.playing .guide-title { color: var(--ui-accent); }
+
+    /* ── Player + synced lyrics ── */
+    .player-wrap {
+      display: grid;
+      grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr);
+      gap: 1rem;
+      padding: 1rem 0 .5rem;
+      align-items: stretch;
+    }
+    .player-video {
+      position: relative;
+      aspect-ratio: 16 / 9;
+      background: #000;
+      border-radius: var(--radius-md);
+      overflow: hidden;
+    }
+    .player-video iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; }
+    .lyrics-panel {
+      position: relative;
+      background: var(--ui-surface);
+      border: 1px solid var(--ui-line);
+      border-radius: var(--radius-md);
+      min-height: 14rem;
+      overflow: hidden;
+    }
+    .lyrics-inner {
+      position: absolute; inset: 0;
+      display: flex; flex-direction: column;
+    }
+    .lyrics-head {
+      padding: .65rem .9rem;
+      font-size: .72rem;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+      color: var(--ui-muted);
+      border-bottom: 1px solid var(--ui-line);
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    }
+    .lyrics-lines {
+      flex: 1;
+      overflow-y: auto;
+      padding: 40% .9rem;
+      scroll-behavior: smooth;
+      -webkit-mask-image: linear-gradient(transparent, #000 18%, #000 82%, transparent);
+              mask-image: linear-gradient(transparent, #000 18%, #000 82%, transparent);
+    }
+    .lyric-line {
+      font-size: .95rem;
+      line-height: 1.6;
+      padding: .25rem 0;
+      color: var(--ui-muted);
+      opacity: .55;
+      cursor: pointer;
+      transition: color .25s, opacity .25s, transform .25s;
+      transform-origin: left center;
+    }
+    .lyric-line.active { color: var(--ui-accent); opacity: 1; transform: scale(1.05); font-weight: 700; }
+    .lyrics-empty {
+      position: absolute; inset: 2.4rem 0 0;
+      display: flex; align-items: center; justify-content: center;
+      padding: 1rem 1.2rem;
+      text-align: center;
+      font-size: .82rem;
+      line-height: 1.6;
+      color: var(--ui-muted);
+    }
+    @media (max-width: 720px) {
+      .player-wrap { grid-template-columns: 1fr; }
+      .lyrics-panel { min-height: 0; height: 15rem; }
+    }
 
     /* ── Album grid ── */
     .album-grid {
@@ -599,6 +672,16 @@
       <div class="info-card-body">
         <div class="prose" style="padding-bottom:.75rem;">
           <p data-i18n="guide-intro">不知從何聽起？以下六首是認識藤井風的最佳起點。</p>
+        </div>
+        <div class="player-wrap">
+          <div class="player-video"><div id="yt-player"></div></div>
+          <div class="lyrics-panel">
+            <div class="lyrics-inner">
+              <div class="lyrics-head" id="lyrics-title">—</div>
+              <div class="lyrics-lines" id="lyrics-lines"></div>
+            </div>
+            <div class="lyrics-empty" id="lyrics-empty" data-i18n="lyrics-empty">此曲尚未加入同步歌詞。</div>
+          </div>
         </div>
         <ul class="guide-list">
 
@@ -864,6 +947,8 @@
       'fact-debut-val':'2020年，首張專輯《Help Ever Hurt Never》',
       'card-guide':    '新手聆聽指南',
       'guide-intro':   '不知從何聽起？以下六首是認識藤井風的最佳起點。',
+      'lyrics-empty':  '此曲尚未加入同步歌詞。',
+      'play-title':    '在上方播放',
       'g1-desc':       '他的名片。讓人胸口發緊的鋼琴與靈魂。第一首聽這首。',
       'g2-desc':       '輕盈閃亮，讓人忍不住跳舞。陽光版藤井風。',
       'g3-desc':       '現場必備神曲。全場一起喊「まつり」，世界短暫消失。',
@@ -902,6 +987,8 @@
       'fact-debut-val':'2020 — Help Ever Hurt Never',
       'card-guide':    'Beginner\'s Listening Guide',
       'guide-intro':   'Not sure where to start? These six tracks are the best introduction to Fujii Kaze.',
+      'lyrics-empty':  'No synced lyrics have been added for this track yet.',
+      'play-title':    'Play above',
       'g1-desc':       'His calling card. Piano and soul that tighten something in your chest. Start here.',
       'g2-desc':       'Light, bright, impossible not to move to. The sunny side of Fujii Kaze.',
       'g3-desc':       'The live anthem. A stadium shouting "matsuri" together makes the world briefly stop.',
@@ -945,6 +1032,103 @@
       if (s && dict[s]) { applyLang(s); return; }
     } catch(e) {}
     applyLang('zh-TW');
+  })();
+
+  /* ── Embedded player + synced lyrics ──
+     LYRICS maps a YouTube video id to [{ t: seconds, text: 'line' }, ...] sorted by t.
+     Only add lyrics you are licensed to display. */
+  const LYRICS = {};
+
+  (function () {
+    const items = Array.from(document.querySelectorAll('.guide-item'));
+    const tracks = items.map(li => {
+      const a = li.querySelector('a[href*="youtube.com/watch"]');
+      const vid = a ? new URL(a.href).searchParams.get('v') : null;
+      return { li, vid, title: li.querySelector('.guide-title').textContent.trim() };
+    }).filter(t => t.vid);
+    if (!tracks.length) return;
+
+    const linesEl = document.getElementById('lyrics-lines');
+    const titleEl = document.getElementById('lyrics-title');
+    const emptyEl = document.getElementById('lyrics-empty');
+    let player = null, current = null, cues = [], activeIdx = -1, timer = null;
+
+    function renderLyrics(vid) {
+      cues = LYRICS[vid] || [];
+      activeIdx = -1;
+      linesEl.innerHTML = '';
+      emptyEl.style.display = cues.length ? 'none' : '';
+      cues.forEach((c, i) => {
+        const d = document.createElement('div');
+        d.className = 'lyric-line';
+        d.textContent = c.text;
+        d.addEventListener('click', () => { if (player) { player.seekTo(c.t, true); player.playVideo(); } });
+        linesEl.appendChild(d);
+      });
+    }
+
+    function select(track, autoplay) {
+      current = track;
+      tracks.forEach(t => t.li.classList.toggle('playing', t === track));
+      titleEl.textContent = track.title;
+      renderLyrics(track.vid);
+      if (player && player.loadVideoById) {
+        autoplay ? player.loadVideoById(track.vid) : player.cueVideoById(track.vid);
+      }
+    }
+
+    function tick() {
+      if (!player || !cues.length) return;
+      const t = player.getCurrentTime();
+      let idx = -1;
+      for (let i = 0; i < cues.length; i++) { if (cues[i].t <= t) idx = i; else break; }
+      if (idx === activeIdx) return;
+      activeIdx = idx;
+      const nodes = linesEl.children;
+      for (let i = 0; i < nodes.length; i++) nodes[i].classList.toggle('active', i === idx);
+      if (idx >= 0) {
+        const n = nodes[idx];
+        linesEl.scrollTo({ top: n.offsetTop - linesEl.clientHeight / 2 + n.offsetHeight / 2, behavior: 'smooth' });
+      }
+    }
+
+    tracks.forEach(t => {
+      const btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'g-link';
+      btn.setAttribute('data-title-i18n', 'play-title');
+      btn.title = dict[currentLang]['play-title'];
+      btn.innerHTML = '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>';
+      btn.addEventListener('click', () => {
+        select(t, true);
+        document.querySelector('.player-wrap').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      });
+      t.li.querySelector('.guide-links').prepend(btn);
+    });
+    const origApply = applyLang;
+    applyLang = function (lang) {
+      origApply(lang);
+      document.querySelectorAll('[data-title-i18n]').forEach(el => { el.title = dict[lang][el.getAttribute('data-title-i18n')]; });
+    };
+
+    select(tracks[0], false);
+
+    window.onYouTubeIframeAPIReady = function () {
+      player = new YT.Player('yt-player', {
+        videoId: current.vid,
+        playerVars: { playsinline: 1, rel: 0, modestbranding: 1 },
+        events: {
+          onStateChange: e => {
+            clearInterval(timer);
+            if (e.data === YT.PlayerState.PLAYING) timer = setInterval(tick, 250);
+            else tick();
+          }
+        }
+      });
+    };
+    const s = document.createElement('script');
+    s.src = 'https://www.youtube.com/iframe_api';
+    document.head.appendChild(s);
   })();
 </script>
 </body>
