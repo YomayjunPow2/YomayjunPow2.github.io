@@ -338,7 +338,9 @@
 
     /* ── Discography ── */
     .album-meta { display: block; padding-top: .8rem; }
-    .album-name, .album-type { display: block; }
+    .album-name, .album-zh, .album-type { display: block; }
+    .album-zh { font-family: var(--serif); font-size: .95rem; color: var(--accent); }
+    .album-zh[hidden] { display: none; }
     .album-name { font-family: var(--serif); font-weight: 700; font-size: 1.2rem; line-height: 1.3; }
     .album-type { font-size: .9rem; color: var(--muted); }
 
@@ -655,18 +657,13 @@
         </div>
         <div class="song-info" id="song-info"></div>
         <ol class="guide-list" id="track-list"></ol>
-      </div>
-    </details>
 
-    <!-- Most played -->
-    <details class="info-card" open id="most-played">
-      <summary class="info-card-toggle">
-        <span class="info-card-label" data-i18n="card-plays"></span>
-      </summary>
-      <div class="info-card-body">
-        <ol class="play-list" id="play-list"></ol>
-        <button type="button" class="more-btn" id="plays-more"></button>
-        <p class="source-note" data-i18n="plays-source"></p>
+        <div id="most-played">
+          <p class="card-section-head" style="margin-top:2.8rem" data-i18n="card-plays"></p>
+          <ol class="play-list" id="play-list"></ol>
+          <button type="button" class="more-btn" id="plays-more"></button>
+          <p class="source-note" data-i18n="plays-source"></p>
+        </div>
       </div>
     </details>
 
@@ -1019,12 +1016,21 @@
     let album = ALBUMS[0], trackIdx = 0, mode = 'yt';
     let player = null, ready = false, apiReady = false, pending = null, cues = [], activeIdx = -1, timer = null, lyricsFor = null;
 
+    function fillAlbumZh(b, a) {
+      const z = b.querySelector('.album-zh');
+      z.textContent = zhMode() && ZH_ALBUM[a.id] ? ZH_ALBUM[a.id] : '';
+      z.hidden = !z.textContent;
+    }
     function fullTitle(t) { return t[1] ? t[0] + ' ' + t[1] : t[0]; }
     const zhMode = () => currentLang === 'zh-TW';
     function trackName(t) { return zhMode() && ZH[t[0]] ? ZH[t[0]] : t[0]; }
     function albumName(a) { return zhMode() && ZH_ALBUM[a.id] ? a.title + '　' + ZH_ALBUM[a.id] : a.title; }
-    /* original-title line shown under a translated title */
-    function origLine(t) { return zhMode() && ZH[t[0]] ? fullTitle(t) : (t[1] || ''); }
+    /* Stacked names: the official (original) title first, the Chinese title below it.
+       In English mode the line below is the Japanese title, as before. */
+    function nameLines(t) {
+      if (zhMode()) return { main: fullTitle(t), sub: ZH[t[0]] && ZH[t[0]] !== t[1] ? ZH[t[0]] : '' };
+      return { main: t[0], sub: t[1] || '' };
+    }
 
     /* Album covers */
     ALBUMS.forEach(a => {
@@ -1033,8 +1039,9 @@
       b.className = 'album-card';
       b.dataset.id = a.id;
       b.innerHTML = '<img class="album-art" src="' + a.art + '" alt="" loading="lazy" width="440" height="440">' +
-        '<span class="album-meta"><span class="album-name"></span><span class="album-type"></span></span>';
-      b.querySelector('.album-name').textContent = albumName(a);
+        '<span class="album-meta"><span class="album-name"></span><span class="album-zh"></span><span class="album-type"></span></span>';
+      b.querySelector('.album-name').textContent = a.title;
+      fillAlbumZh(b, a);
       b.querySelector('.album-type').textContent = a.tag;
       b.addEventListener('click', () => selectAlbum(a, 0, false));
       gridEl.appendChild(b);
@@ -1049,9 +1056,10 @@
         li.innerHTML = '<span class="guide-n"></span><div class="guide-info"><div class="guide-title"></div><div class="guide-title-jp"></div></div>' +
           '<div class="guide-links"><button type="button" class="g-link play"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg></button></div>';
         li.querySelector('.guide-n').textContent = i + 1;
-        li.querySelector('.guide-title').textContent = trackName(t);
+        const nl = nameLines(t);
+        li.querySelector('.guide-title').textContent = nl.main;
         const jp = li.querySelector('.guide-title-jp');
-        if (origLine(t)) jp.textContent = origLine(t); else jp.remove();
+        if (nl.sub) jp.textContent = nl.sub; else jp.remove();
         const btn = li.querySelector('button');
         btn.title = dict[currentLang]['play-title'];
         btn.setAttribute('aria-label', dict[currentLang]['play-title'] + ': ' + trackName(t));
@@ -1078,7 +1086,8 @@
       const rel = (info && info.rel) || ALBUM_REL[album.id];
       const esc = x => String(x).replace(/[&<>]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' }[c]));
       const url = 'https://fujiikaze.com/music/' + (info && info.page ? info.page : SLUG[album.id]) + '/';
-      let h = '<h4>' + esc(trackName(t)) + (origLine(t) ? '<span class="orig">' + esc(origLine(t)) + '</span>' : '') + '</h4>';
+      const nl = nameLines(t);
+      let h = '<h4>' + esc(nl.main) + (nl.sub ? '<span class="orig">' + esc(nl.sub) + '</span>' : '') + '</h4>';
       h += '<p class="si-meta">' + d['si-album'] + '：' + esc(albumName(album)) + '　·　' + d['si-track'] + ' ' + (trackIdx + 1) + '/' + album.tracks.length +
         (rel ? '　·　' + d['si-release'] + '：' + rel : '') + '</p>';
       if (info) h += '<p><span class="si-meta">' + d['si-credit'] + '</span><br>' + esc(zhMode() ? info.zh : info.en) + (zhMode() ? '<br><span lang="en" class="si-meta">' + esc(info.en) + '</span>' : '') + '</p>';
@@ -1193,9 +1202,10 @@
           '<span class="play-meter"><span class="play-count"></span><span class="play-bar"><span></span></span></span>' +
           '<button type="button" class="g-link play" data-album="' + albumId + '" data-idx="' + idx + '"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg></button>';
         li.querySelector('.play-rank').textContent = i + 1;
-        li.querySelector('.play-title').textContent = trackName(t);
+        const nl = nameLines(t);
+        li.querySelector('.play-title').textContent = nl.main;
         const o = li.querySelector('.play-orig');
-        if (origLine(t)) o.textContent = origLine(t); else o.remove();
+        if (nl.sub) o.textContent = nl.sub; else o.remove();
         li.querySelector('.play-count').textContent = n.toLocaleString('en-US');
         li.querySelector('.play-bar > span').style.width = (n / max * 100).toFixed(1) + '%';
         const btn = li.querySelector('button');
@@ -1209,14 +1219,15 @@
     document.getElementById('plays-more').addEventListener('click', () => { playsAll = !playsAll; renderPlays(); });
 
     function refreshLang() {
-      gridEl.querySelectorAll('.album-card').forEach(b => { b.querySelector('.album-name').textContent = albumName(ALBUMS.find(a => a.id === b.dataset.id)); });
+      gridEl.querySelectorAll('.album-card').forEach(b => { fillAlbumZh(b, ALBUMS.find(a => a.id === b.dataset.id)); });
       renderTracks(); markPlaying(); syncTrBtn(); renderPlays();
       document.querySelectorAll('.prema-item').forEach(li => {
         const b = li.querySelector('button[data-album]');
         const a = ALBUMS.find(x => x.id === b.dataset.album), t = a.tracks[Number(b.dataset.idx)];
         const el = li.querySelector('.prema-t');
-        el.textContent = trackName(t);
-        if (origLine(t)) { el.appendChild(document.createTextNode(' ')); const o = document.createElement('span'); o.className = 'orig'; o.textContent = origLine(t); el.appendChild(o); }
+        const nl = nameLines(t);
+        el.textContent = nl.main;
+        if (nl.sub) { el.appendChild(document.createTextNode(' ')); const o = document.createElement('span'); o.className = 'orig'; o.textContent = nl.sub; el.appendChild(o); }
       });
       fillTranslations();
     }

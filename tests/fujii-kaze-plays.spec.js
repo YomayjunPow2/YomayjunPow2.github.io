@@ -26,7 +26,8 @@ test.describe('most played of all time', () => {
 
   test('shows the ten most played songs in descending order, with a way to see the rest', async ({ page }) => {
     await openPage(page, { lang: 'en' });
-    await expect(page.locator('#most-played .info-card-label')).toHaveText('Most played of all time');
+    await expect(page.locator('#discography #most-played .card-section-head')).toHaveText('Most played of all time');
+    await expect(page.locator('details#most-played')).toHaveCount(0);        // part of Discography, not a section of its own
     await expect(rows(page).locator('.play-title')).toHaveText(TOP10);
     await expect(rows(page).first().locator('.play-count')).toHaveText('855,289,744');
 
@@ -65,8 +66,8 @@ test.describe('most played of all time', () => {
   test('titles follow the language switch, like the track lists', async ({ page }) => {
     await openPage(page, { lang: 'en' });
     await page.getByRole('button', { name: '中' }).click();
-    await expect(rows(page).first().locator('.play-title')).toHaveText('死了也好');
-    await expect(rows(page).first().locator('.play-orig')).toContainText('死ぬのがいいわ');
+    await expect(rows(page).first().locator('.play-title')).toHaveText('Shinunoga E-Wa 死ぬのがいいわ');
+    await expect(rows(page).first().locator('.play-orig')).toHaveText('死了也好');   // translation below the original
   });
 
   test('playing a ranked song starts it in its album', async ({ page }) => {

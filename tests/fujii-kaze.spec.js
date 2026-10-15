@@ -36,8 +36,10 @@ test.describe('listening to an album', () => {
 
     await expect(page.locator('#now-album')).toHaveText('LOVE ALL SERVE ALL');
     await expect(page.locator('#track-list .guide-item')).toHaveCount(11);
-    await expect(page.locator('#track-list .guide-title').first()).toHaveText('閃閃發光');
-    await expect(page.locator('#track-list .guide-title').last()).toHaveText('旅途');
+    await expect(page.locator('#track-list .guide-title').first()).toHaveText('Kirari きらり');
+    await expect(page.locator('#track-list .guide-title-jp').first()).toHaveText('閃閃發光');
+    await expect(page.locator('#track-list .guide-title').last()).toHaveText('Tabiji 旅路');
+    await expect(page.locator('#track-list .guide-title-jp').last()).toHaveText('旅途');
 
     const { created } = await ytState(page);
     expect(created.at(-1).vars).toMatchObject({ listType: 'playlist', list: 'OLAK5uy_mIIJtFRIoYVkeKLz4WaN6qgU0BXemlgHA', autoplay: 0 });
@@ -48,7 +50,7 @@ test.describe('listening to an album', () => {
     await openPage(page);
     await page.locator('.album-card', { hasText: 'Feelin’ Good' }).click();
     await expect(page.locator('#track-list .guide-item')).toHaveCount(23);
-    await expect(page.locator('#track-list .guide-title').nth(22)).toHaveText('祭典');
+    await expect(page.locator('#track-list .guide-title').nth(22)).toHaveText('Matsuri まつり');
   });
 
   test('Prema Disc 2 buttons play the matching Pre: Prema track', async ({ page }) => {
@@ -117,8 +119,10 @@ test.describe('official content', () => {
     await openPage(page);
     const names = await page.locator('.album-name').allTextContents();
     expect(names).toEqual([
-      'Prema　至上的愛', 'Pre: Prema', 'Fujii Kaze Stadium Live “Feelin’ Good”',
+      'Prema', 'Pre: Prema', 'Fujii Kaze Stadium Live “Feelin’ Good”',
       'Best of Fujii Kaze 2020-2024', 'LOVE ALL SERVE ALL', 'HELP EVER HURT NEVER',
     ]);
+    // the Chinese album title sits below the original name
+    await expect(page.locator('.album-zh:visible')).toHaveText(['至上的愛']);
   });
 });

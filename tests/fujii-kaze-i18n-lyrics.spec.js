@@ -22,7 +22,7 @@ test.describe('titles', () => {
     Object.values(zh).forEach(v => expect(v).toMatch(CJK));
   });
 
-  test('ZH mode: every row of every album shows the Chinese title over the original; English-only rows stay English', async ({ page }) => {
+  test('ZH mode: every row shows the original title, with the Chinese title below it; English-only rows stay English', async ({ page }) => {
     await openPage(page);
     for (const a of await albums(page)) {
       await pick(page, a.id);
@@ -31,10 +31,10 @@ test.describe('titles', () => {
       const zh = await zhMap(page);
       for (let i = 0; i < a.tracks.length; i++) {
         const [en, jp] = a.tracks[i];
-        await expect(rows.nth(i).locator('.guide-title')).toHaveText(zh[en] || en);
+        await expect(rows.nth(i).locator('.guide-title')).toHaveText(jp ? en + ' ' + jp : en);
         const sub = rows.nth(i).locator('.guide-title-jp');
-        if (zh[en]) await expect(sub).toHaveText(jp ? en + ' ' + jp : en);
-        else await expect(sub).toHaveCount(jp ? 1 : 0);
+        if (zh[en] && zh[en] !== jp) await expect(sub).toHaveText(zh[en]);   // translation below the original
+        else await expect(sub).toHaveCount(0);                               // nothing to add (English-only, or identical to the Japanese)
       }
     }
   });
@@ -52,14 +52,14 @@ test.describe('titles', () => {
     await expect(page.locator('#lyrics-title')).not.toHaveText(CJK);
   });
 
-  test('the same song has the same Chinese title on every album', async ({ page }) => {
+  test('the same song has the same Chinese title below it on every album', async ({ page }) => {
     await openPage(page);
-    const seen = {};
-    for (const [album, idx] of [['pre-prema', 4], ['live', 3], ['best-of', 4]]) {          // all “Hana”
-      await page.evaluate(([a, i]) => window.playAlbumTrack(a, i), [album, idx]);
-      seen[album] = await page.locator('#lyrics-title').textContent();
+    for (const [album, idx] of [['lasa', 0], ['live', 8], ['best-of', 3]]) {                  // all “Kirari”
+      await pick(page, album);
+      const row = page.locator('#track-list .guide-item').nth(idx);
+      await expect(row.locator('.guide-title')).toHaveText('Kirari きらり');
+      await expect(row.locator('.guide-title-jp')).toHaveText('閃閃發光');
     }
-    expect(new Set(Object.values(seen))).toEqual(new Set(['花']));
   });
 
   test('switching language relabels everything live, without reloading', async ({ page }) => {
@@ -68,10 +68,13 @@ test.describe('titles', () => {
     await page.getByRole('button', { name: 'EN' }).click();
     await expect(page.locator('#track-list .guide-title').nth(1)).toHaveText('Mo-Eh-Wa');
     await expect(page.locator('.album-name').first()).toHaveText('Prema');
+    await expect(page.locator('.album-zh:visible')).toHaveCount(0);
     await expect(page.locator('#track-list .guide-item').nth(1).locator('button')).toHaveAttribute('aria-label', /: Mo-Eh-Wa$/);
     await page.getByRole('button', { name: '中' }).click();
-    await expect(page.locator('#track-list .guide-title').nth(1)).toHaveText('夠了啦');
-    await expect(page.locator('.album-name').first()).toHaveText('Prema　至上的愛');
+    await expect(page.locator('#track-list .guide-title').nth(1)).toHaveText('Mo-Eh-Wa もうええわ');
+    await expect(page.locator('#track-list .guide-title-jp').nth(1)).toHaveText('夠了啦');
+    await expect(page.locator('.album-name').first()).toHaveText('Prema');
+    await expect(page.locator('.album-zh:visible')).toHaveText(['至上的愛']);
     await expect(page.locator('#track-list .guide-item').nth(1).locator('button')).toHaveAttribute('aria-label', /夠了啦/);
   });
 
@@ -81,8 +84,11 @@ test.describe('titles', () => {
     const n = await items.count();
     expect(n).toBe(16);                                             // 9 + 7
     const hana = items.filter({ has: page.locator('button[data-album="pre-prema"][data-idx="4"]') });
-    await expect(hana.locator('.prema-t')).toContainText('花');
-    await expect(hana.locator('.prema-t .orig')).toContainText('Hana');
+    await expect(hana.locator('.prema-t')).toHaveText('Hana 花');           // Chinese title is the same as the Japanese: shown once
+    await expect(hana.locator('.prema-t .orig')).toHaveCount(0);
+    const michi = items.filter({ has: page.locator('button[data-album="pre-prema"][data-idx="5"]') });
+    await expect(michi.locator('.prema-t')).toContainText('Michi Teyu Ku (Overflowing) 満ちてゆく');
+    await expect(michi.locator('.prema-t .orig')).toHaveText('逐漸盈滿');   // translation below the original
     await page.getByRole('button', { name: 'EN' }).click();
     await expect(hana.locator('.prema-t')).toHaveText('Hana 花');
     await hana.locator('button').click();
