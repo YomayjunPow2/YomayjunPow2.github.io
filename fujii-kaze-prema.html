@@ -1,0 +1,1264 @@
+<!DOCTYPE html>
+<html lang="zh-Hant-TW" data-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>藤井風 Fujii Kaze — Prema World Tour 高雄</title>
+  <meta name="theme-color" content="#101a33" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Shippori+Mincho:wght@400;500;700&family=Hanken+Grotesk:wght@400;500;700&family=Noto+Sans+TC:wght@400;500;700&family=Noto+Sans+JP:wght@400;500;700&family=Noto+Serif+TC:wght@500;700&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    /* ── Design tokens: indigo cloth (Okayama denim) + one vermilion seal ── */
+    :root {
+      --bg:      #101a33;
+      --raised:  #182546;
+      --text:    #eceae3;
+      --muted:   #a3aec8;
+      --line:    rgba(236,234,227,.18);
+      --hover:   rgba(236,234,227,.07);
+      --seal:    #d9442a;
+      --accent:  #f27d66;
+      --on-accent: #101a33;
+
+      --tile-1-bg: #223c78; --tile-1-fg: #eceae3;
+      --tile-2-bg: #c8412a; --tile-2-fg: #fff6ee;
+      --tile-3-bg: #d8c8a2; --tile-3-fg: #16213f;
+      --tile-4-bg: #5f9188; --tile-4-fg: #0b1a1c;
+
+      --serif: 'Shippori Mincho', 'Noto Serif TC', 'Noto Serif JP', serif;
+      --sans:  'Hanken Grotesk', 'Noto Sans TC', 'Noto Sans JP', system-ui, sans-serif;
+      --gutter: clamp(20px, 5vw, 64px);
+    }
+    [data-theme="light"] {
+      --bg:      #ecebe7;
+      --raised:  #e0dfd9;
+      --text:    #16213f;
+      --muted:   #4a5675;
+      --line:    rgba(22,33,63,.22);
+      --hover:   rgba(22,33,63,.06);
+      --accent:  #b3301a;
+      --on-accent: #ecebe7;
+    }
+
+    html { scroll-behavior: smooth; scroll-padding-top: 4.5rem; color-scheme: dark; }
+    html[data-theme="light"] { color-scheme: light; }
+
+    body {
+      font-family: var(--sans);
+      font-size: 1.0625rem;
+      line-height: 1.8;
+      background: var(--bg);
+      color: var(--text);
+      overflow-x: hidden;
+      min-height: 100vh;
+      -webkit-font-smoothing: antialiased;
+    }
+    a { color: inherit; }
+    :focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; border-radius: 2px; }
+    .wrap { max-width: 1160px; margin: 0 auto; padding: 0 var(--gutter); }
+
+    /* ── Top bar ── */
+    .top-bar {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: color-mix(in srgb, var(--bg) 88%, transparent);
+      backdrop-filter: blur(10px);
+      border-bottom: 1px solid var(--line);
+    }
+    .top-in { display: flex; align-items: center; justify-content: space-between; min-height: 3.4rem; gap: 1rem; }
+    .back-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: .5rem;
+      font-size: .92rem;
+      color: var(--muted);
+      text-decoration: none;
+      padding: .5rem 0;
+      transition: color .2s;
+    }
+    .back-btn:hover { color: var(--text); }
+    .back-btn svg { width: 16px; height: 16px; }
+    .bar-controls { display: flex; align-items: center; gap: .3rem; }
+    .lang-btn {
+      font: 500 .9rem/1 var(--sans);
+      background: none;
+      border: none;
+      border-bottom: 2px solid transparent;
+      color: var(--muted);
+      cursor: pointer;
+      padding: .6rem .6rem;
+      transition: color .2s, border-color .2s;
+    }
+    .lang-btn:hover { color: var(--text); }
+    .lang-btn.active { color: var(--text); border-bottom-color: var(--seal); }
+    .theme-btn {
+      width: 40px; height: 40px;
+      margin-left: .4rem;
+      border-radius: 50%;
+      background: none;
+      border: 1px solid var(--line);
+      color: var(--muted);
+      cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      transition: background .2s, color .2s;
+    }
+    .theme-btn:hover { background: var(--hover); color: var(--text); }
+    .theme-btn svg { width: 16px; height: 16px; }
+
+    /* ── Hero ── */
+    .hero { padding: clamp(2.5rem, 6vw, 5rem) 0 clamp(3rem, 7vw, 6rem); border-bottom: 1px solid var(--line); }
+    .hero-grid {
+      display: grid;
+      grid-template-columns: auto minmax(0, 1fr);
+      gap: clamp(2rem, 7vw, 7rem);
+      align-items: end;
+    }
+    .name-col { display: flex; gap: clamp(1rem, 2.5vw, 2rem); align-items: flex-end; }
+    .hero-name {
+      font-family: var(--serif);
+      font-weight: 700;
+      writing-mode: vertical-rl;
+      font-size: clamp(5.2rem, 17vw, 12rem);
+      line-height: 1;
+      letter-spacing: .08em;
+      color: var(--text);
+    }
+    .seal {
+      flex-shrink: 0;
+      width: clamp(3.4rem, 7vw, 5.2rem);
+      aspect-ratio: 1;
+      display: grid;
+      place-items: center;
+      background: var(--seal);
+      color: #fff6ee;
+      font-family: var(--serif);
+      font-weight: 700;
+      font-size: clamp(2.2rem, 4.8vw, 3.5rem);
+      line-height: 1;
+      border-radius: 4px;
+      transform: rotate(-5deg);
+      margin-bottom: .6rem;
+      box-shadow: inset 0 0 0 3px var(--seal), inset 0 0 0 5px rgba(255,246,238,.65);
+      animation: stamp .32s cubic-bezier(.2,.9,.3,1.2) .5s backwards;
+    }
+    @keyframes stamp {
+      from { transform: rotate(-16deg) scale(1.7); opacity: 0; }
+      to   { transform: rotate(-5deg) scale(1); opacity: 1; }
+    }
+    .hero-text { padding-bottom: .6rem; }
+    .hero-name-en {
+      font-family: var(--serif);
+      font-weight: 500;
+      font-size: clamp(2.6rem, 6.5vw, 5.4rem);
+      line-height: 1;
+      letter-spacing: -.01em;
+      margin-bottom: 1.2rem;
+    }
+    .hero-tagline { max-width: 30em; color: var(--muted); font-size: 1.1rem; margin-bottom: 2.2rem; }
+    .hero-cta {
+      display: inline-flex;
+      align-items: center;
+      gap: .6rem;
+      background: var(--text);
+      color: var(--bg);
+      font: 700 .98rem/1 var(--sans);
+      text-decoration: none;
+      padding: 1rem 1.7rem;
+      border-radius: 999px;
+      transition: background .2s, color .2s;
+    }
+    .hero-cta:hover { background: var(--seal); color: #fff6ee; }
+    .hero-cta svg { width: 15px; height: 15px; }
+
+    /* ── Sections (details as ruled disclosure rows) ── */
+    .content { padding-bottom: clamp(3rem, 7vw, 6rem); }
+    .info-card { border-bottom: 1px solid var(--line); }
+    .info-card-toggle {
+      list-style: none;
+      display: flex;
+      align-items: baseline;
+      gap: 1rem;
+      padding: clamp(1.4rem, 3vw, 2.2rem) 0;
+      cursor: pointer;
+      transition: padding-left .2s;
+    }
+    .info-card-toggle::-webkit-details-marker { display: none; }
+    .info-card-toggle:hover { padding-left: .5rem; }
+    .info-card-label {
+      flex: 1;
+      font-family: var(--serif);
+      font-weight: 700;
+      font-size: clamp(1.9rem, 4.2vw, 3.2rem);
+      line-height: 1.15;
+    }
+    .info-card-toggle::after {
+      content: '';
+      width: 1.1rem; height: 1.1rem;
+      flex-shrink: 0;
+      align-self: center;
+      background:
+        linear-gradient(var(--text), var(--text)) center / 100% 2px no-repeat,
+        linear-gradient(var(--text), var(--text)) center / 2px 100% no-repeat;
+      transition: transform .25s;
+    }
+    .info-card[open] > .info-card-toggle::after {
+      background:
+        linear-gradient(var(--text), var(--text)) center / 100% 2px no-repeat;
+    }
+    .info-card-body { padding: .4rem 0 clamp(2.5rem, 5vw, 4rem); }
+
+    .prose { max-width: 38em; color: var(--muted); }
+    .prose p + p { margin-top: 1.1rem; }
+    .prose p:first-child { color: var(--text); font-size: 1.15rem; }
+
+    /* About layout */
+    .about-grid { display: grid; grid-template-columns: minmax(0, 7fr) minmax(0, 5fr); gap: clamp(2rem, 5vw, 5rem); align-items: start; }
+    .card-section-head { font-weight: 700; margin-bottom: .6rem; }
+    .fact-list { border-top: 1px solid var(--text); }
+    .fact-row {
+      display: grid;
+      grid-template-columns: 6.5rem minmax(0, 1fr);
+      gap: .8rem;
+      padding: .85rem 0;
+      border-bottom: 1px solid var(--line);
+      font-size: .98rem;
+      line-height: 1.55;
+    }
+    .fact-key { color: var(--muted); }
+
+    /* ── Listening guide ── */
+    .guide-intro { margin-bottom: 1.6rem; }
+    .player-wrap {
+      display: grid;
+      grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr);
+      gap: 1rem;
+      align-items: stretch;
+    }
+    .player-video { position: relative; aspect-ratio: 16 / 9; background: #000; border-radius: 4px; overflow: hidden; }
+    .player-video iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; }
+    .lyrics-panel { position: relative; background: var(--raised); border-radius: 4px; min-height: 14rem; overflow: hidden; }
+    .lyrics-inner { position: absolute; inset: 0; display: flex; flex-direction: column; }
+    .lyrics-head {
+      flex-shrink: 0;
+      padding: .75rem 1rem;
+      font-family: var(--serif);
+      font-weight: 700;
+      font-size: 1.05rem;
+      border-bottom: 1px solid var(--line);
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    }
+    .lyrics-lines {
+      flex: 1;
+      min-height: 0;
+      overflow-y: auto;
+      padding: 40% 1rem;
+      scroll-behavior: smooth;
+      -webkit-mask-image: linear-gradient(transparent, #000 18%, #000 82%, transparent);
+              mask-image: linear-gradient(transparent, #000 18%, #000 82%, transparent);
+    }
+    .lyric-line {
+      font-size: 1rem;
+      line-height: 1.6;
+      padding: .25rem 0;
+      color: var(--muted);
+      opacity: .6;
+      cursor: pointer;
+      transition: color .25s, opacity .25s, transform .25s;
+      transform-origin: left center;
+    }
+    .lyric-tr { display: none; font-size: .88rem; font-weight: 400; color: var(--muted); margin-top: .1rem; }
+    .show-tr .lyric-tr { display: block; }
+    .lyrics-head { display: flex; align-items: center; gap: .6rem; }
+    .lyrics-head #lyrics-title { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; }
+    .tr-btn { flex-shrink: 0; font: inherit; font-size: .75rem; font-weight: 400; font-family: var(--sans, inherit); padding: .2rem .6rem; border: 1px solid var(--line); border-radius: 99px; background: transparent; color: var(--muted); cursor: pointer; }
+    .tr-btn[aria-pressed="true"] { background: var(--text); color: var(--bg, #fff); border-color: var(--text); }
+    .orig { font-family: inherit; font-weight: 400; font-size: .8rem; color: var(--muted); margin-left: .4rem; }
+    .song-info { margin-top: 1.4rem; padding: 1rem 1.2rem; background: var(--raised); border-radius: 4px; }
+    .song-info h4 { font-family: var(--serif); font-size: 1.05rem; margin-bottom: .6rem; }
+    .song-info p { font-size: .92rem; line-height: 1.7; margin-top: .4rem; }
+    .song-info .si-meta { color: var(--muted); }
+    .lyric-line.active { color: var(--text); opacity: 1; transform: scale(1.05); font-weight: 700; }
+    .lyrics-empty {
+      position: absolute; inset: 3rem 0 0;
+      display: flex; align-items: center; justify-content: center;
+      padding: 1rem 1.2rem;
+      text-align: center;
+      font-size: .92rem;
+      line-height: 1.6;
+      color: var(--muted);
+    }
+
+    .guide-list { list-style: none; margin-top: 2rem; border-top: 1px solid var(--text); }
+    .guide-item {
+      position: relative;
+      display: grid;
+      grid-template-columns: 3.4rem minmax(0, 1fr) auto;
+      gap: .4rem 1rem;
+      align-items: center;
+      padding: 1.3rem 0;
+      border-bottom: 1px solid var(--line);
+    }
+    .guide-item::before {
+      content: '';
+      position: absolute;
+      left: -1rem; top: 1.3rem; bottom: 1.3rem;
+      width: 3px;
+      background: var(--seal);
+      transform: scaleY(0);
+      transition: transform .25s;
+    }
+    .guide-item.playing::before { transform: scaleY(1); }
+    .guide-n { font-family: var(--serif); font-weight: 500; font-size: 2.6rem; line-height: 1; color: var(--muted); font-variant-numeric: lining-nums; }
+    .guide-item.playing .guide-n { color: var(--accent); }
+    .guide-info { min-width: 0; }
+    .guide-title { font-family: var(--serif); font-weight: 700; font-size: 1.55rem; line-height: 1.2; }
+    .guide-title-jp { font-family: var(--serif); font-size: .95rem; color: var(--accent); margin: .1rem 0 .35rem; }
+    .guide-links { display: flex; gap: .5rem; }
+    .g-link {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 40px; height: 40px;
+      border-radius: 50%;
+      background: none;
+      border: 1px solid var(--line);
+      color: var(--muted);
+      text-decoration: none;
+      transition: background .15s, color .15s, border-color .15s;
+    }
+    .g-link:hover { background: var(--text); color: var(--bg); border-color: var(--text); }
+    .g-link svg { width: 16px; height: 16px; }
+    button.g-link { cursor: pointer; font: inherit; padding: 0; }
+    button.g-link.play { background: var(--seal); border-color: var(--seal); color: #fff6ee; }
+    button.g-link.play:hover { background: var(--text); border-color: var(--text); color: var(--bg); }
+
+    /* ── Discography ── */
+    .album-meta { display: block; padding-top: .8rem; }
+    .album-name, .album-type { display: block; }
+    .album-name { font-family: var(--serif); font-weight: 700; font-size: 1.2rem; line-height: 1.3; }
+    .album-type { font-size: .9rem; color: var(--muted); }
+
+
+    /* ── Album covers + player ── */
+    .album-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 1.2rem; }
+    .album-card { display: block; width: 100%; text-align: left; background: none; border: none; color: inherit; font: inherit; cursor: pointer; padding: 0; }
+    .album-art { display: block; width: 100%; height: auto; aspect-ratio: 1; object-fit: cover; background: var(--raised); border-radius: 2px; outline: 3px solid transparent; outline-offset: 3px; transition: outline-color .2s, transform .2s; }
+    .album-card:hover .album-art { transform: translateY(-3px); }
+    .album-card[aria-pressed="true"] .album-art { outline-color: var(--seal); }
+    .album-card[aria-pressed="true"] .album-name { color: var(--accent); }
+    .player-bar { display: flex; align-items: center; justify-content: space-between; gap: 1rem; flex-wrap: wrap; margin-bottom: 1rem; }
+    .now-album { font-family: var(--serif); font-weight: 700; font-size: 1.3rem; line-height: 1.3; margin: 0; }
+    .src-switch { display: inline-flex; border: 1px solid var(--line); border-radius: 999px; padding: 2px; }
+    .src-btn { font: 500 .9rem/1 var(--sans); background: none; border: none; color: var(--muted); cursor: pointer; padding: .55rem 1rem; border-radius: 999px; transition: background .2s, color .2s; }
+    .src-btn:hover { color: var(--text); }
+    .src-btn[aria-pressed="true"] { background: var(--text); color: var(--bg); }
+    .spotify-wrap iframe { border-radius: 12px; display: block; }
+    .spotify-wrap[hidden], .player-wrap[hidden] { display: none; }
+    .prema-cover { display: block; width: min(220px, 60%); height: auto; aspect-ratio: 1; object-fit: cover; border-radius: 2px; margin-bottom: 1.4rem; background: var(--raised); }
+
+    /* ── Etiquette ── */
+    .etiq-list { list-style: none; border-top: 1px solid var(--text); max-width: 46em; }
+    .etiq-item { padding: 1.05rem 0; border-bottom: 1px solid var(--line); color: var(--muted); line-height: 1.7; }
+    .etiq-item strong { color: var(--text); font-weight: 700; }
+
+    /* ── Links ── */
+    .ext-links { display: flex; flex-wrap: wrap; gap: .4rem 2.2rem; }
+    .ext-link {
+      font-family: var(--serif);
+      font-weight: 700;
+      font-size: clamp(1.4rem, 2.6vw, 1.9rem);
+      text-decoration: none;
+      padding: .3rem 0;
+      border-bottom: 2px solid var(--line);
+      transition: border-color .2s, color .2s;
+    }
+    .ext-link:hover { border-color: var(--seal); color: var(--accent); }
+
+
+    /* ── Show dateline in hero ── */
+    .hero-show { border-top: 1px solid var(--text); margin: 1.6rem 0 1.4rem; padding-top: 1rem; max-width: 34rem; }
+    .hero-tour { font-family: var(--serif); font-weight: 700; font-size: clamp(1.4rem, 2.6vw, 1.9rem); line-height: 1.25; }
+    .hero-when { color: var(--muted); margin-top: .2rem; line-height: 1.6; }
+    .hero-days { color: var(--accent); font-weight: 700; margin-top: .5rem; }
+
+    /* ── Concert ── */
+    .concert-lede { max-width: 40em; font-size: 1.15rem; margin-bottom: 1rem; }
+    .concert-note { max-width: 40em; color: var(--muted); margin-bottom: 2rem; }
+    .price-list { list-style: none; border-top: 1px solid var(--text); }
+    .price-row { display: flex; justify-content: space-between; gap: 1rem; padding: .6rem 0; border-bottom: 1px solid var(--line); font-variant-numeric: tabular-nums; }
+    .price-row span:first-child { color: var(--muted); }
+
+    /* ── Prema ── */
+    .prema-grid { display: grid; grid-template-columns: minmax(0, 6fr) minmax(0, 6fr); gap: clamp(2rem, 5vw, 5rem); align-items: start; }
+    .prema-list { list-style: none; border-top: 1px solid var(--text); }
+    .prema-item { display: grid; grid-template-columns: 2.4rem minmax(0, 1fr) auto; gap: .8rem; align-items: center; padding: .7rem 0; border-bottom: 1px solid var(--line); }
+    .prema-n { font-family: var(--serif); font-size: 1.4rem; color: var(--muted); line-height: 1; }
+    .prema-t { font-family: var(--serif); font-weight: 700; font-size: 1.2rem; line-height: 1.25; }
+    .prema-item .guide-links { gap: .4rem; }
+    .prema-item .g-link { width: 34px; height: 34px; }
+    .prema-item .g-link svg { width: 14px; height: 14px; }
+
+    .gloss { color: var(--muted); font-size: .95em; font-family: var(--sans); font-weight: 400; }
+    .etiq-item .gloss, .prose .gloss { display: inline-block; margin-top: .25rem; }
+    .source-note { margin-top: 1rem; color: var(--muted); font-size: .92rem; max-width: 46em; }
+    .source-note a { color: var(--accent); }
+
+    /* ── Footer ── */
+    footer { padding: 2.5rem 0 3.5rem; border-top: 1px solid var(--line); font-size: .92rem; color: var(--muted); }
+    footer a { color: var(--accent); text-decoration: none; }
+    footer a:hover { text-decoration: underline; }
+
+    /* ── Responsive ── */
+    @media (max-width: 860px) {
+      .about-grid, .prema-grid { grid-template-columns: minmax(0, 1fr); }
+    }
+    @media (max-width: 720px) {
+      .hero-grid { grid-template-columns: minmax(0, 1fr); gap: 2rem; align-items: start; }
+      .player-wrap { grid-template-columns: minmax(0, 1fr); gap: .75rem; }
+      .lyrics-panel { min-height: 0; height: 14rem; }
+      .lyrics-lines { padding: 4.5rem 1rem; }
+    }
+    @media (max-width: 560px) {
+      .guide-item { grid-template-columns: 2.4rem minmax(0, 1fr); }
+      .guide-n { font-size: 2rem; }
+      .guide-links { grid-column: 2; margin-top: .4rem; }
+      .guide-item::before { left: -.7rem; }
+      .fact-row { grid-template-columns: minmax(0, 1fr); gap: .1rem; }
+      .prema-item { grid-template-columns: 2rem minmax(0, 1fr) auto; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      html { scroll-behavior: auto; }
+      *, *::before, *::after { animation-duration: .01ms !important; animation-delay: 0s !important; transition-duration: .01ms !important; }
+      .lyrics-lines { scroll-behavior: auto; }
+    }
+  </style>
+</head>
+<body>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+  <symbol id="i-sp" viewBox="0 0 24 24"><path d="M12 0C5.4 0 0 5.4 0 12s5.4 12 12 12 12-5.4 12-12S18.66 0 12 0zm5.521 17.34c-.24.359-.66.48-1.021.24-2.82-1.74-6.36-2.101-10.561-1.141-.418.122-.779-.179-.899-.539-.12-.421.18-.78.54-.9 4.56-1.021 8.52-.6 11.64 1.32.42.18.479.659.301 1.02zm1.44-3.3c-.301.42-.841.6-1.262.3-3.239-1.98-8.159-2.58-11.939-1.38-.479.12-1.02-.12-1.14-.6-.12-.48.12-1.021.6-1.141C9.6 9.9 15 10.561 18.72 12.84c.361.181.54.78.241 1.2zm.12-3.36C15.24 8.4 8.82 8.16 5.16 9.301c-.6.179-1.2-.181-1.38-.721-.18-.601.18-1.2.72-1.381 4.26-1.26 11.28-1.02 15.721 1.621.539.3.719 1.02.419 1.56-.299.421-1.02.599-1.559.3z"/></symbol>
+  <symbol id="i-yt" viewBox="0 0 24 24"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></symbol>
+</svg>
+
+<!-- ── Top bar ── -->
+<header class="top-bar">
+  <div class="wrap top-in">
+    <a href="laufey-concert.html" class="back-btn">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>
+      <span data-i18n="nav-back">返回首頁</span>
+    </a>
+    <div class="bar-controls">
+      <button class="lang-btn" id="btn-zh" onclick="applyLang('zh-TW')">中</button>
+      <button class="lang-btn" id="btn-en" onclick="applyLang('en')">EN</button>
+      <button class="theme-btn" id="theme-toggle" aria-label="切換主題">
+        <svg id="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+        <svg id="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display:none"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
+      </button>
+    </div>
+  </div>
+</header>
+
+<!-- ── Hero ── -->
+<section class="hero">
+  <div class="wrap hero-grid">
+    <div class="name-col">
+      <h1 class="hero-name" lang="ja" aria-label="藤井風">藤井風</h1>
+      <span class="seal" lang="ja" aria-hidden="true">風</span>
+    </div>
+    <div class="hero-text">
+      <p class="hero-name-en">Fujii Kaze</p>
+      <div class="hero-show">
+        <p class="hero-tour" data-i18n="hero-tour">Prema World Tour 高雄站</p>
+        <p class="hero-when" data-i18n="hero-when">2026年10月31日（六）19:00・高雄國家體育場</p>
+        <p class="hero-days" id="days-left" aria-live="polite"></p>
+      </div>
+      <p class="hero-tagline" data-i18n="hero-tagline">來自岡山的靈魂樂詩人，以鋼琴、福音與岡山方言，構築了一個無邊界的聲音宇宙。</p>
+      <a href="#concert" class="hero-cta">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 19V5M5 12l7 7 7-7"/></svg>
+        <span data-i18n="hero-cta">高雄場資訊</span>
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- ── Content ── -->
+<main class="content wrap">
+  <div id="guide">
+
+    <!-- Concert -->
+    <details class="info-card" open id="concert">
+      <summary class="info-card-toggle">
+        <span class="info-card-label" data-i18n="card-concert"></span>
+      </summary>
+      <div class="info-card-body about-grid">
+        <div>
+          <p class="concert-lede" data-i18n="concert-lede"></p>
+          <p class="concert-note" data-i18n="concert-note"></p>
+          <p class="card-section-head" data-i18n="price-head"></p>
+          <ul class="price-list">
+            <li class="price-row"><span data-i18n="price-special-a"></span><span>TWD$5,800</span></li>
+            <li class="price-row"><span data-i18n="price-special-b"></span><span>TWD$4,800</span></li>
+            <li class="price-row"><span data-i18n="price-1f"></span><span>TWD$4,800 / 3,800 / 2,800</span></li>
+            <li class="price-row"><span data-i18n="price-2f"></span><span>TWD$3,800 / 2,800 / 1,800</span></li>
+          </ul>
+        </div>
+        <div>
+          <p class="card-section-head" data-i18n="show-info"></p>
+          <div class="fact-list">
+            <div class="fact-row"><span class="fact-key" data-i18n="c-date"></span><span class="fact-val" data-i18n="c-date-val"></span></div>
+            <div class="fact-row"><span class="fact-key" data-i18n="c-time"></span><span class="fact-val">16:00 / 19:00</span></div>
+            <div class="fact-row"><span class="fact-key" data-i18n="c-venue"></span><span class="fact-val" data-i18n="c-venue-val"></span></div>
+            <div class="fact-row"><span class="fact-key" data-i18n="c-tix"></span><span class="fact-val" data-i18n="c-tix-val"></span></div>
+            <div class="fact-row"><span class="fact-key" data-i18n="c-sale"></span><span class="fact-val" data-i18n="c-sale-val"></span></div>
+            <div class="fact-row"><span class="fact-key" data-i18n="c-org"></span><span class="fact-val" data-i18n="c-org-val"></span></div>
+            <div class="fact-row"><span class="fact-key" data-i18n="c-co"></span><span class="fact-val" data-i18n="c-co-val"></span></div>
+            <div class="fact-row"><span class="fact-key" data-i18n="c-mgmt"></span><span class="fact-val" data-i18n="c-mgmt-val"></span></div>
+            <div class="fact-row"><span class="fact-key" data-i18n="c-label"></span><span class="fact-val" data-i18n="c-label-val"></span></div>
+          </div>
+          <p class="source-note" data-i18n="concert-source"></p>
+        </div>
+      </div>
+    </details>
+
+    <!-- Rules -->
+    <details class="info-card" open>
+      <summary class="info-card-toggle">
+        <span class="info-card-label" data-i18n="card-etiq"></span>
+      </summary>
+      <div class="info-card-body">
+        <ul class="etiq-list">
+          <li class="etiq-item" data-i18n="etiq1"></li>
+          <li class="etiq-item" data-i18n="etiq2"></li>
+          <li class="etiq-item" data-i18n="etiq3"></li>
+          <li class="etiq-item" data-i18n="etiq4"></li>
+          <li class="etiq-item" data-i18n="etiq5"></li>
+          <li class="etiq-item" data-i18n="etiq6"></li>
+          <li class="etiq-item" data-i18n="etiq7"></li>
+        </ul>
+        <p class="source-note" data-i18n="rules-source"></p>
+      </div>
+    </details>
+
+    <!-- Prema -->
+    <details class="info-card" open>
+      <summary class="info-card-toggle">
+        <span class="info-card-label" data-i18n="card-prema"></span>
+      </summary>
+      <div class="info-card-body prema-grid">
+        <div class="prose">
+          <img class="prema-cover" src="https://fujiikaze.com/wp-content/uploads/sites/2865/2025/06/artwork-440x440-4-compressed.jpg" alt="Prema" width="220" height="220" loading="lazy">
+          <p data-i18n="prema-p1"></p>
+          <p data-i18n="prema-p2"></p>
+          <p data-i18n="prema-p3"></p>
+          <p class="source-note" data-i18n="prema-source"></p>
+        </div>
+        <div>
+          <p class="card-section-head" data-i18n="prema-d1"></p>
+          <ol class="prema-list">
+            <li class="prema-item"><span class="prema-n">1</span><span class="prema-t">Casket Girl</span><span class="guide-links"><button type="button" class="g-link play" data-album="prema" data-idx="0" data-title-i18n="play-title" title="播放" aria-label="播放"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg></button></span></li>
+            <li class="prema-item"><span class="prema-n">2</span><span class="prema-t">I Need U Back</span><span class="guide-links"><button type="button" class="g-link play" data-album="prema" data-idx="1" data-title-i18n="play-title" title="播放" aria-label="播放"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg></button></span></li>
+            <li class="prema-item"><span class="prema-n">3</span><span class="prema-t">Hachikō</span><span class="guide-links"><button type="button" class="g-link play" data-album="prema" data-idx="2" data-title-i18n="play-title" title="播放" aria-label="播放"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg></button></span></li>
+            <li class="prema-item"><span class="prema-n">4</span><span class="prema-t">Love Like This</span><span class="guide-links"><button type="button" class="g-link play" data-album="prema" data-idx="3" data-title-i18n="play-title" title="播放" aria-label="播放"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg></button></span></li>
+            <li class="prema-item"><span class="prema-n">5</span><span class="prema-t">Prema</span><span class="guide-links"><button type="button" class="g-link play" data-album="prema" data-idx="4" data-title-i18n="play-title" title="播放" aria-label="播放"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg></button></span></li>
+            <li class="prema-item"><span class="prema-n">6</span><span class="prema-t">It Ain't Over</span><span class="guide-links"><button type="button" class="g-link play" data-album="prema" data-idx="5" data-title-i18n="play-title" title="播放" aria-label="播放"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg></button></span></li>
+            <li class="prema-item"><span class="prema-n">7</span><span class="prema-t">You</span><span class="guide-links"><button type="button" class="g-link play" data-album="prema" data-idx="6" data-title-i18n="play-title" title="播放" aria-label="播放"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg></button></span></li>
+            <li class="prema-item"><span class="prema-n">8</span><span class="prema-t">Okay, Goodbye</span><span class="guide-links"><button type="button" class="g-link play" data-album="prema" data-idx="7" data-title-i18n="play-title" title="播放" aria-label="播放"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg></button></span></li>
+            <li class="prema-item"><span class="prema-n">9</span><span class="prema-t">Forever Young</span><span class="guide-links"><button type="button" class="g-link play" data-album="prema" data-idx="8" data-title-i18n="play-title" title="播放" aria-label="播放"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg></button></span></li>
+          </ol>
+          <p class="card-section-head" style="margin-top:1.6rem" data-i18n="prema-d2"></p>
+          <ol class="prema-list">
+            <li class="prema-item"><span class="prema-n">1</span><span class="prema-t">grace</span><span class="guide-links"><button type="button" class="g-link play" data-album="pre-prema" data-idx="0" data-title-i18n="play-title" title="播放" aria-label="播放"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg></button></span></li>
+            <li class="prema-item"><span class="prema-n">2</span><span class="prema-t">Feelin' Go(o)d</span><span class="guide-links"><button type="button" class="g-link play" data-album="pre-prema" data-idx="1" data-title-i18n="play-title" title="播放" aria-label="播放"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg></button></span></li>
+            <li class="prema-item"><span class="prema-n">3</span><span class="prema-t">Workin' Hard</span><span class="guide-links"><button type="button" class="g-link play" data-album="pre-prema" data-idx="2" data-title-i18n="play-title" title="播放" aria-label="播放"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg></button></span></li>
+            <li class="prema-item"><span class="prema-n">4</span><span class="prema-t">It's Alright</span><span class="guide-links"><button type="button" class="g-link play" data-album="pre-prema" data-idx="3" data-title-i18n="play-title" title="播放" aria-label="播放"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg></button></span></li>
+            <li class="prema-item"><span class="prema-n">5</span><span class="prema-t">Hana 花</span><span class="guide-links"><button type="button" class="g-link play" data-album="pre-prema" data-idx="4" data-title-i18n="play-title" title="播放" aria-label="播放"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg></button></span></li>
+            <li class="prema-item"><span class="prema-n">6</span><span class="prema-t">Michi Teyu Ku (Overflowing) 満ちてゆく</span><span class="guide-links"><button type="button" class="g-link play" data-album="pre-prema" data-idx="5" data-title-i18n="play-title" title="播放" aria-label="播放"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg></button></span></li>
+            <li class="prema-item"><span class="prema-n">7</span><span class="prema-t">masshiro (pure white) 真っ白</span><span class="guide-links"><button type="button" class="g-link play" data-album="pre-prema" data-idx="6" data-title-i18n="play-title" title="播放" aria-label="播放"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg></button></span></li>
+          </ol>
+        </div>
+      </div>
+    </details>
+
+    <!-- About -->
+    <details class="info-card">
+      <summary class="info-card-toggle">
+        <span class="info-card-label" data-i18n="card-about"></span>
+      </summary>
+      <div class="info-card-body about-grid">
+        <div class="prose">
+          <p data-i18n="about-p1"></p>
+          <p data-i18n="about-p2"></p>
+          <p class="source-note" data-i18n="about-p3"></p>
+        </div>
+        <div>
+          <p class="card-section-head" data-i18n="artist-info"></p>
+          <div class="fact-list">
+            <div class="fact-row"><span class="fact-key" data-i18n="fact-born"></span><span class="fact-val" data-i18n="fact-born-val"></span></div>
+            <div class="fact-row"><span class="fact-key" data-i18n="fact-debut"></span><span class="fact-val" data-i18n="fact-debut-val"></span></div>
+            <div class="fact-row"><span class="fact-key" data-i18n="fact-first"></span><span class="fact-val" data-i18n="fact-first-val"></span></div>
+          </div>
+        </div>
+      </div>
+    </details>
+
+    <!-- Discography -->
+    <details class="info-card" open id="discography">
+      <summary class="info-card-toggle">
+        <span class="info-card-label" data-i18n="card-disc"></span>
+      </summary>
+      <div class="info-card-body">
+        <div class="album-grid" id="album-grid"></div>
+        <p class="source-note" data-i18n="disc-source"></p>
+
+        <p class="card-section-head" style="margin-top:2.4rem" data-i18n="disc-listen"></p>
+        <div class="player-bar">
+          <p class="now-album" id="now-album"></p>
+          <div class="src-switch" role="group" aria-label="Player">
+            <button type="button" class="src-btn" id="src-yt" aria-pressed="true">YouTube</button>
+            <button type="button" class="src-btn" id="src-sp" aria-pressed="false">Spotify</button>
+          </div>
+        </div>
+        <div class="player-wrap" id="player-wrap">
+          <div class="player-video"><div id="yt-player"></div></div>
+          <div class="lyrics-panel">
+            <div class="lyrics-inner">
+              <div class="lyrics-head"><span id="lyrics-title">—</span><button type="button" class="tr-btn" id="tr-btn" aria-pressed="false"></button></div>
+              <div class="lyrics-lines" id="lyrics-lines"></div>
+            </div>
+            <div class="lyrics-empty" id="lyrics-empty" data-i18n="lyrics-empty">找不到此曲的同步歌詞。</div>
+          </div>
+        </div>
+        <div class="spotify-wrap" id="spotify-wrap" hidden>
+          <iframe id="sp-frame" title="Spotify" width="100%" height="352" frameborder="0" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
+          <p class="source-note" data-i18n="sp-note"></p>
+        </div>
+        <div class="song-info" id="song-info"></div>
+        <ol class="guide-list" id="track-list"></ol>
+      </div>
+    </details>
+
+    <!-- Official links -->
+    <details class="info-card">
+      <summary class="info-card-toggle">
+        <span class="info-card-label" data-i18n="card-links">官方連結</span>
+      </summary>
+      <div class="info-card-body">
+        <div class="ext-links">
+          <a class="ext-link" href="https://hehn.fujiikaze.com/pwt/en/" target="_blank" rel="noopener" data-i18n="link-tour">巡演官網</a>
+          <a class="ext-link" href="https://kklivetw.kktix.cc/events/34473ba4" target="_blank" rel="noopener" data-i18n="link-tix">KKTIX 購票</a>
+          <a class="ext-link" href="https://fujiikaze.com" target="_blank" rel="noopener" data-i18n="link-official">官網</a>
+          <a class="ext-link" href="https://open.spotify.com/artist/6bDWAcdtVR3WHz2xtiIPUi" target="_blank" rel="noopener">Spotify</a>
+          <a class="ext-link" href="https://www.youtube.com/channel/UCNIy6zQyP7SuLEIaiwymfUA" target="_blank" rel="noopener">YouTube</a>
+          <a class="ext-link" href="https://www.instagram.com/fujiikaze/" target="_blank" rel="noopener">Instagram</a>
+          <a class="ext-link" href="https://www.tiktok.com/@fujiikaze1997" target="_blank" rel="noopener">TikTok</a>
+          <a class="ext-link" href="https://www.facebook.com/FujiiKazeofficial" target="_blank" rel="noopener">Facebook</a>
+          <a class="ext-link" href="https://twitter.com/fujiikazestaff" target="_blank" rel="noopener">X / Twitter</a>
+        </div>
+      </div>
+    </details>
+
+  </div>
+</main>
+
+<footer>
+  <div class="wrap">
+    <p data-i18n="footer-text">藤井風粉絲指南 · 非官方 · 純粹出於熱愛 · <a href="laufey-concert.html" data-i18n="footer-laufey">← Laufey 頁面</a></p>
+  </div>
+</footer>
+
+<script>
+  /* ── Theme toggle ── */
+  (function () {
+    const html = document.documentElement;
+    const btn = document.getElementById('theme-toggle');
+    const moon = document.getElementById('icon-moon');
+    const sun = document.getElementById('icon-sun');
+    function setTheme(t) {
+      html.setAttribute('data-theme', t);
+      moon.style.display = t === 'dark' ? '' : 'none';
+      sun.style.display  = t === 'light' ? '' : 'none';
+      try { localStorage.setItem('fk_theme', t); } catch(e) {}
+    }
+    btn.addEventListener('click', () => setTheme(html.getAttribute('data-theme') === 'dark' ? 'light' : 'dark'));
+    try {
+      const saved = localStorage.getItem('fk_theme');
+      if (saved) { setTheme(saved); return; }
+    } catch(e) {}
+    setTheme(window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+  })();
+
+  /* ── i18n ── */
+  const dict = {
+    'zh-TW': {
+      'nav-back': '返回首頁',
+      'lyrics-empty': '找不到此曲的同步歌詞。',
+      'lyrics-loading': '歌詞載入中…',
+      'tr-on': '譯文：開', 'tr-off': '譯文：關',
+      'tr-note': '歌詞譯文為機器翻譯（MyMemory），僅供參考；非官方譯詞。',
+      'si-head': '關於這首歌', 'si-album': '收錄專輯', 'si-track': '曲序', 'si-release': '發行日',
+      'si-none': '官方網站沒有這首歌的背景說明，因此不在此編造。',
+      'si-page': '官方頁面', 'si-credit': '官方頁面的製作資訊（摘要，非逐字）',
+      'title-note': '中文曲名／專輯名：官方網站未提供中文名稱，採用通用譯名，並附原名。',
+      'play-title': '在上方播放',
+      'card-disc': '唱片作品',
+      'card-links': '官方連結',
+      'link-official': '官網',
+      'link-tour': '巡演官網',
+      'link-tix': 'KKTIX 購票',
+      'footer-text': '藤井風粉絲指南 · 非官方 · 純粹出於熱愛 · <a href="laufey-concert.html">← Laufey 頁面</a>',
+      'footer-laufey': '← Laufey 頁面',
+      'days-future': '還有 {n} 天',
+      'days-one': '還有 1 天',
+      'days-today': '就是今天',
+      'days-past': '演出已結束',
+      'artist-info': '藝術家資訊',
+      'hero-tour': 'Fujii Kaze Prema World Tour - Kaohsiung',
+      'hero-when': '2026/10/31(周六) 19:00・高雄國家體育場',
+      'hero-tagline': '日本のシンガーソングライター。<br><span class="gloss">中文翻譯：日本創作歌手。</span>',
+      'hero-cta': '高雄場資訊',
+      'card-concert': '高雄場資訊',
+      'concert-lede': '藤井風生涯最大規模世界巡演．全球首站<br>藤井風將首度站上殿堂級的高雄國家體育場',
+      'concert-note': '官方巡演頁（<a href="https://hehn.fujiikaze.com/pwt/en/" target="_blank" rel="noopener">hehn.fujiikaze.com/pwt</a>）的台灣場次只列高雄一站。',
+      'price-head': '票價',
+      'price-special-a': '全票(特A區)',
+      'price-special-b': '全票(特B區)',
+      'price-1f': '全票(1F)',
+      'price-2f': '全票(2F)',
+      'show-info': '演出資訊',
+      'c-date': '日期',
+      'c-date-val': '2026/10/31(周六)',
+      'c-time': '入場 / 開演',
+      'c-venue': '場地',
+      'c-venue-val': '高雄國家體育場 / 高雄市左營區世運大道100號',
+      'c-tix': '購票',
+      'c-tix-val': 'KKTIX・每位KKTIX會員限購4張',
+      'c-sale': '售票',
+      'c-sale-val': '啟售時間：2026 年 6 月 20 日（六）中午 12:00<br>本場演出未完成結帳及退回票券預計將於 2026 年 6 月 30 日 (二) 中午 12 點起準時釋出販售',
+      'c-org': '主辦單位',
+      'c-org-val': 'KKLIVE',
+      'c-co': '協辦單位',
+      'c-co-val': '創昕製作、高雄市政府',
+      'c-mgmt': '藝人經紀',
+      'c-mgmt-val': 'HEHN RECORDS',
+      'c-label': '唱片公司',
+      'c-label-val': 'Universal Music Group',
+      'concert-source': '資料來源：<a href="https://kklivetw.kktix.cc/events/34473ba4" target="_blank" rel="noopener">KKLIVE KKTIX</a>、<a href="https://hehn.fujiikaze.com/pwt/en/" target="_blank" rel="noopener">hehn.fujiikaze.com/pwt</a>。請至 KKTIX 確認最新票況。',
+      'card-etiq': '入場須知',
+      'etiq1': '請勿攜帶相機、攝影機、DV、錄音機入場，未經主辦單位同意，禁止拍照、錄影、錄音。',
+      'etiq2': '本節目禁止攜帶外食、飲料、任何種類之金屬、玻璃、寶特瓶容器、雷射筆、煙火或任何危險物品。',
+      'etiq3': '一人一票、憑票入場，孩童亦需購票。',
+      'etiq4': '為現場安全考量並維護場館之草皮，平面區觀眾請勿穿高跟鞋進入並禁止使用輪類器具進出（例：溜冰鞋、滑板、腳踏車、嬰兒推車等）',
+      'etiq5': '以下所列區域可能因硬體設備而導致部分視線遮蔽，無法看到完整的舞台及表演。現場將不接受以視線遮蔽為由退票或換位',
+      'etiq6': '本場館 2F 看台有一定高度，如有懼高症者，建議評估自身狀況後再行購買。現場恕無法接受懼高因素退票。',
+      'etiq7': '請勿於拍賣網站或是其他非KKTIX正式授權售票之通路、網站購票、也不要透過陌生代購進行購票',
+      'rules-source': '以上為<a href="https://kklivetw.kktix.cc/events/34473ba4" target="_blank" rel="noopener">KKLIVE KKTIX</a>的原文，完整入場規定以主辦單位公告為準。',
+      'card-prema': 'Prema',
+      'prema-p1': '<span lang="en">“Prema” is Fujii Kaze\'s third studio album in three years.</span><br><span class="gloss">中文翻譯：《Prema》是藤井風三年來的第三張錄音室專輯。</span>',
+      'prema-p2': '<span lang="en">The album, which features nine songs with all English lyrics, will be released on September 5, 2025</span><br><span class="gloss">中文翻譯：專輯收錄九首全英文歌詞的歌曲，將於 2025 年 9 月 5 日發行。</span>',
+      'prema-p3': '<span lang="en">DISC2 contains 6 songs released since the release of the previous album “LOVE ALL SERVE ALL”</span><br><span class="gloss">中文翻譯：DISC2 收錄上一張專輯《LOVE ALL SERVE ALL》發行後推出的 6 首歌曲。</span>',
+      'prema-d1': 'DISC 1',
+      'prema-d2': '限定盤 DISC 2',
+      'prema-source': '資料來源：<a href="https://fujiikaze.com/music/prema_limited/" target="_blank" rel="noopener">fujiikaze.com</a>。',
+      'card-about': '關於藤井風',
+      'about-p1': '1997年6月14日生まれ。日本のシンガーソングライター。<br><span class="gloss">中文翻譯：1997年6月14日出生。日本創作歌手。</span>',
+      'about-p2': '2020年、“何なんw”のMusic Video公開と共にデビューした。<br><span class="gloss">中文翻譯：2020年，隨著〈何なんw〉音樂錄影帶公開而出道。</span>',
+      'about-p3': '來源：<a href="https://fujiikaze.com/profile/" target="_blank" rel="noopener">fujiikaze.com/profile</a>。',
+      'fact-born': '生日',
+      'fact-born-val': '1997年6月14日',
+      'fact-debut': '出道',
+      'fact-debut-val': '2020年，“何なんw” Music Video',
+      'fact-first': '首張專輯',
+      'fact-first-val': 'HELP EVER HURT NEVER（2020年5月）',
+      'disc-listen': '試聽',
+      'sp-note': 'Spotify 嵌入播放器：未登入 Spotify 時只能試聽片段。',
+      'disc-source': '曲目與格式標示依 <a href="https://fujiikaze.com/music/" target="_blank" rel="noopener">fujiikaze.com/music</a>。官方頁面未列出發行日期。封面圖片與播放連結來自官方網站與官方智慧連結（fujii-kaze.lnk.to）；現場專輯曲名省略了結尾的 (Fujii Kaze Stadium Live “Feelin’ Good”)。',
+    },
+    'en': {
+      'nav-back': 'Back',
+      'lyrics-empty': 'No synced lyrics found for this track.',
+      'lyrics-loading': 'Loading lyrics…',
+      'tr-on': 'Translation: on', 'tr-off': 'Translation: off',
+      'tr-note': 'Lyric translations are machine-generated (MyMemory) and unofficial.',
+      'si-head': 'About this song', 'si-album': 'Album', 'si-track': 'Track', 'si-release': 'Released',
+      'si-none': 'The official site gives no background text for this song, so none is invented here.',
+      'si-page': 'Official page', 'si-credit': 'Credits from the official page (summary, not verbatim)',
+      'title-note': '',
+      'play-title': 'Play above',
+      'card-disc': 'Discography',
+      'card-links': 'Official Links',
+      'link-official': 'Website',
+      'link-tour': 'Tour site',
+      'link-tix': 'Tickets (KKTIX)',
+      'footer-text': 'Fujii Kaze fan guide · Unofficial · Made with love · <a href="laufey-concert.html">← Laufey page</a>',
+      'footer-laufey': '← Laufey page',
+      'days-future': '{n} days to go',
+      'days-one': '1 day to go',
+      'days-today': 'Today is the day',
+      'days-past': 'This show has taken place',
+      'artist-info': 'Artist Info',
+      'hero-tour': 'Fujii Kaze Prema World Tour - Kaohsiung',
+      'hero-when': 'October 31 (Sat) 2026 · 19:00 · Kaohsiung National Stadium',
+      'hero-tagline': '日本のシンガーソングライター。<br><span class="gloss">English translation: Japanese singer-songwriter.</span>',
+      'hero-cta': 'Show details',
+      'card-concert': 'Kaohsiung show',
+      'concert-lede': 'Prema World Tour is set to take place across Asia, Europe, and North America, in support of Fujii Kaze’s release of the 3rd album “Prema”',
+      'concert-note': 'On the official tour page (<a href="https://hehn.fujiikaze.com/pwt/en/" target="_blank" rel="noopener">hehn.fujiikaze.com/pwt</a>) the Kaohsiung date is the only Taiwan date listed.',
+      'price-head': 'Tickets',
+      'price-special-a': '全票(特A區) · Special A',
+      'price-special-b': '全票(特B區) · Special B',
+      'price-1f': '全票(1F)',
+      'price-2f': '全票(2F)',
+      'show-info': 'Show details',
+      'c-date': 'Date',
+      'c-date-val': 'October 31 (Sat) 2026',
+      'c-time': 'Opens / Starts',
+      'c-venue': 'Venue',
+      'c-venue-val': 'Kaohsiung National Stadium · <span lang="zh-Hant">高雄市左營區世運大道100號</span>',
+      'c-tix': 'Tickets',
+      'c-tix-val': 'KKTIX · <span lang="zh-Hant">每位KKTIX會員限購4張</span><br><span class="gloss">English translation: Limit of 4 tickets per KKTIX member.</span>',
+      'c-sale': 'On sale',
+      'c-sale-val': 'June 20 (Sat) 12:00 PM [CST]<br><span lang="zh-Hant">本場演出未完成結帳及退回票券預計將於 2026 年 6 月 30 日 (二) 中午 12 點起準時釋出販售</span><br><span class="gloss">English translation: Unpaid and returned tickets are expected to be released for sale at 12:00 noon on June 30, 2026 (Tue).</span>',
+      'c-org': 'Promoter',
+      'c-org-val': 'KKLIVE',
+      'c-co': 'Co-organizers',
+      'c-co-val': '創昕製作, 高雄市政府 (Kaohsiung City Government)',
+      'c-mgmt': 'Artist management',
+      'c-mgmt-val': 'HEHN RECORDS',
+      'c-label': 'Record label',
+      'c-label-val': 'Universal Music Group',
+      'concert-source': 'Sources: <a href="https://kklivetw.kktix.cc/events/34473ba4" target="_blank" rel="noopener">KKLIVE KKTIX</a>, <a href="https://hehn.fujiikaze.com/pwt/en/" target="_blank" rel="noopener">hehn.fujiikaze.com/pwt</a>. Check KKTIX for the latest availability.',
+      'card-etiq': 'Know before you go',
+      'etiq1': '<span lang="zh-Hant">請勿攜帶相機、攝影機、DV、錄音機入場，未經主辦單位同意，禁止拍照、錄影、錄音。</span><br><span class="gloss">English translation: Do not bring cameras, camcorders, DVs or audio recorders into the venue. Taking photos, video or audio recordings is prohibited without the promoter\'s consent.</span>',
+      'etiq2': '<span lang="zh-Hant">本節目禁止攜帶外食、飲料、任何種類之金屬、玻璃、寶特瓶容器、雷射筆、煙火或任何危險物品。</span><br><span class="gloss">English translation: Outside food, drinks, any kind of metal, glass or PET bottle containers, laser pointers, fireworks and any dangerous items are not allowed at this show.</span>',
+      'etiq3': '<span lang="zh-Hant">一人一票、憑票入場，孩童亦需購票。</span><br><span class="gloss">English translation: One ticket per person, entry by ticket only. Children also need a ticket.</span>',
+      'etiq4': '<span lang="zh-Hant">為現場安全考量並維護場館之草皮，平面區觀眾請勿穿高跟鞋進入並禁止使用輪類器具進出（例：溜冰鞋、滑板、腳踏車、嬰兒推車等）</span><br><span class="gloss">English translation: For on-site safety and to protect the venue turf, flat-floor attendees must not wear high heels and wheeled devices are prohibited (e.g. roller skates, skateboards, bicycles, strollers).</span>',
+      'etiq5': '<span lang="zh-Hant">以下所列區域可能因硬體設備而導致部分視線遮蔽，無法看到完整的舞台及表演。現場將不接受以視線遮蔽為由退票或換位</span><br><span class="gloss">English translation: The areas listed below (on the ticket page) may have part of the view blocked by equipment, so the full stage and performance may not be visible. No refunds or seat changes on-site for view obstruction.</span>',
+      'etiq6': '<span lang="zh-Hant">本場館 2F 看台有一定高度，如有懼高症者，建議評估自身狀況後再行購買。現場恕無法接受懼高因素退票。</span><br><span class="gloss">English translation: The 2F stand of this venue is fairly high. If you have a fear of heights, please consider before buying. No on-site refunds for fear of heights.</span>',
+      'etiq7': '<span lang="zh-Hant">請勿於拍賣網站或是其他非KKTIX正式授權售票之通路、網站購票、也不要透過陌生代購進行購票</span><br><span class="gloss">English translation: Do not buy tickets on auction sites or any channel or site not officially authorised by KKTIX, and do not buy through unknown proxy buyers.</span>',
+      'rules-source': 'The Chinese text is quoted from <a href="https://kklivetw.kktix.cc/events/34473ba4" target="_blank" rel="noopener">KKLIVE KKTIX</a>; the English is an unofficial translation. The promoter’s announcements have the final word.',
+      'card-prema': 'Prema',
+      'prema-p1': '<span lang="en">“Prema” is Fujii Kaze\'s third studio album in three years.</span>',
+      'prema-p2': '<span lang="en">The album, which features nine songs with all English lyrics, will be released on September 5, 2025</span>',
+      'prema-p3': '<span lang="en">DISC2 contains 6 songs released since the release of the previous album “LOVE ALL SERVE ALL”</span>',
+      'prema-d1': 'Disc 1',
+      'prema-d2': 'Limited edition, Disc 2',
+      'prema-source': 'Source: <a href="https://fujiikaze.com/music/prema_limited/" target="_blank" rel="noopener">fujiikaze.com</a>.',
+      'card-about': 'About Fujii Kaze',
+      'about-p1': '1997年6月14日生まれ。日本のシンガーソングライター。<br><span class="gloss">English translation: Born June 14, 1997. Japanese singer-songwriter.</span>',
+      'about-p2': '2020年、“何なんw”のMusic Video公開と共にデビューした。<br><span class="gloss">English translation: He debuted in 2020 with the release of the music video for “Nan-Nan”.</span>',
+      'about-p3': 'Source: <a href="https://fujiikaze.com/profile/" target="_blank" rel="noopener">fujiikaze.com/profile</a>.',
+      'fact-born': 'Born',
+      'fact-born-val': 'June 14, 1997',
+      'fact-debut': 'Debut',
+      'fact-debut-val': '2020, “Nan-Nan” music video',
+      'fact-first': 'First album',
+      'fact-first-val': 'HELP EVER HURT NEVER (May 2020)',
+      'disc-listen': 'Listen',
+      'sp-note': 'Spotify embed: you only get previews unless you are logged in to Spotify.',
+      'disc-source': 'Titles and format tags as listed on <a href="https://fujiikaze.com/music/" target="_blank" rel="noopener">fujiikaze.com/music</a>, which does not show release dates. Cover images and play links come from the official site and its official smart links (fujii-kaze.lnk.to); the live album titles omit the trailing (Fujii Kaze Stadium Live “Feelin’ Good”).',
+    }
+  };
+
+  let currentLang = 'zh-TW';
+
+  function applyLang(lang) {
+    currentLang = lang;
+    const d = dict[lang];
+    document.querySelectorAll('[data-i18n]').forEach(el => {
+      const key = el.getAttribute('data-i18n');
+      if (d[key] !== undefined) el.innerHTML = d[key];
+    });
+    document.documentElement.lang = lang === 'zh-TW' ? 'zh-Hant-TW' : 'en';
+    document.getElementById('btn-zh').classList.toggle('active', lang === 'zh-TW');
+    document.getElementById('btn-en').classList.toggle('active', lang === 'en');
+    try { localStorage.setItem('fk_lang', lang); } catch(e) {}
+    updateDays();
+  }
+
+  /* Days until the Kaohsiung show (Oct 31, 2026, 19:00 Taiwan time), counted in Taiwan calendar days */
+  function updateDays() {
+    const el = document.getElementById('days-left');
+    if (!el) return;
+    const d = dict[currentLang];
+    const show = new Date('2026-10-31T19:00:00+08:00').getTime();
+    const now = Date.now();
+    const taiwanDay = ms => Math.floor((ms + 8 * 3600000) / 86400000);
+    const left = taiwanDay(show) - taiwanDay(now);
+    if (now > show + 4 * 3600000) el.textContent = d['days-past'];
+    else if (left <= 0) el.textContent = d['days-today'];
+    else if (left === 1) el.textContent = d['days-one'];
+    else el.textContent = d['days-future'].replace('{n}', left);
+  }
+  setInterval(updateDays, 60000);
+
+
+  (function () {
+    try {
+      const s = localStorage.getItem('fk_lang');
+      if (s && dict[s]) { applyLang(s); return; }
+    } catch(e) {}
+    applyLang('zh-TW');
+  })();
+
+  /* ── Albums, player and synced lyrics ──
+     Titles come from the official detail pages on fujiikaze.com/music; playlist and Spotify ids
+     come from the official smart links (fujii-kaze.lnk.to). Lyrics are looked up on lrclib.net. */
+  const ART = 'https://fujiikaze.com/wp-content/uploads/sites/2865/';
+  const LS = ' (Fujii Kaze Stadium Live “Feelin’ Good”)';
+  const ALBUMS = [
+    { id: 'prema', title: 'Prema', tag: 'Album', art: ART + '2025/06/artwork-440x440-4-compressed.jpg',
+      yt: 'OLAK5uy_mZ7icpUir1knB_mb6kN29cuivilgCWr8Q', sp: '6ELurkxQnAif7u5Vv6Wly9',
+      tracks: [['Casket Girl'], ['I Need U Back'], ['Hachikō'], ['Love Like This'], ['Prema'], ["It Ain't Over"], ['You'], ['Okay, Goodbye'], ['Forever Young']] },
+    { id: 'pre-prema', title: 'Pre: Prema', tag: 'Album', art: ART + '2026/04/PrePrema_jk-compressed-1024x1024.jpg',
+      yt: 'OLAK5uy_mKkUPmKZc5gtASvMP-ICUwI7EcrSu1oDA', sp: '1aslkAwn7kQ4HC9EkHTfaH',
+      tracks: [['grace'], ["Feelin' Go(o)d"], ["Workin' Hard"], ["It's Alright"], ['Hana', '花'], ['Michi Teyu Ku (Overflowing)', '満ちてゆく'], ['masshiro (pure white)', '真っ白']] },
+    { id: 'live', title: 'Fujii Kaze Stadium Live “Feelin’ Good”', tag: 'Live album', art: ART + '2025/07/artwork-440x440-4-compressed.jpg',
+      yt: 'OLAK5uy_kfpo0I1v_HjhNiPEA1Ou5vZv37i9uaKt0', sp: '0U55vgfligIVp8fFNSu2Xf',
+      tracks: [['summer grace'], ['Introduction “Feelin’ Go(o)d”'], ["Feelin' Go(o)d"], ['Hana', '花'], ['Garden', 'ガーデン'], ['Tokuninai', '特にない'], ['SAYONARA Baby', 'さよならべいべ'], ['Interlude I “CASTING CALL”'], ['Kirari', 'きらり'], ['Kiri Ga Naikara', 'キリがないから'], ['MO-EH-YO (Ignite)', '燃えよ'], ['Kazeyo', '風よ'], ['Lonely Rhapsody', 'ロンリーラプソディ'], ['Koishigure (Shounanno Kaze)', '恋時雨 (湘南乃風)'], ['Shinunoga E-Wa', '死ぬのがいいわ'], ['Interlude II “Mo-Eh-Wa”'], ["Workin' Hard"], ['damn'], ['Tabiji', '旅路'], ['Michi Teyu Ku (Overflowing)', '満ちてゆく'], ['Seishun Sick', '青春病'], ['Nan-Nan', '何なんw'], ['Matsuri', 'まつり']] },
+    { id: 'best-of', title: 'Best of Fujii Kaze 2020-2024', tag: 'Compilation', art: ART + '2025/05/artwork-440x440-3-compressed.jpg',
+      yt: 'OLAK5uy_mmTDY0ochaQm5ffvqDbKDN2TG04DBIXPE', sp: '1DeciVpwShHj82dFZJiO0N',
+      tracks: [['Matsuri', 'まつり'], ["Workin' Hard"], ['Nan-Nan', '何なんw'], ['Kirari', 'きらり'], ['Hana', '花'], ['Garden', 'ガーデン'], ['damn'], ['Shinunoga E-Wa', '死ぬのがいいわ'], ['Tabiji', '旅路'], ['Michi Teyu Ku (Overflowing)', '満ちてゆく']] },
+    { id: 'lasa', title: 'LOVE ALL SERVE ALL', tag: 'Album', art: ART + '2025/05/artwork-440x440-26-compressed.jpg',
+      yt: 'OLAK5uy_mIIJtFRIoYVkeKLz4WaN6qgU0BXemlgHA', sp: '6VJwkUQXD3DnqqUUaxqDzH',
+      tracks: [['Kirari', 'きらり'], ['Matsuri', 'まつり'], ['Hedemo Ne-Yo (LASA edit)', 'へでもねーよ (LASA edit)'], ['YABA', 'やば。'], ['MO-EH-YO (Ignite)', '燃えよ'], ['Garden', 'ガーデン'], ['damn'], ['Lonely Rhapsody', 'ロンリーラプソディ'], ['Bye for now,', 'それでは、'], ['Seishun Sick', '青春病'], ['Tabiji', '旅路']] },
+    { id: 'hehn', title: 'HELP EVER HURT NEVER', tag: 'Album', art: ART + '2025/06/artwork-440x440-3-compressed.jpg',
+      yt: 'OLAK5uy_nuS1IYhaVBgIgRC4wti3aWxjOqwZo4NyA', sp: '03QiFOKDh6xMiSTkOnsmMG',
+      tracks: [['Nan-Nan', '何なんw'], ['Mo-Eh-Wa', 'もうええわ'], ['YASASHISA', '優しさ'], ['Kiri Ga Naikara', 'キリがないから'], ['Tsumi No Kaori', '罪の香り'], ['Cho Si Noccha Te', '調子のっちゃって'], ['Tokuninai', '特にない'], ['Shinunoga E-Wa', '死ぬのがいいわ'], ['Kazeyo', '風よ'], ['SAYONARA Baby', 'さよならべいべ'], ['Kaerou', '帰ろう']] },
+  ];
+  const LYRICS = {};
+
+  /* Chinese titles: only for songs whose official title is Japanese (no official Chinese title exists,
+     so these are the common renderings). English-only official titles stay in English. */
+  const ZH = {
+    'Hana': '花', 'Michi Teyu Ku (Overflowing)': '逐漸盈滿', 'masshiro (pure white)': '純白',
+    'Garden': '花園', 'Tokuninai': '沒什麼特別的', 'SAYONARA Baby': '再見了，寶貝', 'Kirari': '閃閃發光',
+    'Kiri Ga Naikara': '因為沒完沒了', 'MO-EH-YO (Ignite)': '燃燒吧', 'Kazeyo': '風啊',
+    'Lonely Rhapsody': '孤獨狂想曲', 'Koishigure (Shounanno Kaze)': '戀時雨（湘南乃風）',
+    'Shinunoga E-Wa': '死了也好', 'Tabiji': '旅途', 'Seishun Sick': '青春病', 'Nan-Nan': '什麼啊www',
+    'Matsuri': '祭典', 'Hedemo Ne-Yo (LASA edit)': '才沒什麼大不了（LASA edit）', 'YABA': '糟了。',
+    'Bye for now,': '那麼，先再見了', 'Mo-Eh-Wa': '夠了啦', 'YASASHISA': '溫柔', 'Tsumi No Kaori': '罪惡的香氣',
+    'Cho Si Noccha Te': '得意忘形', 'Kaerou': '回家吧'
+  };
+  const ZH_ALBUM = { 'prema': '至上的愛', 'pre-prema': null };
+  /* Facts taken from fujiikaze.com/music (release date, credits). No official page carries per-song commentary. */
+  const SLUG = { 'prema': 'prema', 'pre-prema': 'pre_prema', 'live': 'fujii_kaze_stadium_live_feelin_good', 'best-of': 'best_of_fujii_kaze_2020-2024', 'lasa': 'love_all_serve_all', 'hehn': 'help-ever-hurt-never' };
+  const ALBUM_REL = { 'prema': '2025-09-05' };
+  const TRACK_INFO = {
+    'prema:Hachikō': { rel: '2025-06-13', page: 'hachiko',
+      en: 'Originally produced in 2022 with Sir Nolan and Tobias Jesso Jr.; Fujii Kaze later added a new top line, and producer 250 arranged the final version.',
+      zh: '2022 年與 Sir Nolan、Tobias Jesso Jr. 共同製作的原型；藤井風之後加入新的主旋律，最終版本由製作人 250 編曲。' }
+  };
+
+  (function () {
+    const gridEl = document.getElementById('album-grid');
+    const listEl = document.getElementById('track-list');
+    const nowEl = document.getElementById('now-album');
+    const linesEl = document.getElementById('lyrics-lines');
+    const titleEl = document.getElementById('lyrics-title');
+    const emptyEl = document.getElementById('lyrics-empty');
+    const infoEl = document.getElementById('song-info');
+    const trBtn = document.getElementById('tr-btn');
+    const wrapEl = document.getElementById('player-wrap');
+    const spWrap = document.getElementById('spotify-wrap');
+    const spFrame = document.getElementById('sp-frame');
+    const btnYt = document.getElementById('src-yt');
+    const btnSp = document.getElementById('src-sp');
+
+    let album = ALBUMS[0], trackIdx = 0, mode = 'yt';
+    let player = null, ready = false, apiReady = false, pending = null, cues = [], activeIdx = -1, timer = null, lyricsFor = null;
+
+    function fullTitle(t) { return t[1] ? t[0] + ' ' + t[1] : t[0]; }
+    const zhMode = () => currentLang === 'zh-TW';
+    function trackName(t) { return zhMode() && ZH[t[0]] ? ZH[t[0]] : t[0]; }
+    function albumName(a) { return zhMode() && ZH_ALBUM[a.id] ? a.title + '　' + ZH_ALBUM[a.id] : a.title; }
+    /* original-title line shown under a translated title */
+    function origLine(t) { return zhMode() && ZH[t[0]] ? fullTitle(t) : (t[1] || ''); }
+
+    /* Album covers */
+    ALBUMS.forEach(a => {
+      const b = document.createElement('button');
+      b.type = 'button';
+      b.className = 'album-card';
+      b.dataset.id = a.id;
+      b.innerHTML = '<img class="album-art" src="' + a.art + '" alt="" loading="lazy" width="440" height="440">' +
+        '<span class="album-meta"><span class="album-name"></span><span class="album-type"></span></span>';
+      b.querySelector('.album-name').textContent = albumName(a);
+      b.querySelector('.album-type').textContent = a.tag;
+      b.addEventListener('click', () => selectAlbum(a, 0, true));
+      gridEl.appendChild(b);
+    });
+
+    function renderTracks() {
+      listEl.innerHTML = '';
+      album.tracks.forEach((t, i) => {
+        const li = document.createElement('li');
+        li.className = 'guide-item';
+        li.dataset.i = i;
+        li.innerHTML = '<span class="guide-n"></span><div class="guide-info"><div class="guide-title"></div><div class="guide-title-jp"></div></div>' +
+          '<div class="guide-links"><button type="button" class="g-link play"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg></button></div>';
+        li.querySelector('.guide-n').textContent = i + 1;
+        li.querySelector('.guide-title').textContent = trackName(t);
+        const jp = li.querySelector('.guide-title-jp');
+        if (origLine(t)) jp.textContent = origLine(t); else jp.remove();
+        const btn = li.querySelector('button');
+        btn.title = dict[currentLang]['play-title'];
+        btn.setAttribute('aria-label', dict[currentLang]['play-title'] + ': ' + trackName(t));
+        btn.setAttribute('data-title-i18n', 'play-title');
+        btn.addEventListener('click', () => playTrack(i));
+        listEl.appendChild(li);
+      });
+    }
+
+    function markPlaying() {
+      listEl.querySelectorAll('.guide-item').forEach(li => li.classList.toggle('playing', Number(li.dataset.i) === trackIdx));
+      gridEl.querySelectorAll('.album-card').forEach(b => b.setAttribute('aria-pressed', b.dataset.id === album.id ? 'true' : 'false'));
+      nowEl.textContent = albumName(album);
+      const t = album.tracks[trackIdx];
+      titleEl.textContent = t ? trackName(t) : '—';
+      renderInfo();
+    }
+
+    /* Song background block: official facts only */
+    function renderInfo() {
+      const d = dict[currentLang], t = album.tracks[trackIdx];
+      if (!t) { infoEl.innerHTML = ''; return; }
+      const info = TRACK_INFO[album.id + ':' + t[0]];
+      const rel = (info && info.rel) || ALBUM_REL[album.id];
+      const esc = x => String(x).replace(/[&<>]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' }[c]));
+      const url = 'https://fujiikaze.com/music/' + (info && info.page ? info.page : SLUG[album.id]) + '/';
+      let h = '<h4>' + esc(trackName(t)) + (origLine(t) ? '<span class="orig">' + esc(origLine(t)) + '</span>' : '') + '</h4>';
+      h += '<p class="si-meta">' + d['si-album'] + '：' + esc(albumName(album)) + '　·　' + d['si-track'] + ' ' + (trackIdx + 1) + '/' + album.tracks.length +
+        (rel ? '　·　' + d['si-release'] + '：' + rel : '') + '</p>';
+      if (info) h += '<p><span class="si-meta">' + d['si-credit'] + '</span><br>' + esc(zhMode() ? info.zh : info.en) + (zhMode() ? '<br><span lang="en" class="si-meta">' + esc(info.en) + '</span>' : '') + '</p>';
+      else h += '<p class="si-meta">' + d['si-none'] + '</p>';
+      h += '<p class="source-note"><a href="' + url + '" target="_blank" rel="noopener">' + d['si-page'] + '</a>' + (zhMode() ? '　' + d['title-note'] : '') + '</p>';
+      infoEl.innerHTML = h;
+    }
+
+    /* Lyrics (synced, lrclib.net) */
+    function parseLrc(lrc) {
+      const out = [];
+      (lrc || '').split('\n').forEach(l => {
+        const m = l.match(/^\[(\d+):(\d+(?:\.\d+)?)\]\s*(.*)$/);
+        if (m && m[3].trim()) out.push({ t: +m[1] * 60 + parseFloat(m[2]), text: m[3].trim() });
+      });
+      return out;
+    }
+    async function loadLyrics(key, t) {
+      if (LYRICS[key]) return LYRICS[key];
+      const names = [t[1], t[0]].filter(Boolean).map(n => n.replace(/\s*\(.*?\)\s*/g, ' ').trim()).filter(Boolean);
+      const queries = names.map(n => 'Fujii Kaze ' + n).concat(names.map(n => '藤井風 ' + n));
+      for (const q of queries) {
+        try {
+          const r = await fetch('https://lrclib.net/api/search?q=' + encodeURIComponent(q));
+          if (!r.ok) continue;
+          const hit = (await r.json()).find(x => x.syncedLyrics);
+          if (hit) { LYRICS[key] = parseLrc(hit.syncedLyrics); return LYRICS[key]; }
+        } catch (e) {}
+      }
+      LYRICS[key] = [];
+      return LYRICS[key];
+    }
+    function renderLyrics() {
+      const key = album.id + ':' + trackIdx;
+      if (lyricsFor === key) return;
+      lyricsFor = key;
+      cues = []; activeIdx = -1; linesEl.innerHTML = '';
+      emptyEl.textContent = dict[currentLang]['lyrics-loading'];
+      emptyEl.style.display = '';
+      const t = album.tracks[trackIdx];
+      loadLyrics(key, t).then(list => {
+        if (lyricsFor !== key) return;
+        cues = list;
+        emptyEl.textContent = dict[currentLang]['lyrics-empty'];
+        emptyEl.style.display = cues.length ? 'none' : '';
+        cues.forEach(c => {
+          const d = document.createElement('div');
+          d.className = 'lyric-line';
+          d.appendChild(document.createTextNode(c.text));
+          const tr = document.createElement('div'); tr.className = 'lyric-tr'; d.appendChild(tr);
+          d.addEventListener('click', () => { if (ready) { player.seekTo(c.t, true); player.playVideo(); } });
+          linesEl.appendChild(d);
+        });
+        fillTranslations();
+        tick();
+      });
+    }
+
+    /* Lyric translation (machine, MyMemory), toggleable. Lines already in the target language are skipped. */
+    let transOn = true;
+    try { transOn = localStorage.getItem('fk_tr') !== '0'; } catch (e) {}
+    const TRC = {};
+    const isJa = x => /[\u3040-\u30ff\u4e00-\u9fff]/.test(x);
+    async function mm(text, src, tgt) {
+      const ck = src + tgt + text;
+      if (TRC[ck] !== undefined) return TRC[ck];
+      try {
+        const r = await fetch('https://api.mymemory.translated.net/get?q=' + encodeURIComponent(text) + '&langpair=' + src + '|' + tgt);
+        const j = await r.json();
+        const out = j && j.responseStatus == 200 ? j.responseData.translatedText : '';
+        return (TRC[ck] = out || '');
+      } catch (e) { return ''; }
+    }
+    async function fillTranslations() {
+      const key = lyricsFor, lang = currentLang, tgt = lang === 'zh-TW' ? 'zh-TW' : 'en';
+      const nodes = Array.from(linesEl.children);
+      nodes.forEach(n => { n.lastChild.textContent = ''; });
+      if (!transOn) return;
+      for (let i = 0; i < cues.length; i++) {
+        const text = cues[i].text, ja = isJa(text);
+        if (!ja && tgt === 'en') continue;
+        const out = await mm(text, ja ? 'ja' : 'en', tgt);
+        if (lyricsFor !== key || currentLang !== lang || !transOn) return;
+        if (out && out.toLowerCase() !== text.toLowerCase() && nodes[i]) nodes[i].lastChild.textContent = out;
+      }
+    }
+    function syncTrBtn() {
+      const d = dict[currentLang];
+      trBtn.setAttribute('aria-pressed', String(transOn));
+      trBtn.textContent = transOn ? d['tr-on'] : d['tr-off'];
+      trBtn.title = d['tr-note'];
+      linesEl.classList.toggle('show-tr', transOn);
+    }
+    trBtn.addEventListener('click', () => {
+      transOn = !transOn;
+      try { localStorage.setItem('fk_tr', transOn ? '1' : '0'); } catch (e) {}
+      syncTrBtn(); fillTranslations();
+    });
+
+    function refreshLang() {
+      gridEl.querySelectorAll('.album-card').forEach(b => { b.querySelector('.album-name').textContent = albumName(ALBUMS.find(a => a.id === b.dataset.id)); });
+      renderTracks(); markPlaying(); syncTrBtn();
+      document.querySelectorAll('.prema-item').forEach(li => {
+        const b = li.querySelector('button[data-album]');
+        const a = ALBUMS.find(x => x.id === b.dataset.album), t = a.tracks[Number(b.dataset.idx)];
+        const el = li.querySelector('.prema-t');
+        el.textContent = trackName(t);
+        if (origLine(t)) { const o = document.createElement('span'); o.className = 'orig'; o.textContent = origLine(t); el.appendChild(o); }
+      });
+      fillTranslations();
+    }
+    function tick() {
+      if (!ready || !cues.length) return;
+      const t = player.getCurrentTime();
+      let idx = -1;
+      for (let i = 0; i < cues.length; i++) { if (cues[i].t <= t) idx = i; else break; }
+      if (idx === activeIdx) return;
+      activeIdx = idx;
+      const nodes = linesEl.children;
+      for (let i = 0; i < nodes.length; i++) nodes[i].classList.toggle('active', i === idx);
+      if (idx >= 0) {
+        const n = nodes[idx];
+        linesEl.scrollTo({ top: n.offsetTop - linesEl.clientHeight / 2 + n.offsetHeight / 2, behavior: 'smooth' });
+      }
+    }
+
+    /* Source switch */
+    function setMode(m) {
+      mode = m;
+      btnYt.setAttribute('aria-pressed', String(m === 'yt'));
+      btnSp.setAttribute('aria-pressed', String(m === 'sp'));
+      wrapEl.hidden = m !== 'yt';
+      spWrap.hidden = m !== 'sp';
+      if (m === 'sp') {
+        if (ready && player.pauseVideo) player.pauseVideo();
+        const src = 'https://open.spotify.com/embed/album/' + album.sp + '?utm_source=generator';
+        if (spFrame.getAttribute('src') !== src) spFrame.setAttribute('src', src);
+      }
+    }
+    btnYt.addEventListener('click', () => setMode('yt'));
+    btnSp.addEventListener('click', () => setMode('sp'));
+
+    /* Selecting and playing */
+    /* A fresh player per album: loadPlaylist on a running player proved unreliable. */
+    function mount(autoplay, index) {
+      if (!apiReady) { pending = { autoplay: autoplay, index: index || 0 }; return; }
+      clearInterval(timer);
+      ready = false;
+      if (player && player.destroy) player.destroy();
+      const holder = document.querySelector('.player-video');
+      holder.innerHTML = '<div id="yt-player"></div>';
+      player = new YT.Player('yt-player', {
+        playerVars: { listType: 'playlist', list: album.yt, autoplay: autoplay ? 1 : 0, playsinline: 1, rel: 0, modestbranding: 1 },
+        events: {
+          onReady: () => {
+            ready = true;
+            if (autoplay && index > 0) player.playVideoAt(index);
+          },
+          onStateChange: e => {
+            clearInterval(timer);
+            if (e.data === YT.PlayerState.PLAYING) {
+              const i = player.getPlaylistIndex();
+              if (i >= 0 && i !== trackIdx && i < album.tracks.length) {
+                trackIdx = i; markPlaying(); lyricsFor = null; renderLyrics();
+              }
+              timer = setInterval(tick, 250);
+            } else tick();
+          }
+        }
+      });
+    }
+    function load(autoplay, index) { mount(autoplay, index); }
+    function selectAlbum(a, index, autoplay) {
+      const changed = a !== album;
+      album = a; trackIdx = index || 0;
+      if (changed) renderTracks();
+      markPlaying();
+      lyricsFor = null; renderLyrics();
+      if (autoplay && mode !== 'yt') setMode('yt');
+      if (changed) load(!!autoplay, trackIdx);
+      else if (autoplay) { if (ready) player.playVideoAt(trackIdx); else mount(true, trackIdx); }
+      if (mode === 'sp') setMode('sp');
+    }
+    function playTrack(i) {
+      if (mode !== 'yt') setMode('yt');
+      trackIdx = i; markPlaying(); lyricsFor = null; renderLyrics();
+      if (ready) player.playVideoAt(i); else mount(true, i);
+    }
+    window.playAlbumTrack = function (albumId, i) {
+      const a = ALBUMS.find(x => x.id === albumId);
+      if (!a) return;
+      const det = document.getElementById('discography');
+      if (det) det.open = true;
+      selectAlbum(a, i, true);
+      document.getElementById('player-wrap').scrollIntoView({ behavior: 'smooth', block: 'center' });
+    };
+
+    document.querySelectorAll('button[data-album]').forEach(b => {
+      b.addEventListener('click', () => window.playAlbumTrack(b.dataset.album, Number(b.dataset.idx)));
+    });
+
+    /* Language switch also relabels dynamic buttons */
+    const origApply = applyLang;
+    applyLang = function (lang) {
+      origApply(lang);
+      document.querySelectorAll('[data-title-i18n]').forEach(el => {
+        const label = dict[lang][el.getAttribute('data-title-i18n')];
+        el.title = label;
+        const row = el.closest('.guide-item');
+        const name = row ? row.querySelector('.guide-title').textContent : (el.closest('.prema-item') ? el.closest('.prema-item').querySelector('.prema-t').textContent : '');
+        el.setAttribute('aria-label', label + (name ? ': ' + name : ''));
+      });
+      refreshLang();
+    };
+
+    refreshLang();
+    renderLyrics();
+
+    window.onYouTubeIframeAPIReady = function () {
+      apiReady = true;
+      const p = pending || { autoplay: false, index: trackIdx };
+      pending = null;
+      mount(p.autoplay, p.index);
+    };
+    const s = document.createElement('script');
+    s.src = 'https://www.youtube.com/iframe_api';
+    document.head.appendChild(s);
+  })();
+</script>
+</body>
+</html>

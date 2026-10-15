@@ -36,8 +36,8 @@ test.describe('listening to an album', () => {
 
     await expect(page.locator('#now-album')).toHaveText('LOVE ALL SERVE ALL');
     await expect(page.locator('#track-list .guide-item')).toHaveCount(11);
-    await expect(page.locator('#track-list .guide-title').first()).toHaveText('Kirari');
-    await expect(page.locator('#track-list .guide-title').last()).toHaveText('Tabiji');
+    await expect(page.locator('#track-list .guide-title').first()).toHaveText('閃閃發光');
+    await expect(page.locator('#track-list .guide-title').last()).toHaveText('旅途');
 
     const { created } = await ytState(page);
     expect(created.at(-1).vars).toMatchObject({ listType: 'playlist', list: 'OLAK5uy_mIIJtFRIoYVkeKLz4WaN6qgU0BXemlgHA', autoplay: 1 });
@@ -47,7 +47,7 @@ test.describe('listening to an album', () => {
     await openPage(page);
     await page.locator('.album-card', { hasText: 'Feelin’ Good' }).click();
     await expect(page.locator('#track-list .guide-item')).toHaveCount(23);
-    await expect(page.locator('#track-list .guide-title').nth(22)).toHaveText('Matsuri');
+    await expect(page.locator('#track-list .guide-title').nth(22)).toHaveText('祭典');
   });
 
   test('Prema Disc 2 buttons play the matching Pre: Prema track', async ({ page }) => {
@@ -116,8 +116,41 @@ test.describe('official content', () => {
     await openPage(page);
     const names = await page.locator('.album-name').allTextContents();
     expect(names).toEqual([
-      'Prema', 'Pre: Prema', 'Fujii Kaze Stadium Live “Feelin’ Good”',
+      'Prema　至上的愛', 'Pre: Prema', 'Fujii Kaze Stadium Live “Feelin’ Good”',
       'Best of Fujii Kaze 2020-2024', 'LOVE ALL SERVE ALL', 'HELP EVER HURT NEVER',
     ]);
+  });
+});
+
+test.describe('Chinese titles, lyric translation toggle and song info', () => {
+  test('English-only official titles stay English; Japanese titles get a Chinese title with the original beneath', async ({ page }) => {
+    await openPage(page);
+    await page.locator('.album-card', { hasText: 'HELP EVER HURT NEVER' }).click();
+    await expect(page.locator('#track-list .guide-title').nth(1)).toHaveText('夠了啦');
+    await expect(page.locator('#track-list .guide-title-jp').nth(1)).toHaveText('Mo-Eh-Wa もうええわ');
+    await page.locator('.album-card', { hasText: 'Pre: Prema' }).click();
+    await expect(page.locator('#track-list .guide-title').first()).toHaveText('grace');
+    await page.locator('#btn-en').click();
+    await page.locator('.album-card', { hasText: 'HELP EVER HURT NEVER' }).click();
+    await expect(page.locator('#track-list .guide-title').nth(1)).toHaveText('Mo-Eh-Wa');
+  });
+
+  test('translation toggle shows and hides lyric translations', async ({ page }) => {
+    await openPage(page);
+    const btn = page.locator('#tr-btn');
+    await expect(btn).toHaveAttribute('aria-pressed', 'true');
+    await expect(page.locator('#lyrics-lines')).toHaveClass(/show-tr/);
+    await btn.click();
+    await expect(btn).toHaveAttribute('aria-pressed', 'false');
+    await expect(page.locator('#lyrics-lines')).not.toHaveClass(/show-tr/);
+  });
+
+  test('song info shows official facts and links to the official page, without invented commentary', async ({ page }) => {
+    await openPage(page);
+    await page.locator('button[data-album="prema"][data-idx="2"]').click();
+    await expect(page.locator('#song-info')).toContainText('2025-06-13');
+    await expect(page.locator('#song-info a')).toHaveAttribute('href', 'https://fujiikaze.com/music/hachiko/');
+    await page.locator('button[data-album="prema"][data-idx="1"]').click();
+    await expect(page.locator('#song-info')).toContainText('官方網站沒有這首歌的背景說明');
   });
 });

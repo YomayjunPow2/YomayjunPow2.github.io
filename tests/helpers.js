@@ -28,7 +28,7 @@ async function openPage(page, { now = '2026-10-15T12:00:00+08:00', lang = 'zh-TW
     route.fulfill({ contentType: 'text/javascript', body: YT_STUB }));
   await page.route(url => !/^http:\/\/127\.0\.0\.1:4173\//.test(url.href) && url.href !== 'https://www.youtube.com/iframe_api',
     route => route.abort());
-  await page.goto('/fujii-kaze.html');
+  await page.goto('/fujii-kaze-prema.html');
 }
 
 const ytState = page => page.evaluate(() => window.__yt);
