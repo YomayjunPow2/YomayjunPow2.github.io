@@ -30,20 +30,26 @@ test.describe('days until the Kaohsiung show', () => {
 
 // Official sources: fujii-kaze.lnk.to smart links (playlist ids) and fujiikaze.com/music (track titles).
 test.describe('listening to an album', () => {
-  test('choosing an album lists its official tracks and mounts its playlist without playing it', async ({ page }) => {
+  test('choosing an album lists its official tracks and leaves the player alone; pressing play then mounts its playlist', async ({ page }) => {
     await openPage(page);
     await page.locator('.album-card', { hasText: 'LOVE ALL SERVE ALL' }).click();
 
-    await expect(page.locator('#now-album')).toHaveText('LOVE ALL SERVE ALL');
+    await expect(page.locator('#view-album')).toHaveText('LOVE ALL SERVE ALL');
     await expect(page.locator('#track-list .guide-item')).toHaveCount(11);
     await expect(page.locator('#track-list .guide-title').first()).toHaveText('Kirari きらり');
     await expect(page.locator('#track-list .guide-title-jp').first()).toHaveText('閃閃發光');
     await expect(page.locator('#track-list .guide-title').last()).toHaveText('Tabiji 旅路');
     await expect(page.locator('#track-list .guide-title-jp').last()).toHaveText('旅途');
 
+    const idle = await ytState(page);                              // browsing only: still the Prema player that was cued at load
+    expect(idle.created).toHaveLength(1);
+    expect(idle.created[0].vars).toMatchObject({ list: 'OLAK5uy_mZ7icpUir1knB_mb6kN29cuivilgCWr8Q', autoplay: 0 });
+    expect(idle.calls).toEqual([]);
+
+    await page.locator('#track-list .guide-item').first().locator('button').click();
     const { created } = await ytState(page);
-    expect(created.at(-1).vars).toMatchObject({ listType: 'playlist', list: 'OLAK5uy_mIIJtFRIoYVkeKLz4WaN6qgU0BXemlgHA', autoplay: 0 });
-    expect((await ytState(page)).calls).not.toContainEqual(expect.arrayContaining(['playVideoAt']));
+    expect(created.at(-1).vars).toMatchObject({ listType: 'playlist', list: 'OLAK5uy_mIIJtFRIoYVkeKLz4WaN6qgU0BXemlgHA', autoplay: 1 });
+    await expect(page.locator('#now-album')).toHaveText('LOVE ALL SERVE ALL');
   });
 
   test('the live album lists all 23 tracks', async ({ page }) => {

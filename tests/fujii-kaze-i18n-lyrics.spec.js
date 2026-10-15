@@ -46,7 +46,7 @@ test.describe('titles', () => {
       await pick(page, a.id);
       const titles = await page.locator('#track-list .guide-title').allTextContents();
       titles.forEach(t => expect(t).not.toMatch(CJK));
-      await expect(page.locator('#now-album')).toHaveText(title);
+      await expect(page.locator('#view-album')).toHaveText(title);
     }
     (await page.locator('.album-name').allTextContents()).forEach(t => expect(t).not.toMatch(CJK));
     await expect(page.locator('#lyrics-title')).not.toHaveText(CJK);

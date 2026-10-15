@@ -656,6 +656,7 @@
           <p class="source-note" data-i18n="sp-note"></p>
         </div>
         <div class="song-info" id="song-info"></div>
+        <p class="card-section-head" id="view-album" style="margin-top:1.6rem"></p>
         <ol class="guide-list" id="track-list"></ol>
 
         <div id="most-played">
@@ -1002,6 +1003,7 @@
     const gridEl = document.getElementById('album-grid');
     const listEl = document.getElementById('track-list');
     const nowEl = document.getElementById('now-album');
+    const viewEl = document.getElementById('view-album');
     const linesEl = document.getElementById('lyrics-lines');
     const titleEl = document.getElementById('lyrics-title');
     const emptyEl = document.getElementById('lyrics-empty');
@@ -1013,7 +1015,9 @@
     const btnYt = document.getElementById('src-yt');
     const btnSp = document.getElementById('src-sp');
 
-    let album = ALBUMS[0], trackIdx = 0, mode = 'yt';
+    /* `album` is the album loaded in the player; `viewed` is the one whose tracks are listed.
+       Clicking a cover only changes `viewed`, so the song that is playing is never interrupted. */
+    let album = ALBUMS[0], viewed = ALBUMS[0], trackIdx = 0, mode = 'yt';
     let player = null, ready = false, apiReady = false, pending = null, cues = [], activeIdx = -1, timer = null, lyricsFor = null;
 
     function fillAlbumZh(b, a) {
@@ -1043,13 +1047,13 @@
       b.querySelector('.album-name').textContent = a.title;
       fillAlbumZh(b, a);
       b.querySelector('.album-type').textContent = a.tag;
-      b.addEventListener('click', () => selectAlbum(a, 0, false));
+      b.addEventListener('click', () => selectAlbum(a));
       gridEl.appendChild(b);
     });
 
     function renderTracks() {
       listEl.innerHTML = '';
-      album.tracks.forEach((t, i) => {
+      viewed.tracks.forEach((t, i) => {
         const li = document.createElement('li');
         li.className = 'guide-item';
         li.dataset.i = i;
@@ -1070,9 +1074,10 @@
     }
 
     function markPlaying() {
-      listEl.querySelectorAll('.guide-item').forEach(li => li.classList.toggle('playing', Number(li.dataset.i) === trackIdx));
-      gridEl.querySelectorAll('.album-card').forEach(b => b.setAttribute('aria-pressed', b.dataset.id === album.id ? 'true' : 'false'));
+      listEl.querySelectorAll('.guide-item').forEach(li => li.classList.toggle('playing', viewed === album && Number(li.dataset.i) === trackIdx));
+      gridEl.querySelectorAll('.album-card').forEach(b => b.setAttribute('aria-pressed', b.dataset.id === viewed.id ? 'true' : 'false'));
       nowEl.textContent = albumName(album);
+      viewEl.textContent = albumName(viewed);
       const t = album.tracks[trackIdx];
       titleEl.textContent = t ? trackName(t) : '—';
       renderInfo();
@@ -1255,7 +1260,7 @@
       spWrap.hidden = m !== 'sp';
       if (m === 'sp') {
         if (ready && player.pauseVideo) player.pauseVideo();
-        const src = 'https://open.spotify.com/embed/album/' + album.sp + '?utm_source=generator';
+        const src = 'https://open.spotify.com/embed/album/' + viewed.sp + '?utm_source=generator';
         if (spFrame.getAttribute('src') !== src) spFrame.setAttribute('src', src);
       }
     }
@@ -1292,28 +1297,31 @@
       });
     }
     function load(autoplay, index) { mount(autoplay, index); }
-    function selectAlbum(a, index, autoplay) {
-      const changed = a !== album;
-      album = a; trackIdx = index || 0;
-      if (changed) renderTracks();
+    /* Clicking a cover: browse that album. Never touches the player. */
+    function selectAlbum(a) {
+      if (a === viewed) return;
+      viewed = a;
+      renderTracks();
       markPlaying();
-      lyricsFor = null; renderLyrics();
-      if (autoplay && mode !== 'yt') setMode('yt');
-      if (changed) load(!!autoplay, trackIdx);
-      else if (autoplay) { if (ready) player.playVideoAt(trackIdx); else mount(true, trackIdx); }
       if (mode === 'sp') setMode('sp');
     }
-    function playTrack(i) {
+    /* Play track i of album a: the only way the song changes. */
+    function playIn(a, i) {
       if (mode !== 'yt') setMode('yt');
-      trackIdx = i; markPlaying(); lyricsFor = null; renderLyrics();
-      if (ready) player.playVideoAt(i); else mount(true, i);
+      viewed = a;
+      renderTracks();
+      const sameAlbum = a === album;
+      album = a; trackIdx = i;
+      markPlaying(); lyricsFor = null; renderLyrics();
+      if (sameAlbum && ready) player.playVideoAt(i); else mount(true, i);
     }
+    function playTrack(i) { playIn(viewed, i); }
     window.playAlbumTrack = function (albumId, i) {
       const a = ALBUMS.find(x => x.id === albumId);
       if (!a) return;
       const det = document.getElementById('discography');
       if (det) det.open = true;
-      selectAlbum(a, i, true);
+      playIn(a, i);
       document.getElementById('player-wrap').scrollIntoView({ behavior: 'smooth', block: 'center' });
     };
 

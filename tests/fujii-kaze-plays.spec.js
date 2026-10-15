@@ -80,3 +80,51 @@ test.describe('most played of all time', () => {
     expect(calls).toContainEqual(['playVideoAt', 7]);
   });
 });
+
+test.describe('browsing albums while a song plays', () => {
+  const rank1 = page => page.locator('#most-played .play-row').first().locator('button');
+
+  test('clicking another cover only lists its tracks: the player, the song and its album stay as they are', async ({ page }) => {
+    await openPage(page, { lang: 'en' });
+    await rank1(page).click();                                           // Shinunoga E-Wa, HELP EVER HURT NEVER
+    await expect(page.locator('#now-album')).toHaveText('HELP EVER HURT NEVER');
+    const before = await ytState(page);
+
+    await page.locator('.album-card', { hasText: 'LOVE ALL SERVE ALL' }).click();
+    await expect(page.locator('#track-list .guide-item')).toHaveCount(11);          // browsing LASA
+    await expect(page.locator('#track-list .guide-title').first()).toHaveText('Kirari');
+    await expect(page.locator('#track-list .playing')).toHaveCount(0);             // the song playing is not in this album
+    await expect(page.locator('#now-album')).toHaveText('HELP EVER HURT NEVER');   // player untouched
+    await expect(page.locator('#view-album')).toHaveText('LOVE ALL SERVE ALL');
+
+    const after = await ytState(page);
+    expect(after.created.length).toBe(before.created.length);                      // no new player mounted
+    expect(after.calls).toEqual(before.calls);                                      // nothing paused, switched or played
+
+    await page.locator('.album-card', { hasText: 'HELP EVER HURT NEVER' }).click();  // back: the playing row is marked again
+    await expect(page.locator('#track-list .playing .guide-title')).toHaveText('Shinunoga E-Wa');
+  });
+
+  test('pressing play on a track of the browsed album is what switches the song', async ({ page }) => {
+    await openPage(page, { lang: 'en' });
+    await rank1(page).click();
+    const n = (await ytState(page)).created.length;
+    await page.locator('.album-card', { hasText: 'LOVE ALL SERVE ALL' }).click();
+    await page.locator('#track-list .guide-item').nth(1).locator('button').click();   // Matsuri
+    await expect(page.locator('#now-album')).toHaveText('LOVE ALL SERVE ALL');
+    await expect(page.locator('#track-list .playing .guide-title')).toHaveText('Matsuri');
+    const { created, calls } = await ytState(page);
+    expect(created.length).toBe(n + 1);
+    expect(created.at(-1).vars.list).toBe('OLAK5uy_mIIJtFRIoYVkeKLz4WaN6qgU0BXemlgHA');
+    expect(calls).toContainEqual(['playVideoAt', 1]);
+  });
+
+  test('pressing play on a track of the album already playing just jumps to it', async ({ page }) => {
+    await openPage(page, { lang: 'en' });
+    await rank1(page).click();
+    const n = (await ytState(page)).created.length;
+    await page.locator('#track-list .guide-item').nth(1).locator('button').click();   // Mo-Eh-Wa, same album
+    expect((await ytState(page)).created.length).toBe(n);
+    expect((await ytState(page)).calls).toContainEqual(['playVideoAt', 1]);
+  });
+});
