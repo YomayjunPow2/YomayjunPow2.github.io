@@ -680,7 +680,7 @@
               <div class="lyrics-head" id="lyrics-title">—</div>
               <div class="lyrics-lines" id="lyrics-lines"></div>
             </div>
-            <div class="lyrics-empty" id="lyrics-empty" data-i18n="lyrics-empty">此曲尚未加入同步歌詞。</div>
+            <div class="lyrics-empty" id="lyrics-empty" data-i18n="lyrics-empty">找不到此曲的同步歌詞。</div>
           </div>
         </div>
         <ul class="guide-list">
@@ -947,7 +947,8 @@
       'fact-debut-val':'2020年，首張專輯《Help Ever Hurt Never》',
       'card-guide':    '新手聆聽指南',
       'guide-intro':   '不知從何聽起？以下六首是認識藤井風的最佳起點。',
-      'lyrics-empty':  '此曲尚未加入同步歌詞。',
+      'lyrics-empty':  '找不到此曲的同步歌詞。',
+      'lyrics-loading':'歌詞載入中…',
       'play-title':    '在上方播放',
       'g1-desc':       '他的名片。讓人胸口發緊的鋼琴與靈魂。第一首聽這首。',
       'g2-desc':       '輕盈閃亮，讓人忍不住跳舞。陽光版藤井風。',
@@ -987,7 +988,8 @@
       'fact-debut-val':'2020 — Help Ever Hurt Never',
       'card-guide':    'Beginner\'s Listening Guide',
       'guide-intro':   'Not sure where to start? These six tracks are the best introduction to Fujii Kaze.',
-      'lyrics-empty':  'No synced lyrics have been added for this track yet.',
+      'lyrics-empty':  'No synced lyrics found for this track.',
+      'lyrics-loading':'Loading lyrics…',
       'play-title':    'Play above',
       'g1-desc':       'His calling card. Piano and soul that tighten something in your chest. Start here.',
       'g2-desc':       'Light, bright, impossible not to move to. The sunny side of Fujii Kaze.',
@@ -1044,7 +1046,7 @@
     const tracks = items.map(li => {
       const a = li.querySelector('a[href*="youtube.com/watch"]');
       const vid = a ? new URL(a.href).searchParams.get('v') : null;
-      return { li, vid, title: li.querySelector('.guide-title').textContent.trim() };
+      return { li, vid, title: li.querySelector('.guide-title').textContent.trim(), jp: li.querySelector('.guide-title-jp').textContent.trim() };
     }).filter(t => t.vid);
     if (!tracks.length) return;
 
@@ -1053,17 +1055,50 @@
     const emptyEl = document.getElementById('lyrics-empty');
     let player = null, current = null, cues = [], activeIdx = -1, timer = null;
 
-    function renderLyrics(vid) {
-      cues = LYRICS[vid] || [];
+    function parseLrc(lrc) {
+      const out = [];
+      (lrc || '').split('\n').forEach(l => {
+        const m = l.match(/^\[(\d+):(\d+(?:\.\d+)?)\]\s*(.*)$/);
+        if (m && m[3].trim()) out.push({ t: +m[1] * 60 + parseFloat(m[2]), text: m[3].trim() });
+      });
+      return out;
+    }
+
+    async function loadLyrics(track) {
+      if (LYRICS[track.vid]) return LYRICS[track.vid];
+      const queries = [track.jp, track.title].filter(Boolean).map(n => 'Fujii Kaze ' + n);
+      queries.push(...[track.jp, track.title].filter(Boolean).map(n => '藤井風 ' + n));
+      for (const q of queries) {
+        try {
+          const r = await fetch('https://lrclib.net/api/search?q=' + encodeURIComponent(q));
+          if (!r.ok) continue;
+          const hit = (await r.json()).find(x => x.syncedLyrics);
+          if (hit) { LYRICS[track.vid] = parseLrc(hit.syncedLyrics); return LYRICS[track.vid]; }
+        } catch (e) {}
+      }
+      LYRICS[track.vid] = [];
+      return LYRICS[track.vid];
+    }
+
+    function renderLyrics(track) {
+      cues = [];
       activeIdx = -1;
       linesEl.innerHTML = '';
-      emptyEl.style.display = cues.length ? 'none' : '';
-      cues.forEach((c, i) => {
-        const d = document.createElement('div');
-        d.className = 'lyric-line';
-        d.textContent = c.text;
-        d.addEventListener('click', () => { if (player) { player.seekTo(c.t, true); player.playVideo(); } });
-        linesEl.appendChild(d);
+      emptyEl.textContent = dict[currentLang]['lyrics-loading'];
+      emptyEl.style.display = '';
+      loadLyrics(track).then(list => {
+        if (current !== track) return;
+        cues = list;
+        emptyEl.textContent = dict[currentLang]['lyrics-empty'];
+        emptyEl.style.display = cues.length ? 'none' : '';
+        cues.forEach(c => {
+          const d = document.createElement('div');
+          d.className = 'lyric-line';
+          d.textContent = c.text;
+          d.addEventListener('click', () => { if (player) { player.seekTo(c.t, true); player.playVideo(); } });
+          linesEl.appendChild(d);
+        });
+        tick();
       });
     }
 
@@ -1071,7 +1106,7 @@
       current = track;
       tracks.forEach(t => t.li.classList.toggle('playing', t === track));
       titleEl.textContent = track.title;
-      renderLyrics(track.vid);
+      renderLyrics(track);
       if (player && player.loadVideoById) {
         autoplay ? player.loadVideoById(track.vid) : player.cueVideoById(track.vid);
       }
